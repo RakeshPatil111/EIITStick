@@ -89,16 +89,19 @@
                         android:id="@+id/actv_choose_a_topic"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="@string/choose_a_topic"
-                        android:singleLine="true"
-                        android:lines="1"
                         android:layout_gravity="center_vertical"
+                        android:hint="@string/choose_a_topic"
+                        android:lines="1"
+                        android:focusableInTouchMode="false"
+                        android:singleLine="true"
                         tools:text="Choose a topic" />
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/til_subject"
-                    style="@style/Widget.App.TextInputLayout.Light">
+                    style="@style/Widget.App.TextInputLayout.Light"
+                    app:hintAnimationEnabled="false"
+                    app:hintEnabled="false">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/tiet_subject"
@@ -110,6 +113,53 @@
                         android:inputType="textCapSentences"
                         android:maxLines="1" />
                 </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/til_description"
+                    style="@style/Widget.App.TextInputLayout.Light"
+                    app:hintAnimationEnabled="false"
+                    app:hintEnabled="false">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/tiet_description"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/dimen_150dp"
+                        android:digits="abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ 0123456789"
+                        android:gravity="top"
+                        android:hint="@string/enter_description"
+                        android:imeOptions="actionDone"
+                        android:inputType="textCapSentences"
+                        android:maxLines="8" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/dimen_16dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/ic_add_circle"
+                        android:contentDescription="@string/upload_image_content_description"
+                        android:layout_marginEnd="@dimen/dimen_8dp"
+                        app:tint="@color/color_primary" />
+
+                    <com.google.android.material.textview.MaterialTextView
+                        style="@style/Widget.AppCompat.TextView.Options"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/upload_media" />
+                </LinearLayout>
+
+                <com.google.android.material.button.MaterialButton
+                    android:layout_width="@dimen/dimen_150dp"
+                    android:layout_gravity="center"
+                    style="@style/Widget.App.Button"
+                    android:layout_margin="@dimen/dimen_24dp"
+                    android:text="@string/submit"/>
             </LinearLayout>
         </ScrollView>
     </LinearLayout>

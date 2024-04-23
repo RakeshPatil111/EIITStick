@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/color_primary"
+    tools:context=".StickerFragment">
+
+    <ImageView
+        android:id="@+id/img_app_icon"
+        android:layout_width="72dp"
+        android:layout_height="68dp"
+        android:contentDescription="@string/app_name"
+        android:scaleType="centerCrop"
+        android:src="@drawable/app_icon"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/til_search"
+        style="@style/Widget.App.TextInputLayout.Dark"
+        app:endIconMode="clear_text"
+        app:hintEnabled="false"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/img_app_icon"
+        app:startIconDrawable="@drawable/ic_search">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/tiet_search"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:digits="abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ 0123456789"
+            android:hint="@string/search"
+            android:imeOptions="actionSearch"
+            android:inputType="textCapWords"
+            android:maxLines="1" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <ImageView
+        android:id="@+id/img_screen_bg"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dimen_0dp"
+        android:layout_marginTop="@dimen/dimen_12dp"
+        android:contentDescription="@string/background_image"
+        android:scaleType="centerCrop"
+        android:src="@drawable/background"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/til_search" />
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cv_recent_sticker"
+        android:layout_width="46dp"
+        android:layout_height="52dp"
+        android:layout_marginStart="@dimen/dimen_10dp"
+        android:layout_marginTop="@dimen/dimen_10dp"
+        app:cardBackgroundColor="@color/sticker_bg"
+        app:cardCornerRadius="10dp"
+        app:cardElevation="0dp"
+        app:cardForegroundColor="@android:color/transparent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/img_screen_bg">
+
+        <ImageView
+            android:id="@+id/iv_recent_sticker_thumbnail"
+            android:layout_width="34dp"
+            android:layout_height="34dp"
+            android:layout_gravity="center"
+            android:contentDescription="@string/_content_description"
+            android:src="@drawable/ic_recent"
+            app:tint="@color/white" />
+    </com.google.android.material.card.MaterialCardView>
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cv_downloaded_sticker"
+        android:layout_width="46dp"
+        android:layout_height="52dp"
+        android:layout_marginVertical="@dimen/dimen_8dp"
+        app:cardBackgroundColor="@color/sticker_bg"
+        app:cardCornerRadius="10dp"
+        app:cardElevation="0dp"
+        app:cardForegroundColor="@android:color/transparent"
+        app:layout_constraintEnd_toEndOf="@+id/cv_recent_sticker"
+        app:layout_constraintStart_toStartOf="@+id/cv_recent_sticker"
+        app:layout_constraintTop_toBottomOf="@+id/cv_recent_sticker">
+
+        <ImageView
+            android:id="@+id/iv_downloaded_sticker_thumbnail"
+            android:layout_width="34dp"
+            android:layout_height="34dp"
+            android:layout_gravity="center"
+            android:contentDescription="@string/_content_description"
+            android:src="@drawable/ic_download"
+            app:tint="@color/white" />
+    </com.google.android.material.card.MaterialCardView>
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cv_fav_sticker"
+        android:layout_width="46dp"
+        android:layout_height="52dp"
+        android:layout_marginVertical="@dimen/dimen_8dp"
+        app:cardBackgroundColor="@color/sticker_bg"
+        app:cardCornerRadius="10dp"
+        app:cardElevation="0dp"
+        app:cardForegroundColor="@android:color/transparent"
+        app:layout_constraintEnd_toEndOf="@+id/cv_downloaded_sticker"
+        app:layout_constraintStart_toStartOf="@+id/cv_downloaded_sticker"
+        app:layout_constraintTop_toBottomOf="@+id/cv_downloaded_sticker">
+
+        <ImageView
+            android:id="@+id/iv_fav_sticker_thumbnail"
+            android:layout_width="34dp"
+            android:layout_height="34dp"
+            android:layout_gravity="center"
+            android:contentDescription="@string/_content_description"
+            android:src="@drawable/ic_favorite"
+            app:tint="@color/white" />
+    </com.google.android.material.card.MaterialCardView>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_emoji"
+        android:layout_width="48dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="@dimen/dimen_4dp"
+        android:clipToPadding="false"
+        android:paddingBottom="@dimen/dimen_32dp"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/cv_fav_sticker"
+        app:layout_constraintStart_toStartOf="@+id/cv_fav_sticker"
+        app:layout_constraintTop_toBottomOf="@+id/cv_fav_sticker"
+        tools:itemCount="4"
+        tools:listitem="@layout/cv_sticker_item" />
+
+    <!--tools:listitem="@layout/cv_gif_item"-->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_stickers"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:clipToPadding="false"
+        android:orientation="vertical"
+        android:padding="@dimen/dimen_6dp"
+        app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/rv_emoji"
+        app:layout_constraintTop_toTopOf="@+id/img_screen_bg"
+        app:spanCount="3"
+        tools:itemCount="4" />
+</androidx.constraintlayout.widget.ConstraintLayout>

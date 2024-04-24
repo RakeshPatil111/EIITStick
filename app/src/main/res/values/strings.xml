@@ -34,4 +34,8 @@
     <string name="download_sticker">Download Sticker</string>
     <string name="choose_a_topic">Choose a Topic</string>
     <string name="enter_subject">Enter Subject</string>
+    <string name="enter_description">Enter Description</string>
+    <string name="upload_media">Upload Media</string>
+    <string name="upload_image_content_description">upload image content description</string>
+    <string name="submit">Submit</string>
 </resources>

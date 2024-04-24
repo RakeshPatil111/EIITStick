@@ -1,3 +1,37 @@
 <resources>
     <string name="app_name">StickerPocket</string>
+    <string name="home">Sticker</string>
+    <string name="more_stickers">More Sticker</string>
+    <string name="settings">Settings</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="_content_description">sticker image</string>
+    <string name="background_image">background image</string>
+    <string name="search">Search my stickers</string>
+    <string name="filter_image_button">filter image button</string>
+    <string name="trending">Trending :</string>
+    <string name="contact_us">Contact Us</string>
+    <string name="tell_a_friend">Tell a Friend</string>
+    <string name="backup_restore">Backup/Restore</string>
+    <string name="deleted_stickers">Deleted Stickers</string>
+    <string name="tutorials">Tutorials</string>
+    <string name="tip_of_the_day">Tip of the Day</string>
+    <string name="send_sticker_from_app">Send Sticker from App</string>
+    <string name="send_sticker_from_keyboard">Send Sticker from Keyboard</string>
+    <string name="setup_sticker_pocket_keyboard">Setup Sticker Pocket Keyboard</string>
+    <string name="open_sticker_pocket_keyboard">Open Sticker Pocket Keyboard</string>
+    <string name="import_stickers_from_photo">Import Stickers from Photo</string>
+    <string name="import_stickers_from_whatsapp">Import Stickers from WhatsApp</string>
+    <string name="sticker_pocket_layout">Sticker Pocket Layout</string>
+    <string name="welcome_message">Welcome Message</string>
+    <string name="recognize_pockets">Recognize Pockets</string>
+    <string name="manage_pockets">Manage Pockets</string>
+    <string name="move_multiple_stickers_to_new_pocket">Move Multiple Stickers to New Pocket</string>
+    <string name="move_sticker_to_new_pocket">Move Sticker to New Pocket</string>
+    <string name="reorder_stickers">Reorder Stickers</string>
+    <string name="add_tags_to_sticker">Add Tags to Sticker</string>
+    <string name="manage_sticker">Manage Sticker</string>
+    <string name="download_sticker">Download Sticker</string>
+    <string name="choose_a_topic">Choose a Topic</string>
+    <string name="enter_subject">Enter Subject</string>
 </resources>

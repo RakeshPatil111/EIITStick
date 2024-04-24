@@ -1,0 +1,348 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/color_primary"
+    tools:context=".TutorialsFragment">
+
+    <ImageView
+        android:id="@+id/img_app_icon"
+        android:layout_width="72dp"
+        android:layout_height="68dp"
+        android:layout_margin="@dimen/dimen_32dp"
+        android:contentDescription="@string/app_name"
+        android:scaleType="centerCrop"
+        android:src="@drawable/app_icon"
+        app:layout_constraintBottom_toTopOf="@+id/img_screen_bg"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_chainStyle="spread" />
+
+    <ImageView
+        android:id="@+id/img_screen_bg"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dimen_0dp"
+        android:contentDescription="@string/background_image"
+        android:scaleType="centerCrop"
+        android:src="@drawable/background"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/img_app_icon"
+        app:layout_constraintVertical_chainStyle="spread" />
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginHorizontal="@dimen/dimen_24dp"
+        android:layout_marginVertical="@dimen/dimen_24dp"
+        android:background="@drawable/cv_border_rectangle"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="@+id/img_screen_bg"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/img_screen_bg">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <com.google.android.material.textview.MaterialTextView
+                style="@style/Widget.AppCompat.TextView.Header"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="@dimen/dimen_24dp"
+                android:text="@string/tutorials" />
+
+            <ImageView
+                android:layout_width="72dp"
+                android:layout_height="72dp"
+                android:layout_alignParentEnd="true"
+                android:layout_marginEnd="@dimen/dimen_24dp"
+                android:contentDescription="@string/app_name"
+                android:scaleType="centerCrop"
+                android:src="@drawable/app_icon" />
+        </RelativeLayout>
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingVertical="@dimen/dimen_8dp"
+            android:clipToPadding="true">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/dimen_24dp"
+                    android:layout_marginVertical="@dimen/dimen_12dp"
+                    app:cardCornerRadius="@dimen/dimen_10dp"
+                    app:cardElevation="@dimen/dimen_4dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:layout_margin="@dimen/dimen_12dp">
+
+                        <com.google.android.material.textview.MaterialTextView
+                            android:id="@+id/tv_send_sticker_from_app"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            style="@style/Widget.AppCompat.TextView.Setting.Options"
+                            android:text="@string/send_sticker_from_app"/>
+
+                        <com.google.android.material.textview.MaterialTextView
+                            android:id="@+id/tv_send_sticker_from_keyboard"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/dimen_12dp"
+                            style="@style/Widget.AppCompat.TextView.Setting.Options"
+                            android:text="@string/send_sticker_from_keyboard"/>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/dimen_24dp"
+                    android:layout_marginVertical="@dimen/dimen_12dp"
+                    app:cardCornerRadius="@dimen/dimen_10dp"
+                    app:cardElevation="@dimen/dimen_4dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:layout_margin="@dimen/dimen_12dp">
+
+                        <com.google.android.material.textview.MaterialTextView
+                            android:id="@+id/tv_open_sticker_pocket_keyboard"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            style="@style/Widget.AppCompat.TextView.Setting.Options"
+                            android:text="@string/open_sticker_pocket_keyboard"/>
+
+                        <com.google.android.material.textview.MaterialTextView
+                            android:id="@+id/tv_setup_sticker_pocket_keyboard"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/dimen_12dp"
+                            style="@style/Widget.AppCompat.TextView.Setting.Options"
+                            android:text="@string/setup_sticker_pocket_keyboard"/>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/dimen_24dp"
+                    android:layout_marginVertical="@dimen/dimen_12dp"
+                    app:cardCornerRadius="@dimen/dimen_10dp"
+                    app:cardElevation="@dimen/dimen_4dp">
+
+                        <com.google.android.material.textview.MaterialTextView
+                            android:id="@+id/tv_download_stickers"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:padding="@dimen/dimen_12dp"
+                            style="@style/Widget.AppCompat.TextView.Setting.Options"
+                            android:text="@string/download_sticker"/>
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/dimen_24dp"
+                    android:layout_marginVertical="@dimen/dimen_12dp"
+                    app:cardCornerRadius="@dimen/dimen_10dp"
+                    app:cardElevation="@dimen/dimen_4dp">
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/tv_manage_stickers"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="@dimen/dimen_12dp"
+                        style="@style/Widget.AppCompat.TextView.Setting.Options"
+                        android:text="@string/manage_sticker"/>
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/dimen_24dp"
+                    android:layout_marginVertical="@dimen/dimen_12dp"
+                    app:cardCornerRadius="@dimen/dimen_10dp"
+                    app:cardElevation="@dimen/dimen_4dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:layout_margin="@dimen/dimen_12dp">
+
+                        <com.google.android.material.textview.MaterialTextView
+                            android:id="@+id/tv_add_tags_to_sticker"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            style="@style/Widget.AppCompat.TextView.Setting.Options"
+                            android:text="@string/add_tags_to_sticker"/>
+
+                        <com.google.android.material.textview.MaterialTextView
+                            android:id="@+id/tv_reorder_stickers"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/dimen_12dp"
+                            style="@style/Widget.AppCompat.TextView.Setting.Options"
+                            android:text="@string/reorder_stickers"/>
+
+                        <com.google.android.material.textview.MaterialTextView
+                            android:id="@+id/tv_move_sticker_to_new_pocket"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/dimen_12dp"
+                            style="@style/Widget.AppCompat.TextView.Setting.Options"
+                            android:text="@string/move_sticker_to_new_pocket"/>
+
+                        <com.google.android.material.textview.MaterialTextView
+                            android:id="@+id/tv_move_multiple_stickers_to_new_pocket"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/dimen_12dp"
+                            style="@style/Widget.AppCompat.TextView.Setting.Options"
+                            android:text="@string/move_multiple_stickers_to_new_pocket"/>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/dimen_24dp"
+                    android:layout_marginVertical="@dimen/dimen_12dp"
+                    app:cardCornerRadius="@dimen/dimen_10dp"
+                    app:cardElevation="@dimen/dimen_4dp">
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/tv_manage_pockets"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="@dimen/dimen_12dp"
+                        style="@style/Widget.AppCompat.TextView.Setting.Options"
+                        android:text="@string/manage_pockets"/>
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/dimen_24dp"
+                    android:layout_marginVertical="@dimen/dimen_12dp"
+                    app:cardCornerRadius="@dimen/dimen_10dp"
+                    app:cardElevation="@dimen/dimen_4dp">
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/tv_recognize_pockets"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="@dimen/dimen_12dp"
+                        style="@style/Widget.AppCompat.TextView.Setting.Options"
+                        android:text="@string/recognize_pockets"/>
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/dimen_24dp"
+                    android:layout_marginVertical="@dimen/dimen_12dp"
+                    app:cardCornerRadius="@dimen/dimen_10dp"
+                    app:cardElevation="@dimen/dimen_4dp">
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/tv_welcome_message"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="@dimen/dimen_12dp"
+                        style="@style/Widget.AppCompat.TextView.Setting.Options"
+                        android:text="@string/welcome_message"/>
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/dimen_24dp"
+                    android:layout_marginVertical="@dimen/dimen_12dp"
+                    app:cardCornerRadius="@dimen/dimen_10dp"
+                    app:cardElevation="@dimen/dimen_4dp">
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/tv_sticker_pocket_layout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="@dimen/dimen_12dp"
+                        style="@style/Widget.AppCompat.TextView.Setting.Options"
+                        android:text="@string/sticker_pocket_layout"/>
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/dimen_24dp"
+                    android:layout_marginVertical="@dimen/dimen_12dp"
+                    app:cardCornerRadius="@dimen/dimen_10dp"
+                    app:cardElevation="@dimen/dimen_4dp">
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/tv_import_stickers_from_whatsapp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="@dimen/dimen_12dp"
+                        style="@style/Widget.AppCompat.TextView.Setting.Options"
+                        android:text="@string/import_stickers_from_whatsapp"/>
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/dimen_24dp"
+                    android:layout_marginVertical="@dimen/dimen_12dp"
+                    app:cardCornerRadius="@dimen/dimen_10dp"
+                    app:cardElevation="@dimen/dimen_4dp">
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/tv_import_stickers_from_photo"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="@dimen/dimen_12dp"
+                        style="@style/Widget.AppCompat.TextView.Setting.Options"
+                        android:text="@string/import_stickers_from_photo"/>
+                </com.google.android.material.card.MaterialCardView>
+
+            </LinearLayout>
+        </ScrollView>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

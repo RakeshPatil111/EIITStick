@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<com.google.android.material.card.MaterialCardView
+    android:id="@+id/cv_sticker"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="52dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_marginVertical="@dimen/dimen_4dp"
+    app:cardCornerRadius="10dp"
+    app:cardElevation="0dp"
+    app:cardBackgroundColor="@color/sticker_bg"
+    app:cardForegroundColor="@android:color/transparent">
+
+    <ImageView
+        android:id="@+id/iv_sticker_thumbnail"
+        android:layout_width="34dp"
+        android:layout_height="34dp"
+        android:scaleType="centerInside"
+        android:layout_gravity="center"
+        android:contentDescription="@string/_content_description"/>
+</com.google.android.material.card.MaterialCardView>

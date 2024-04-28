@@ -137,18 +137,12 @@
         tools:listitem="@layout/cv_sticker_item" />
 
     <!--tools:listitem="@layout/cv_gif_item"-->
-    <androidx.recyclerview.widget.RecyclerView
+    <com.giphy.sdk.ui.views.GiphyGridView
         android:id="@+id/rv_stickers"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:clipToPadding="false"
-        android:orientation="vertical"
-        android:padding="@dimen/dimen_6dp"
-        app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/rv_emoji"
-        app:layout_constraintTop_toTopOf="@+id/img_screen_bg"
-        app:spanCount="3"
-        tools:itemCount="4" />
+        app:layout_constraintTop_toTopOf="@+id/img_screen_bg" />
 </androidx.constraintlayout.widget.ConstraintLayout>

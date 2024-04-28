@@ -12,7 +12,7 @@ import com.android.stickerpocket.databinding.CvStickerItemBinding
 class EmojiCategoryListAdapter :
     RecyclerView.Adapter<EmojiCategoryListAdapter.StepperViewHolder>() {
 
-    private var selected = 0
+    private var selected = -1
     private var stickerClickAction: ((sticker: Sticker, position: Int) -> Unit)? = null
     private val differ = AsyncListDiffer(this, diffUtilEmoji)
 

@@ -1,5 +1,6 @@
 package com.android.stickerpocket
 
+import android.content.Context
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -22,6 +23,7 @@ class StickerDialog : DialogFragment() {
    /* private var selectedMedia: Media? = null*/
     private var gif: String? = null
     private lateinit var imageLoader: ImageLoader
+    private var listener: StickerDialogListener? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -47,6 +49,17 @@ class StickerDialog : DialogFragment() {
             .build()
 
         return binding?.root
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        listener = try {
+            context as StickerDialogListener
+        } catch (e: ClassCastException) {
+            throw ClassCastException(
+                context.toString() + "must implement StickerDialogListener"
+            )
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -86,6 +99,10 @@ class StickerDialog : DialogFragment() {
                     }
                 )
             }
+
+            tvInfo.setOnClickListener {
+                listener?.selectedSticker(Sticker(1,gif,"new one"))
+            }
         }
     }
 
@@ -111,6 +128,10 @@ class StickerDialog : DialogFragment() {
         }
     }
 
+    interface StickerDialogListener {
+        fun selectedSticker(sticker: Sticker)
+        fun cancel()
+    }
 
     override fun getTheme(): Int {
         return R.style.TransparentDialogTheme

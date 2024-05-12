@@ -12,7 +12,11 @@
         tools:layout="@layout/fragment_sticker" >
         <action
             android:id="@+id/action_stickerFragment_to_stickerDetailsFragment"
-            app:destination="@id/stickerDetailsFragment" />
+            app:destination="@id/stickerDetailsFragment">
+            <argument
+                android:name="sticker"
+                app:argType="com.android.stickerpocket.Sticker"/>
+        </action>
     </fragment>
     <fragment
         android:id="@+id/searchStickerFragment"

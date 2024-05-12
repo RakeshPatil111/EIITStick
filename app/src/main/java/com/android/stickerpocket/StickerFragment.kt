@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.widget.doAfterTextChanged
+import androidx.navigation.fragment.findNavController
 import com.android.stickerpocket.databinding.FragmentStickerBinding
 import com.giphy.sdk.core.models.Media
 import com.giphy.sdk.ui.pagination.GPHContent
@@ -16,7 +17,7 @@ import com.giphy.sdk.ui.views.GPHGridCallback
 import com.giphy.sdk.ui.views.GiphyGridView
 import timber.log.Timber
 
-class StickerFragment : Fragment() {
+class StickerFragment : Fragment(), StickerDialog.StickerDialogListener {
 
     private lateinit var binding: FragmentStickerBinding
     private lateinit var emojiCategoryListAdapter: EmojiCategoryListAdapter
@@ -104,5 +105,14 @@ class StickerFragment : Fragment() {
                 gifApiCallResponse()
             }, 500
         )
+    }
+
+    override fun selectedSticker(sticker: Sticker) {
+        //val action = StickerDetailsNavDirections(sticker)
+        //findNavController().navigate(action)
+    }
+
+    override fun cancel() {
+        Unit
     }
 }

@@ -9,7 +9,7 @@ import com.android.stickerpocket.databinding.ActivityMainBinding
 import com.giphy.sdk.ui.Giphy
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), StickerDialog.StickerDialogListener {
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var navController: NavController
@@ -24,5 +24,13 @@ class MainActivity : AppCompatActivity() {
 
         val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottom_navigation)
         NavigationUI.setupWithNavController(bottomNavigationView, navController)
+    }
+
+    override fun selectedSticker(sticker: Sticker) {
+        val action = StickerDetailsNavDirections(sticker)
+        navController.navigate(action)
+    }
+
+    override fun cancel() {
     }
 }

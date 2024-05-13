@@ -1,21 +1,28 @@
 package com.android.stickerpocket
 
+import android.content.Context
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
+import android.widget.PopupWindow
 import android.widget.Toast
+import androidx.core.view.get
 import androidx.core.widget.doAfterTextChanged
-import androidx.navigation.fragment.findNavController
+import androidx.fragment.app.Fragment
 import com.android.stickerpocket.databinding.FragmentStickerBinding
 import com.giphy.sdk.core.models.Media
+import com.giphy.sdk.core.models.enums.MediaType
 import com.giphy.sdk.ui.pagination.GPHContent
 import com.giphy.sdk.ui.views.GPHGridCallback
 import com.giphy.sdk.ui.views.GiphyGridView
 import timber.log.Timber
+
 
 class StickerFragment : Fragment(), StickerDialog.StickerDialogListener {
 
@@ -25,7 +32,7 @@ class StickerFragment : Fragment(), StickerDialog.StickerDialogListener {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = FragmentStickerBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -33,7 +40,7 @@ class StickerFragment : Fragment(), StickerDialog.StickerDialogListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.rvStickers.apply {
-            showViewOnGiphy = true
+            showViewOnGiphy = false
             spanCount = 3
             direction = GiphyGridView.VERTICAL
             showCheckeredBackground = true
@@ -48,11 +55,6 @@ class StickerFragment : Fragment(), StickerDialog.StickerDialogListener {
 
             override fun didSelectMedia(media: Media) {
                 Timber.d("didSelectMedia ${media.id}")
-                /*Toast.makeText(
-                    requireContext(),
-                    "media selected: ${media.id}",
-                    Toast.LENGTH_SHORT
-                ).show()*/
                 StickerDialog.show(childFragmentManager, "https://i.ibb.co/6BH61RN/first.gif")
             }
         }
@@ -63,7 +65,7 @@ class StickerFragment : Fragment(), StickerDialog.StickerDialogListener {
                 {
                     Toast.makeText(requireContext(), it.toString(), Toast.LENGTH_SHORT).show()
                     if (it.toString().isNotEmpty()) {
-                        binding.rvStickers.content = GPHContent.searchQuery(it.toString())
+                        binding.rvStickers.content = GPHContent.searchQuery(it.toString(), mediaType = MediaType.gif)
                     }
                 }, 1500
             )
@@ -72,24 +74,46 @@ class StickerFragment : Fragment(), StickerDialog.StickerDialogListener {
 
     private fun setupEmojiRecyclerView() {
         emojiCategoryListAdapter = EmojiCategoryListAdapter()
-        binding.rvEmoji.adapter = emojiCategoryListAdapter
+        binding.rvCategory.adapter = emojiCategoryListAdapter
 
         emojiCategoryListAdapter.stickerActionClick { sticker, _ ->
             binding.rvStickers.content = GPHContent.searchQuery(sticker.title.toString())
         }
         emojiCategoryListAdapter.stickerActionLongClick { sticker, position ->
-            val view = binding.rvEmoji.layoutManager?.findViewByPosition(position)
+            val view = binding.rvCategory[position].findViewById<View>(com.android.stickerpocket.R.id.cv_sticker)
             val location = IntArray(2)
-            view?.getLocationOnScreen(location)
+            view?.getLocationInWindow(location)
             val x = location[0]
             val y = location[1]
             println("Item $position clicked, X: $x, Y: $y")
-            StickerCategoryDialog.show(childFragmentManager, sticker, x, y)
+            //StickerCategoryDialog.show(childFragmentManager, sticker, x, y)
+            binding.fadeUpView.visibility = View.VISIBLE
+            val popupWindow = popupDisplay()
+            //popupWindow.showAsDropDown(view, x, y)
+            popupWindow.showAsDropDown( view, 0, (-3.0 * (view.pivotY.toInt())).toInt())
+            popupWindow.setOnDismissListener { binding.fadeUpView.visibility = View.GONE }
+
         }
 
         emojiApiCallResponse()
     }
+    fun popupDisplay(): PopupWindow {
+        val popupWindow = PopupWindow(requireContext())
 
+        // inflate your layout or dynamically add view
+        val inflater = requireContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+
+        val view: View = inflater.inflate(R.layout.cv_sticker_caterogy_dialog, null)
+
+        popupWindow.isFocusable = true
+        popupWindow.width = WindowManager.LayoutParams.WRAP_CONTENT
+        popupWindow.height = WindowManager.LayoutParams.WRAP_CONTENT
+        popupWindow.contentView = view
+        popupWindow.elevation = 12F
+        popupWindow.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+
+        return popupWindow
+    }
     private fun emojiApiCallResponse() {
         emojiCategoryListAdapter.updateList(emoji)
     }

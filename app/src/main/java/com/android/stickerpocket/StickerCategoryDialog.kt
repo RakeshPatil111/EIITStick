@@ -5,10 +5,12 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentManager
 import coil.load
 import com.android.stickerpocket.databinding.CvStickerCaterogyDialogBinding
+
 
 class StickerCategoryDialog : DialogFragment() {
 
@@ -112,10 +114,15 @@ class StickerCategoryDialog : DialogFragment() {
         val dialogY = args.getInt(ARG_DIALOG_Y)
 
         val window = dialog?.window
-        val params = window?.attributes
-        params?.x = dialogX - 90
-        params?.y = dialogY - 700
-        println(" X: ${params?.x}, Y: ${params?.y}")
-        window?.attributes = params
+//        val params = window?.attributes
+//        params?.x = dialogX
+//        params?.y = dialogY - 700
+//        println(" X: ${params?.x}, Y: ${params?.y}")
+//        window?.attributes = params
+
+        val param = window?.attributes
+        param?.y = dialogY-700
+        window?.attributes = param
+        window?.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
     }
 }

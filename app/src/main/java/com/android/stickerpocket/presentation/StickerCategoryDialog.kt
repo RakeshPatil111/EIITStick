@@ -1,4 +1,4 @@
-package com.android.stickerpocket
+package com.android.stickerpocket.presentation
 
 import android.os.Bundle
 import android.util.Log
@@ -9,6 +9,7 @@ import android.view.WindowManager
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentManager
 import coil.load
+import com.android.stickerpocket.R
 import com.android.stickerpocket.databinding.CvStickerCaterogyDialogBinding
 
 

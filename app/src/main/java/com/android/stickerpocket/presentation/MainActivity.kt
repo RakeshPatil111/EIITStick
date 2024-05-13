@@ -1,10 +1,12 @@
-package com.android.stickerpocket
+package com.android.stickerpocket.presentation
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.NavigationUI
+import com.android.stickerpocket.BuildConfig
+import com.android.stickerpocket.R
 import com.android.stickerpocket.databinding.ActivityMainBinding
 import com.giphy.sdk.ui.Giphy
 import com.google.android.material.bottomnavigation.BottomNavigationView

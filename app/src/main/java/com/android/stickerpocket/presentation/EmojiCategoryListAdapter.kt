@@ -1,4 +1,4 @@
-package com.android.stickerpocket
+package com.android.stickerpocket.presentation
 
 import android.graphics.Color
 import android.view.LayoutInflater

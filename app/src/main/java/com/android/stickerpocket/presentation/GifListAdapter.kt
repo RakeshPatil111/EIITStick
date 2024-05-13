@@ -1,4 +1,4 @@
-package com.android.stickerpocket
+package com.android.stickerpocket.presentation
 
 import android.content.Context
 import android.os.Build.VERSION.SDK_INT
@@ -21,7 +21,7 @@ class GifListAdapter : RecyclerView.Adapter<GifListAdapter.GifListViewHolder>() 
 
     private val differ = AsyncListDiffer(this, diffUtilGifs)
     private lateinit var context: Context
-    private var gifClickAction: ((gifs:Gifs, position: Int) -> Unit)? = null
+    private var gifClickAction: ((gifs: Gifs, position: Int) -> Unit)? = null
     private lateinit var imageLoader: ImageLoader
     private lateinit var scrollType: String
 

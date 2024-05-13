@@ -1,4 +1,4 @@
-package com.android.stickerpocket
+package com.android.stickerpocket.presentation
 
 import android.content.Context
 import android.graphics.Color
@@ -15,6 +15,7 @@ import android.widget.Toast
 import androidx.core.view.get
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
+import com.android.stickerpocket.R
 import com.android.stickerpocket.databinding.FragmentStickerBinding
 import com.giphy.sdk.core.models.Media
 import com.giphy.sdk.core.models.enums.MediaType
@@ -80,7 +81,7 @@ class StickerFragment : Fragment(), StickerDialog.StickerDialogListener {
             binding.rvStickers.content = GPHContent.searchQuery(sticker.title.toString())
         }
         emojiCategoryListAdapter.stickerActionLongClick { sticker, position ->
-            val view = binding.rvCategory[position].findViewById<View>(com.android.stickerpocket.R.id.cv_sticker)
+            val view = binding.rvCategory[position].findViewById<View>(R.id.cv_sticker)
             val location = IntArray(2)
             view?.getLocationInWindow(location)
             val x = location[0]

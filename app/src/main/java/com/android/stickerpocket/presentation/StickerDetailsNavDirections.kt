@@ -1,7 +1,8 @@
-package com.android.stickerpocket
+package com.android.stickerpocket.presentation
 
 import android.os.Bundle
 import androidx.navigation.NavDirections
+import com.android.stickerpocket.R
 
 data class StickerDetailsNavDirections(val sticker: Sticker): NavDirections {
     override val actionId: Int

@@ -19,7 +19,7 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        buildConfigField("String", "API_KEY", properties["API_KEY"].toString())
+        buildConfigField("String", "API_KEY", "\"${System.getenv("API_KEY")}\"")
     }
     buildFeatures {
         viewBinding = true

@@ -1,10 +1,14 @@
 package com.android.stickerpocket
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
+
+@Parcelize
 data class Sticker(
     val id: Int,
-    val thumbnail: String,
-    val title: String
-)
+    val thumbnail: String?,
+    val title: String?
+): Parcelable
 
 val smiley = Sticker(
     1,

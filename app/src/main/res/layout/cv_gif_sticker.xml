@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/siv_gif_image"
+        android:layout_width="220dp"
+        android:layout_height="220dp"
+        android:padding="@dimen/dimen_1dp"
+        android:scaleType="centerCrop"
+        android:background="@color/black"
+        app:layout_constraintBottom_toTopOf="@+id/option_card_view"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_chainStyle="packed"
+        app:shapeAppearance="@style/ShapeAppearance.ImageView"
+        tools:src="@tools:sample/avatars" />
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/option_card_view"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        app:cardBackgroundColor="@android:color/white"
+        app:cardCornerRadius="@dimen/dimen_8dp"
+        android:layout_marginTop="@dimen/dimen_18dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/siv_gif_image"
+        app:layout_constraintVertical_chainStyle="packed">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:divider="@color/color_text_hint"
+            android:orientation="vertical"
+            android:showDividers="middle">
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/tv_info"
+                style="@style/Widget.AppCompat.TextView.Options"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/text_dimen_12"
+                android:text="@string/info"
+                android:textColor="@android:color/black"
+                app:drawableEndCompat="@drawable/ic_add_circle" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/tv_add_to_fav"
+                style="@style/Widget.AppCompat.TextView.Options"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/text_dimen_12"
+                android:text="@string/add_to_favourites"
+                android:textColor="@android:color/black"
+                app:drawableEndCompat="@drawable/ic_add_circle" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/tv_share"
+                style="@style/Widget.AppCompat.TextView.Options"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/text_dimen_12"
+                android:text="@string/share"
+                android:textColor="@android:color/black"
+                app:drawableEndCompat="@drawable/ic_add_circle" />
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+</androidx.constraintlayout.widget.ConstraintLayout>

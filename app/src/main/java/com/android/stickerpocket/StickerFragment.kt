@@ -1,34 +1,26 @@
 package com.android.stickerpocket
 
-import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.widget.doAfterTextChanged
+import androidx.navigation.fragment.findNavController
 import com.android.stickerpocket.databinding.FragmentStickerBinding
 import com.giphy.sdk.core.models.Media
-import com.giphy.sdk.ui.GPHContentType
-import com.giphy.sdk.ui.GiphyLoadingProvider
 import com.giphy.sdk.ui.pagination.GPHContent
 import com.giphy.sdk.ui.views.GPHGridCallback
-import com.giphy.sdk.ui.views.GPHSearchGridCallback
-import com.giphy.sdk.ui.views.GifView
 import com.giphy.sdk.ui.views.GiphyGridView
-import kotlinx.coroutines.delay
 import timber.log.Timber
 
-class StickerFragment : Fragment() {
+class StickerFragment : Fragment(), StickerDialog.StickerDialogListener {
 
     private lateinit var binding: FragmentStickerBinding
     private lateinit var emojiCategoryListAdapter: EmojiCategoryListAdapter
-    private lateinit var gifListAdapter: GifListAdapter
-    private lateinit var giphyGridView: GiphyGridView
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -56,27 +48,15 @@ class StickerFragment : Fragment() {
 
             override fun didSelectMedia(media: Media) {
                 Timber.d("didSelectMedia ${media.id}")
-                Toast.makeText(
+                /*Toast.makeText(
                     requireContext(),
                     "media selected: ${media.id}",
                     Toast.LENGTH_SHORT
-                ).show()
+                ).show()*/
+                StickerDialog.show(childFragmentManager, "https://i.ibb.co/6BH61RN/first.gif")
             }
         }
 
-        binding.rvStickers.searchCallback = object : GPHSearchGridCallback {
-            override fun didTapUsername(username: String) {
-                Timber.d("didTapUsername $username")
-            }
-
-            override fun didLongPressCell(cell: GifView) {
-                Timber.d("didLongPressCell")
-            }
-
-            override fun didScroll(dx: Int, dy: Int) {
-                Timber.d("didScroll")
-            }
-        }
         binding.rvStickers.content = GPHContent.recents
         binding.tietSearch.doAfterTextChanged {
             Handler(Looper.getMainLooper()).postDelayed(
@@ -93,24 +73,27 @@ class StickerFragment : Fragment() {
     private fun setupEmojiRecyclerView() {
         emojiCategoryListAdapter = EmojiCategoryListAdapter()
         binding.rvEmoji.adapter = emojiCategoryListAdapter
+
         emojiCategoryListAdapter.stickerActionClick { sticker, _ ->
-            binding.rvStickers.content = GPHContent.searchQuery(sticker.title)
+            binding.rvStickers.content = GPHContent.searchQuery(sticker.title.toString())
         }
+        emojiCategoryListAdapter.stickerActionLongClick { sticker, position ->
+            val view = binding.rvEmoji.layoutManager?.findViewByPosition(position)
+            val location = IntArray(2)
+            view?.getLocationOnScreen(location)
+            val x = location[0]
+            val y = location[1]
+            println("Item $position clicked, X: $x, Y: $y")
+            StickerCategoryDialog.show(childFragmentManager, sticker, x, y)
+        }
+
         emojiApiCallResponse()
     }
-//
-//    private fun setupGifsRecyclerView() {
-//        gifListAdapter = GifListAdapter()
-//        binding.rvStickers.adapter = gifListAdapter
-//        gifListAdapter.gifActionClick { gif, _ ->
-//            Log.d("selected gif", gif.toString())
-//        }
-//    }
-//
+
     private fun emojiApiCallResponse() {
         emojiCategoryListAdapter.updateList(emoji)
     }
-//
+
     private fun gifApiCallResponse() {
         //gifListAdapter.updateList(gifs, requireActivity(), "VERTICAL")
     }
@@ -122,5 +105,14 @@ class StickerFragment : Fragment() {
                 gifApiCallResponse()
             }, 500
         )
+    }
+
+    override fun selectedSticker(sticker: Sticker) {
+        //val action = StickerDetailsNavDirections(sticker)
+        //findNavController().navigate(action)
+    }
+
+    override fun cancel() {
+        Unit
     }
 }

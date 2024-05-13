@@ -14,6 +14,7 @@ class EmojiCategoryListAdapter :
 
     private var selected = -1
     private var stickerClickAction: ((sticker: Sticker, position: Int) -> Unit)? = null
+    private var stickerLongClickAction: ((sticker: Sticker, position: Int) -> Unit)? = null
     private val differ = AsyncListDiffer(this, diffUtilEmoji)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
@@ -54,12 +55,23 @@ class EmojiCategoryListAdapter :
                         setSelectedItem(adapterPosition)
                     }
                 }
+
+                stickerLongClickAction?.let { sticker ->
+                    cvSticker.setOnLongClickListener {
+                        sticker(selectedSticker, adapterPosition)
+                        true
+                    }
+                }
             }
         }
     }
 
     fun stickerActionClick(action: (sticker: Sticker, position: Int) -> Unit) {
         this.stickerClickAction = action
+    }
+
+    fun stickerActionLongClick(action: (sticker: Sticker, position: Int) -> Unit) {
+        this.stickerLongClickAction = action
     }
 
     private fun setSelectedItem(position: Int) {

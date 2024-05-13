@@ -38,4 +38,15 @@
     <string name="upload_media">Upload Media</string>
     <string name="upload_image_content_description">upload image content description</string>
     <string name="submit">Submit</string>
+    <string name="share">Share</string>
+    <string name="add_to_favourites">Add to favourites</string>
+    <string name="info">Info</string>
+    <string name="delete_category">Delete Category</string>
+    <string name="reorganize">Reorganize</string>
+    <string name="new_category">New Category</string>
+    <string name="id">ID</string>
+    <string name="source">Source</string>
+    <string name="creator">Creator</string>
+    <string name="tags">Tags</string>
+    <string name="add">Add</string>
 </resources>

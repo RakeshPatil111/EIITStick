@@ -42,10 +42,10 @@ class StickerDetailsFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.apply {
-            sivGifImage.load("https://i.ibb.co/6BH61RN/first.gif", imageLoader){
+            sivGifImage.load("https://i.ibb.co/353QnHz/first.gif", imageLoader){
                 target(
                     onSuccess = {
-                        sivGifImage.load("https://i.ibb.co/6BH61RN/first.gif", imageLoader)
+                        sivGifImage.load("https://i.ibb.co/353QnHz/first.gif", imageLoader)
                     }
                 )
             }

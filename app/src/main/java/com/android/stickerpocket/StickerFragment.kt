@@ -10,18 +10,21 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
+import android.widget.ImageView
 import android.widget.PopupWindow
 import android.widget.Toast
 import androidx.core.view.get
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import androidx.emoji2.emojipicker.EmojiViewItem
+import coil.load
 import com.android.stickerpocket.databinding.FragmentStickerBinding
 import com.giphy.sdk.core.models.Media
 import com.giphy.sdk.core.models.enums.MediaType
 import com.giphy.sdk.ui.pagination.GPHContent
 import com.giphy.sdk.ui.views.GPHGridCallback
 import com.giphy.sdk.ui.views.GiphyGridView
+import com.google.android.material.textview.MaterialTextView
 import timber.log.Timber
 
 class StickerFragment : Fragment(),
@@ -57,7 +60,7 @@ class StickerFragment : Fragment(),
 
             override fun didSelectMedia(media: Media) {
                 Timber.d("didSelectMedia ${media.id}")
-                StickerDialog.show(childFragmentManager, "https://i.ibb.co/6BH61RN/first.gif")
+                StickerDialog.show(childFragmentManager, "https://i.ibb.co/353QnHz/first.gif")
             }
         }
 
@@ -88,32 +91,47 @@ class StickerFragment : Fragment(),
             val x = location[0]
             val y = location[1]
             println("Item $position clicked, X: $x, Y: $y")
-            //StickerCategoryDialog.show(childFragmentManager, sticker, x, y)
+
             binding.fadeUpView.visibility = View.VISIBLE
-            val popupWindow = popupDisplay()
-            //popupWindow.showAsDropDown(view, x, y)
+            val popupWindow = popupDisplay(sticker)
             popupWindow.showAsDropDown( view, 0, (-3.0 * (view.pivotY.toInt())).toInt())
             popupWindow.setOnDismissListener { binding.fadeUpView.visibility = View.GONE }
 
-            val stickerCategoryDialog = StickerCategoryDialog()
+            /*val stickerCategoryDialog = StickerCategoryDialog()
             stickerCategoryDialog.setupDialogInformation(
                 listener = this,
                 dialogX = x,
                 dialogY = y,
                 sticker = sticker
             )
-            stickerCategoryDialog.show(childFragmentManager, "StickerCategoryDialog")
+            stickerCategoryDialog.show(childFragmentManager, "StickerCategoryDialog")*/
         }
 
         emojiApiCallResponse()
     }
-    fun popupDisplay(): PopupWindow {
+    private fun popupDisplay(sticker: Sticker): PopupWindow {
         val popupWindow = PopupWindow(requireContext())
 
         // inflate your layout or dynamically add view
         val inflater = requireContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
 
         val view: View = inflater.inflate(R.layout.cv_sticker_caterogy_dialog, null)
+        val imageView = view.rootView.findViewById<ImageView>(R.id.iv_sticker_thumbnail)
+        val tvNewCategory = view.rootView.findViewById<MaterialTextView>(R.id.tv_new_category)
+
+        sticker.let {
+            imageView.load(it.thumbnail)
+        }
+
+        tvNewCategory.setOnClickListener {
+            popupWindow.dismiss()
+            binding.fadeUpView.visibility = View.GONE
+            val emojiPickerDialog = EmojiPickerDialog()
+            emojiPickerDialog.setDialogListener(
+                listener = this
+            )
+            emojiPickerDialog.show(childFragmentManager, "EmojiPickerDialog")
+        }
 
         popupWindow.isFocusable = true
         popupWindow.width = WindowManager.LayoutParams.WRAP_CONTENT

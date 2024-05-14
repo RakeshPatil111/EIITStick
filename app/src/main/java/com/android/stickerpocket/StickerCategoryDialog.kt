@@ -4,11 +4,9 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.WindowManager
 import androidx.fragment.app.DialogFragment
 import coil.load
 import com.android.stickerpocket.databinding.CvStickerCaterogyDialogBinding
-
 
 class StickerCategoryDialog : DialogFragment() {
 
@@ -78,15 +76,10 @@ class StickerCategoryDialog : DialogFragment() {
     override fun onResume() {
         super.onResume()
         val window = dialog?.window
-//        val params = window?.attributes
-//        params?.x = dialogX
-//        params?.y = dialogY - 700
-//        println(" X: ${params?.x}, Y: ${params?.y}")
-//        window?.attributes = params
-
-        val param = window?.attributes
-        param?.y = dialogY-700
-        window?.attributes = param
-        window?.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
+        val params = window?.attributes
+        params?.x = dialogX - 90
+        params?.y = dialogY - 700
+        println(" X: ${params?.x}, Y: ${params?.y}")
+        window?.attributes = params
     }
 }

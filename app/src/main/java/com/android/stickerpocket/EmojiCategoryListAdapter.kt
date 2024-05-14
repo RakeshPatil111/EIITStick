@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import com.android.stickerpocket.databinding.CvStickerItemBinding
+import com.android.stickerpocket.utils.ViewExt.shakeMe
 
 class EmojiCategoryListAdapter :
     RecyclerView.Adapter<EmojiCategoryListAdapter.StepperViewHolder>() {
@@ -62,6 +63,8 @@ class EmojiCategoryListAdapter :
                         true
                     }
                 }
+                //shake items once
+                this.root.shakeMe()
             }
         }
     }

@@ -122,10 +122,10 @@
     </com.google.android.material.card.MaterialCardView>
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rv_emoji"
+        android:id="@+id/rv_category"
         android:layout_width="48dp"
         android:layout_height="0dp"
-        android:layout_marginTop="@dimen/dimen_4dp"
+        android:layout_marginTop="@dimen/dimen_6dp"
         android:clipToPadding="false"
         android:paddingBottom="@dimen/dimen_32dp"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
@@ -136,13 +136,18 @@
         tools:itemCount="4"
         tools:listitem="@layout/cv_sticker_item" />
 
-    <!--tools:listitem="@layout/cv_gif_item"-->
     <com.giphy.sdk.ui.views.GiphyGridView
         android:id="@+id/rv_stickers"
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/rv_emoji"
+        app:layout_constraintStart_toEndOf="@+id/rv_category"
         app:layout_constraintTop_toTopOf="@+id/img_screen_bg" />
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/fade_up_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#AA000000"
+        android:visibility="gone"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

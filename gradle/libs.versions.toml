@@ -13,6 +13,7 @@ activity = "1.8.0"
 constraintlayout = "2.1.4"
 navigationFragmentKtx = "2.7.7"
 giphy = "2.3.13"
+emoji2Emojipicker = "1.4.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -29,6 +30,7 @@ material = { group = "com.google.android.material", name = "material", version.r
 androidx-activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }
 androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
 giphy = {module = "com.giphy.sdk:ui", name = "giphy", version.ref = "giphy"}
+androidx-emoji2-emojipicker = { group = "androidx.emoji2", name = "emoji2-emojipicker", version.ref = "emoji2Emojipicker" }
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
 jetbrainsKotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }

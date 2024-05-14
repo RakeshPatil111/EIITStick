@@ -9,7 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.widget.doAfterTextChanged
-import androidx.navigation.fragment.findNavController
+import androidx.emoji2.emojipicker.EmojiViewItem
 import com.android.stickerpocket.databinding.FragmentStickerBinding
 import com.giphy.sdk.core.models.Media
 import com.giphy.sdk.ui.pagination.GPHContent
@@ -17,7 +17,9 @@ import com.giphy.sdk.ui.views.GPHGridCallback
 import com.giphy.sdk.ui.views.GiphyGridView
 import timber.log.Timber
 
-class StickerFragment : Fragment(), StickerDialog.StickerDialogListener {
+class StickerFragment : Fragment(),
+    StickerCategoryDialog.StickerCategoryDialogListener,
+    EmojiPickerDialog.EmojiPickerDialogListener {
 
     private lateinit var binding: FragmentStickerBinding
     private lateinit var emojiCategoryListAdapter: EmojiCategoryListAdapter
@@ -53,7 +55,7 @@ class StickerFragment : Fragment(), StickerDialog.StickerDialogListener {
                     "media selected: ${media.id}",
                     Toast.LENGTH_SHORT
                 ).show()*/
-                StickerDialog.show(childFragmentManager, "https://i.ibb.co/6BH61RN/first.gif")
+                StickerDialog.show(childFragmentManager, "https://i.ibb.co/353QnHz/first.gif")
             }
         }
 
@@ -84,7 +86,14 @@ class StickerFragment : Fragment(), StickerDialog.StickerDialogListener {
             val x = location[0]
             val y = location[1]
             println("Item $position clicked, X: $x, Y: $y")
-            StickerCategoryDialog.show(childFragmentManager, sticker, x, y)
+            val stickerCategoryDialog = StickerCategoryDialog()
+            stickerCategoryDialog.setupDialogInformation(
+                listener = this,
+                dialogX = x,
+                dialogY = y,
+                sticker = sticker
+            )
+            stickerCategoryDialog.show(childFragmentManager, "StickerCategoryDialog")
         }
 
         emojiApiCallResponse()
@@ -107,10 +116,18 @@ class StickerFragment : Fragment(), StickerDialog.StickerDialogListener {
         )
     }
 
-    override fun selectedSticker(sticker: Sticker) {
-        //val action = StickerDetailsNavDirections(sticker)
-        //findNavController().navigate(action)
+    override fun addNewCategory() {
+        val emojiPickerDialog = EmojiPickerDialog()
+        emojiPickerDialog.setDialogListener(
+            listener = this
+        )
+        emojiPickerDialog.show(childFragmentManager, "EmojiPickerDialog")
     }
+
+    override fun addSelectedCategory(emojiItem: EmojiViewItem) {
+
+    }
+
 
     override fun cancel() {
         Unit

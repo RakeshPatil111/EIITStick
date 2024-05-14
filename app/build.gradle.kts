@@ -61,4 +61,6 @@ dependencies {
     implementation(libs.coil.gif)
     implementation(libs.lottie)
     implementation(libs.giphy)
+    implementation(libs.androidx.emoji2.emojipicker)
+
 }

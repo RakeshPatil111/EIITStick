@@ -101,6 +101,7 @@ class StickerDialog : DialogFragment() {
             }
 
             tvInfo.setOnClickListener {
+                this@StickerDialog.dismiss()
                 listener?.selectedSticker(Sticker(1,gif,"new one"))
             }
         }

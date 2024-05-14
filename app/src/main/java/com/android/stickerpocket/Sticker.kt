@@ -12,37 +12,37 @@ data class Sticker(
 
 val smiley = Sticker(
     1,
-    "https://i.ibb.co/Bt6F31P/smile.png",
+    "https://i.ibb.co/44H70gw/smile.png",
     "smiley"
 )
 
 val clap = Sticker(
     2,
-    "https://i.ibb.co/dQDJM6b/clap.png",
+    "https://i.ibb.co/tQv1P0F/clap.png",
     "clap"
 )
 
 val laugh = Sticker(
     3,
-    "https://i.ibb.co/x8cn4Kc/laugh.png",
+    "https://i.ibb.co/3Rr0Kf7/laugh.png",
     "laugh"
 )
 
 val love = Sticker(
     4,
-    "https://i.ibb.co/KVX2t7w/love.png",
+    "https://i.ibb.co/6JFV20f/love.png",
     "love"
 )
 
 val unwell = Sticker(
     5,
-    "https://i.ibb.co/VLjn4Hf/unwell.png",
+    "https://i.ibb.co/Ycb6NxN/unwell.png",
     "Unwell"
 )
 
 val sleepy = Sticker(
     6,
-    "https://i.ibb.co/5KG03VW/sleepy.png",
+    "https://i.ibb.co/KmyDKsc/sleepy.png",
     "Sleepy"
 )
 

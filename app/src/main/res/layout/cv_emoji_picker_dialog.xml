@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    app:cardCornerRadius="10dp"
+    app:cardElevation="0dp"
+    android:layout_gravity="center"
+    app:cardBackgroundColor="@color/sticker_bg"
+    app:strokeColor="@color/color_primary_bg"
+    app:strokeWidth="@dimen/dimen_2dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/tv_choose_emoji_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/choose_an_emoji"
+            android:textAppearance="?attr/textAppearanceBody1"
+            android:textColor="@color/white"
+            android:layout_marginVertical="@dimen/dimen_12dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.emoji2.emojipicker.EmojiPickerView
+            android:id="@+id/emoji_picker_view"
+            android:layout_width="260dp"
+            android:layout_height="380dp"
+            app:emojiGridColumns="7"
+            android:layout_margin="@dimen/dimen_12dp"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:layout_width="match_parent"
+            android:layout_gravity="center"
+            style="@style/Widget.App.Button"
+            android:layout_margin="@dimen/dimen_12dp"
+            android:text="@string/ok"/>
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

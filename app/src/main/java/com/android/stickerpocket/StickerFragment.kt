@@ -84,64 +84,17 @@ class StickerFragment : Fragment(),
         emojiCategoryListAdapter.stickerActionClick { sticker, _ ->
             binding.rvStickers.content = GPHContent.searchQuery(sticker.title.toString())
         }
-        emojiCategoryListAdapter.stickerActionLongClick { sticker, position ->
-            val view = binding.rvCategory[position].findViewById<View>(com.android.stickerpocket.R.id.cv_sticker)
-            val location = IntArray(2)
-            view?.getLocationInWindow(location)
-            val x = location[0]
-            val y = location[1]
-            println("Item $position clicked, X: $x, Y: $y")
-
-            binding.fadeUpView.visibility = View.VISIBLE
-            val popupWindow = popupDisplay(sticker)
-            popupWindow.showAsDropDown( view, 0, (-3.0 * (view.pivotY.toInt())).toInt())
-            popupWindow.setOnDismissListener { binding.fadeUpView.visibility = View.GONE }
-
-            /*val stickerCategoryDialog = StickerCategoryDialog()
+        emojiCategoryListAdapter.stickerActionLongClick { _, _ ->
+            val stickerCategoryDialog = StickerCategoryDialog()
             stickerCategoryDialog.setupDialogInformation(
-                listener = this,
-                dialogX = x,
-                dialogY = y,
-                sticker = sticker
+                listener = this
             )
-            stickerCategoryDialog.show(childFragmentManager, "StickerCategoryDialog")*/
+            stickerCategoryDialog.show(childFragmentManager, "StickerCategoryDialog")
         }
 
         emojiApiCallResponse()
     }
-    private fun popupDisplay(sticker: Sticker): PopupWindow {
-        val popupWindow = PopupWindow(requireContext())
 
-        // inflate your layout or dynamically add view
-        val inflater = requireContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-
-        val view: View = inflater.inflate(R.layout.cv_sticker_caterogy_dialog, null)
-        val imageView = view.rootView.findViewById<ImageView>(R.id.iv_sticker_thumbnail)
-        val tvNewCategory = view.rootView.findViewById<MaterialTextView>(R.id.tv_new_category)
-
-        sticker.let {
-            imageView.load(it.thumbnail)
-        }
-
-        tvNewCategory.setOnClickListener {
-            popupWindow.dismiss()
-            binding.fadeUpView.visibility = View.GONE
-            val emojiPickerDialog = EmojiPickerDialog()
-            emojiPickerDialog.setDialogListener(
-                listener = this
-            )
-            emojiPickerDialog.show(childFragmentManager, "EmojiPickerDialog")
-        }
-
-        popupWindow.isFocusable = true
-        popupWindow.width = WindowManager.LayoutParams.WRAP_CONTENT
-        popupWindow.height = WindowManager.LayoutParams.WRAP_CONTENT
-        popupWindow.contentView = view
-        popupWindow.elevation = 12F
-        popupWindow.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-
-        return popupWindow
-    }
     private fun emojiApiCallResponse() {
         emojiCategoryListAdapter.updateList(emoji)
     }
@@ -170,7 +123,6 @@ class StickerFragment : Fragment(),
     override fun addSelectedCategory(emojiItem: EmojiViewItem) {
 
     }
-
 
     override fun cancel() {
         Unit

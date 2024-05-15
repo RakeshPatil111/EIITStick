@@ -25,7 +25,7 @@ val clap = Sticker(
 val laugh = Sticker(
     3,
     "https://i.ibb.co/3Rr0Kf7/laugh.png",
-    "laugh"
+    "face with tears of joy"
 )
 
 val love = Sticker(

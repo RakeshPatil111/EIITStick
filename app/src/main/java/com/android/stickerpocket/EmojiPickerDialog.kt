@@ -5,10 +5,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.emoji2.emojipicker.EmojiViewItem
-import androidx.fragment.app.DialogFragment
 import com.android.stickerpocket.databinding.CvEmojiPickerDialogBinding
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
-class EmojiPickerDialog: DialogFragment() {
+class EmojiPickerDialog: BottomSheetDialogFragment() {
 
     private var _binding: CvEmojiPickerDialogBinding? = null
     val binding get()= _binding

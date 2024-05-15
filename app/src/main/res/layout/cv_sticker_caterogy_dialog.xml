@@ -1,79 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content">
+    android:orientation="vertical"
+    android:background="@android:color/white"
+    android:paddingVertical="@dimen/dimen_24dp"
+    android:gravity="center_horizontal">
 
-    <com.google.android.material.card.MaterialCardView
-        android:id="@+id/cv_sticker"
-        android:layout_width="52dp"
-        android:layout_height="52dp"
-        app:cardBackgroundColor="@color/sticker_bg"
-        app:cardCornerRadius="10dp"
-        app:cardElevation="2dp"
-        app:strokeWidth="@dimen/dimen_4dp"
-        app:strokeColor="@color/sticker_border_bg"
-        app:cardForegroundColor="@android:color/transparent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/option_card_view"
-        app:layout_constraintVertical_bias="0.24">
-
-        <ImageView
-            android:id="@+id/iv_sticker_thumbnail"
-            android:layout_width="34dp"
-            android:layout_height="34dp"
-            android:layout_gravity="center"
-            android:contentDescription="@string/_content_description"
-            android:scaleType="centerInside" />
-    </com.google.android.material.card.MaterialCardView>
-
-    <com.google.android.material.card.MaterialCardView
-        android:id="@+id/option_card_view"
-        android:layout_width="250dp"
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/tv_new_category"
+        style="@style/Widget.AppCompat.TextView.Options"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/dimen_8dp"
-        app:cardBackgroundColor="@android:color/white"
-        app:cardCornerRadius="@dimen/dimen_8dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/cv_sticker"
-        app:layout_constraintTop_toTopOf="parent">
+        android:padding="@dimen/text_dimen_12"
+        android:text="@string/new_category"
+        android:drawablePadding="@dimen/dimen_24dp"
+        app:drawableStartCompat="@drawable/ic_add_reaction"
+        android:textColor="@android:color/black" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:divider="@color/color_text_hint"
-            android:orientation="vertical"
-            android:showDividers="middle">
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/tv_reorganize"
+        style="@style/Widget.AppCompat.TextView.Options"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/text_dimen_12"
+        android:text="@string/reorganize"
+        android:drawablePadding="@dimen/dimen_24dp"
+        app:drawableStartCompat="@drawable/ic_organize"
+        android:textColor="@android:color/black" />
 
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/tv_new_category"
-                style="@style/Widget.AppCompat.TextView.Options"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="@dimen/text_dimen_12"
-                android:text="@string/new_category"
-                android:textColor="@android:color/black" />
-
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/tv_reorganize"
-                style="@style/Widget.AppCompat.TextView.Options"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="@dimen/text_dimen_12"
-                android:text="@string/reorganize"
-                android:textColor="@android:color/black" />
-
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/tv_delete_category"
-                style="@style/Widget.AppCompat.TextView.Options"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="@dimen/text_dimen_12"
-                android:text="@string/delete_category"
-                android:textColor="@android:color/black" />
-        </LinearLayout>
-    </com.google.android.material.card.MaterialCardView>
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/tv_delete_category"
+        style="@style/Widget.AppCompat.TextView.Options"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/text_dimen_12"
+        android:text="@string/delete_category"
+        android:drawablePadding="@dimen/dimen_24dp"
+        app:drawableStartCompat="@drawable/ic_delete"
+        android:textColor="@android:color/black" />
+</LinearLayout>

@@ -7,16 +7,15 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentManager
 import coil.ImageLoader
 import coil.decode.GifDecoder
 import coil.decode.ImageDecoderDecoder
 import coil.load
 import com.android.stickerpocket.databinding.CvGifStickerBinding
-import com.giphy.sdk.core.models.Media
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
-class StickerDialog : DialogFragment() {
+class StickerDialog : BottomSheetDialogFragment() {
 
     private var _binding: CvGifStickerBinding? = null
     val binding get() = _binding

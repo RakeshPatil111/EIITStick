@@ -13,6 +13,9 @@ activity = "1.8.0"
 constraintlayout = "2.1.4"
 navigationFragmentKtx = "2.7.7"
 giphy = "2.3.13"
+okhttp = "4.11.0"
+retrofit = "2.9.0"
+retrofit2KotlinxSerializationConverter = "1.0.0"
 roomKtx = "2.6.1"
 ksp = "1.9.22-1.0.17"
 
@@ -34,6 +37,9 @@ material = { group = "com.google.android.material", name = "material", version.r
 androidx-activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }
 androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
 giphy = {module = "com.giphy.sdk:ui", name = "giphy", version.ref = "giphy"}
+okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
+retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
+retrofit2-kotlinx-serialization-converter = { module = "com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter", version.ref = "retrofit2KotlinxSerializationConverter" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

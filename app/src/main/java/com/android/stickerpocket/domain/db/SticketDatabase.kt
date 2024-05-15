@@ -5,9 +5,10 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.android.stickerpocket.domain.dao.RecentSearchDAO
+import com.android.stickerpocket.domain.model.Emoji
 import com.android.stickerpocket.domain.model.RecentSearch
 
-@Database(entities = arrayOf(RecentSearch::class), version = 1, exportSchema = false)
+@Database(entities = arrayOf(RecentSearch::class, Emoji::class), version = 1, exportSchema = false)
 public abstract class StickerDB : RoomDatabase() {
 
     abstract fun recentSearchDAO(): RecentSearchDAO

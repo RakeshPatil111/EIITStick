@@ -1,13 +1,26 @@
 package com.android.stickerpocket
 
+import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.FileProvider
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.NavigationUI
 import com.android.stickerpocket.databinding.ActivityMainBinding
 import com.giphy.sdk.ui.Giphy
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.io.File
+import java.io.FileOutputStream
+import java.net.URL
+
 
 class MainActivity : AppCompatActivity(), StickerDialog.StickerDialogListener {
 
@@ -31,6 +44,58 @@ class MainActivity : AppCompatActivity(), StickerDialog.StickerDialogListener {
         navController.navigate(action)
     }
 
+    override fun shareSticker(sticker: Sticker) {
+        sticker.let {stickerItem ->
+            stickerItem.thumbnail?.let {stickerUrl ->
+                val scope = MainScope()
+                scope.launch {
+                    val gifFile = downloadGifAndSaveToCache(applicationContext, stickerUrl)
+                    if (gifFile != null) {
+                        val gifUri = FileProvider.getUriForFile(this@MainActivity, BuildConfig.APPLICATION_ID + ".provider",gifFile);
+                        val shareIntent = Intent(Intent.ACTION_SEND)
+                        shareIntent.setType("image/gif")
+                        shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                        shareIntent.putExtra(Intent.EXTRA_STREAM, gifUri)
+                        startActivity(Intent.createChooser(shareIntent, "Share GIF using"))
+                    } else {
+                        Toast.makeText(this@MainActivity, "Please try again", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+        }
+    }
+
     override fun cancel() {
     }
+
+    private suspend fun downloadGifAndSaveToCache(context: Context, gifUrl: String): File? {
+        return withContext(Dispatchers.IO) {
+            try {
+                val url = URL(gifUrl)
+                val connection = url.openConnection()
+                connection.connect()
+
+                // Create a temporary file in the cache directory
+                val gifFile = File(context.cacheDir, "temp.gif")
+
+                val inputStream = connection.getInputStream()
+                val outputStream = FileOutputStream(gifFile)
+
+                val buffer = ByteArray(1024)
+                var bytesRead: Int
+                while (inputStream.read(buffer).also { bytesRead = it } != -1) {
+                    outputStream.write(buffer, 0, bytesRead)
+                }
+
+                outputStream.close()
+                inputStream.close()
+
+                gifFile
+            } catch (e: Exception) {
+                e.printStackTrace()
+                null
+            }
+        }
+    }
+
 }

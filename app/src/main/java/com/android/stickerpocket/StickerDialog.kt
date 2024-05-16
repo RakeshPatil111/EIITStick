@@ -103,6 +103,11 @@ class StickerDialog : BottomSheetDialogFragment() {
                 this@StickerDialog.dismiss()
                 listener?.selectedSticker(Sticker(1,gif,"new one"))
             }
+
+            tvShare.setOnClickListener {
+                this@StickerDialog.dismiss()
+                listener?.shareSticker(Sticker(1,gif,"new one"))
+            }
         }
     }
 
@@ -122,7 +127,6 @@ class StickerDialog : BottomSheetDialogFragment() {
             stickerDialog.show(fragmentManager, TAG)
         }
 
-
         fun dismiss(fragmentManager: FragmentManager) {
             (fragmentManager.findFragmentByTag(TAG) as StickerDialog?)?.dismiss()
         }
@@ -130,6 +134,7 @@ class StickerDialog : BottomSheetDialogFragment() {
 
     interface StickerDialogListener {
         fun selectedSticker(sticker: Sticker)
+        fun shareSticker(sticker: Sticker)
         fun cancel()
     }
 

@@ -144,10 +144,4 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/rv_category"
         app:layout_constraintTop_toTopOf="@+id/img_screen_bg" />
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/fade_up_view"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#AA000000"
-        android:visibility="gone"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

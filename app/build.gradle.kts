@@ -77,4 +77,6 @@ dependencies {
     implementation(libs.retrofit2.kotlinx.serialization.converter)
     implementation(libs.retrofit)
     implementation(libs.okhttp)
+    implementation(libs.androidx.emoji2.emojipicker)
+    implementation(libs.fresco)
 }

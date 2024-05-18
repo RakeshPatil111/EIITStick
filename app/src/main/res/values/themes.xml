@@ -20,6 +20,7 @@
         <item name="textAppearanceButton">@style/TextAppearance.Button</item>
         <item name="textAppearanceHeadline6">@style/TextAppearance.Headline6</item>
         <item name="bottomNavigationStyle">@style/BottomNavigationViewStyle</item>
+        <item name="bottomSheetDialogTheme">@style/ThemeOverlay.App.BottomSheetDialog</item>
         <item name="shapeAppearanceSmallComponent">@style/ShapeAppearance.SmallComponent</item>
         <item name="shapeAppearanceMediumComponent">@style/ShapeAppearance.MediumComponent</item>
         <item name="shapeAppearanceLargeComponent">@style/ShapeAppearance.LargeComponent</item>
@@ -167,5 +168,13 @@
         <item name="android:windowContentOverlay">@null</item>
     </style>
 
+    <!--Bottom sheet dialog-->
+    <style name="ThemeOverlay.App.BottomSheetDialog" parent="ThemeOverlay.MaterialComponents.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/ModalBottomSheetDialog</item>
+    </style>
+
+    <style name="ModalBottomSheetDialog" parent="Widget.MaterialComponents.BottomSheet.Modal">
+        <item name="shapeAppearance">@style/ShapeAppearance.LargeComponent</item>
+    </style>
 
 </resources>

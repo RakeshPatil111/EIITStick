@@ -17,7 +17,7 @@ val first1 = Gifs(
 val first2 = Gifs(
     1,
     1,
-    "https://i.ibb.co/6BH61RN/first.gif",
+    "https://i.ibb.co/353QnHz/first.gif",
     "test2"
 )
 
@@ -31,7 +31,7 @@ val second1 = Gifs(
 val second2 = Gifs(
     2,
     1,
-    "https://i.ibb.co/6BH61RN/first.gif",
+    "https://i.ibb.co/353QnHz/first.gif",
     "test2"
 )
 
@@ -45,7 +45,7 @@ val third1 = Gifs(
 val third2 = Gifs(
     3,
     1,
-    "https://i.ibb.co/6BH61RN/first.gif",
+    "https://i.ibb.co/353QnHz/first.gif",
     "test2"
 )
 
@@ -59,7 +59,7 @@ val fourth1 = Gifs(
 val fourth2 = Gifs(
     4,
     1,
-    "https://i.ibb.co/6BH61RN/first.gif",
+    "https://i.ibb.co/353QnHz/first.gif",
     "test2"
 )
 

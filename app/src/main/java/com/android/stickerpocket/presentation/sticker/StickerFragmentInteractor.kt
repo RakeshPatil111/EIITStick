@@ -24,6 +24,7 @@ class StickerFragmentInteractor {
     }
 
     fun onViewCreated() {
-
+        _liveData.value = Actions.InitCategoryView
+        _liveData.postValue(Actions.InitGiphyView)
     }
 }

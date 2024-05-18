@@ -14,14 +14,11 @@ import coil.decode.ImageDecoderDecoder
 import coil.load
 import com.android.stickerpocket.R
 import com.android.stickerpocket.databinding.CvGifStickerBinding
-<<<<<<< HEAD:app/src/main/java/com/android/stickerpocket/presentation/StickerDialog.kt
-=======
 import com.facebook.cache.common.CacheKey
 import com.facebook.imagepipeline.cache.DefaultCacheKeyFactory
 import com.facebook.imagepipeline.core.ImagePipelineFactory
 import com.facebook.imagepipeline.request.ImageRequest
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
->>>>>>> master:app/src/main/java/com/android/stickerpocket/StickerDialog.kt
 
 class StickerDialog : BottomSheetDialogFragment() {
 

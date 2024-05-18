@@ -4,14 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-<<<<<<< HEAD:app/src/main/java/com/android/stickerpocket/presentation/StickerCategoryDialog.kt
-import android.view.WindowManager
-import androidx.fragment.app.DialogFragment
-import androidx.fragment.app.FragmentManager
-import coil.load
 import com.android.stickerpocket.R
-=======
->>>>>>> master:app/src/main/java/com/android/stickerpocket/StickerCategoryDialog.kt
 import com.android.stickerpocket.databinding.CvStickerCaterogyDialogBinding
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 

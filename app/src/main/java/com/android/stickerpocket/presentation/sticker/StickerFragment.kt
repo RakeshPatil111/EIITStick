@@ -1,4 +1,4 @@
-package com.android.stickerpocket
+package com.android.stickerpocket.presentation.sticker
 
 import android.os.Bundle
 import android.os.Handler
@@ -10,10 +10,16 @@ import android.widget.Toast
 import androidx.core.widget.doAfterTextChanged
 import androidx.emoji2.emojipicker.EmojiViewItem
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.android.stickerpocket.EmojiPickerDialog
 import com.android.stickerpocket.databinding.FragmentStickerBinding
+import com.android.stickerpocket.presentation.StickerCategoryDialog
+import com.android.stickerpocket.presentation.StickerDialog
+import com.android.stickerpocket.presentation.emoji
+import com.android.stickerpocket.utils.GiphyConfigure
 import com.android.stickerpocket.utils.ItemTouchHelperAdapter
 import com.android.stickerpocket.utils.ItemTouchHelperCallback
 import com.android.stickerpocket.utils.ViewExt.shakeMe
@@ -23,7 +29,6 @@ import com.giphy.sdk.ui.pagination.GPHContent
 import com.giphy.sdk.ui.views.GPHGridCallback
 import com.giphy.sdk.ui.views.GPHSearchGridCallback
 import com.giphy.sdk.ui.views.GifView
-import com.giphy.sdk.ui.views.GiphyGridView
 import timber.log.Timber
 
 class StickerFragment : Fragment(),
@@ -35,13 +40,46 @@ class StickerFragment : Fragment(),
     private lateinit var itemTouchHelper: ItemTouchHelper
     private lateinit var callback: ItemTouchHelperCallback
 
+    private val interactor by lazy {
+        StickerFragmentInteractor()
+    }
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentStickerBinding.inflate(inflater, container, false)
         setClickListeners()
+        interactor.initObserver(viewLifecycleOwner)
+        observeInteractor()
         return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        interactor.onViewCreated()
+    }
+
+    private fun observeInteractor() {
+        interactor.liveData.observe(viewLifecycleOwner, Observer {
+            when (it) {
+                is StickerFragmentInteractor.Actions.InitGiphyView -> {
+                    initGiphyView()
+                }
+
+                is StickerFragmentInteractor.Actions.InitCategoryView -> {
+                    setupEmojiRecyclerView()
+                }
+                else -> {}
+            }
+        })
+    }
+
+    private fun initGiphyView() {
+        binding.rvStickers.apply {
+            GiphyConfigure.configGiphyGridView(this)
+            callback = this@StickerFragment
+            content = GPHContent.recents
+        }
     }
 
     private fun setClickListeners() {
@@ -49,32 +87,17 @@ class StickerFragment : Fragment(),
             cvRecentSticker.setOnClickListener { binding.rvStickers.content = GPHContent.recents }
             cvFavSticker.setOnClickListener { binding.rvStickers.content = GPHContent.recents }
             cvDownloadedSticker.setOnClickListener { binding.rvStickers.content = GPHContent.recents }
-        }
-    }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        binding.rvStickers.apply {
-            showViewOnGiphy = false
-            spanCount = 3
-            direction = GiphyGridView.VERTICAL
-            showCheckeredBackground = true
-            fixedSizeCells = true
-            cellPadding = 24
-        }
-        setupEmojiRecyclerView()
-        binding.rvStickers.callback = this
-
-        binding.rvStickers.content = GPHContent.recents
-        binding.tietSearch.doAfterTextChanged {
-            Handler(Looper.getMainLooper()).postDelayed(
-                {
-                    Toast.makeText(requireContext(), it.toString(), Toast.LENGTH_SHORT).show()
-                    if (it.toString().isNotEmpty()) {
-                        binding.rvStickers.content = GPHContent.searchQuery(it.toString(), mediaType = MediaType.gif)
-                    }
-                }, 1500
-            )
+            tietSearch.doAfterTextChanged {
+                Handler(Looper.getMainLooper()).postDelayed(
+                    {
+                        Toast.makeText(requireContext(), it.toString(), Toast.LENGTH_SHORT).show()
+                        if (it.toString().isNotEmpty()) {
+                            binding.rvStickers.content = GPHContent.searchQuery(it.toString(), mediaType = MediaType.gif)
+                        }
+                    }, 1500
+                )
+            }
         }
     }
 
@@ -98,7 +121,6 @@ class StickerFragment : Fragment(),
                 stickerCategoryDialog.show(childFragmentManager, "StickerCategoryDialog")
             }
         }
-
         emojiApiCallResponse()
     }
 
@@ -113,11 +135,6 @@ class StickerFragment : Fragment(),
     override fun onResume() {
         super.onResume()
         callback.isDragEnabled = false
-        Handler(Looper.getMainLooper()).postDelayed(
-            {
-                gifApiCallResponse()
-            }, 500
-        )
     }
 
     override fun addNewCategory() {

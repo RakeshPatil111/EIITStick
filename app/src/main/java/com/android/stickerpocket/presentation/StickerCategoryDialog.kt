@@ -1,9 +1,10 @@
-package com.android.stickerpocket
+package com.android.stickerpocket.presentation
 
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.android.stickerpocket.R
 import com.android.stickerpocket.databinding.CvStickerCaterogyDialogBinding
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 

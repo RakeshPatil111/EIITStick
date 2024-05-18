@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/stickerFragment"
-        android:name="com.android.stickerpocket.StickerFragment"
+        android:name="com.android.stickerpocket.presentation.sticker.StickerFragment"
         android:label="fragment_sticker"
         tools:layout="@layout/fragment_sticker" >
         <action
@@ -15,17 +15,17 @@
             app:destination="@id/stickerDetailsFragment">
             <argument
                 android:name="sticker"
-                app:argType="com.android.stickerpocket.Sticker"/>
+                app:argType="com.android.stickerpocket.presentation.Sticker"/>
         </action>
     </fragment>
     <fragment
         android:id="@+id/searchStickerFragment"
-        android:name="com.android.stickerpocket.SearchStickerFragment"
+        android:name="com.android.stickerpocket.presentation.SearchStickerFragment"
         android:label="fragment_search_sticker"
         tools:layout="@layout/fragment_search_sticker" />
     <fragment
         android:id="@+id/settingsFragment"
-        android:name="com.android.stickerpocket.SettingsFragment"
+        android:name="com.android.stickerpocket.presentation.SettingsFragment"
         android:label="fragment_settings"
         tools:layout="@layout/fragment_settings" >
         <action
@@ -37,17 +37,17 @@
     </fragment>
     <fragment
         android:id="@+id/tutorialsFragment"
-        android:name="com.android.stickerpocket.TutorialsFragment"
+        android:name="com.android.stickerpocket.presentation.TutorialsFragment"
         android:label="fragment_tutorials"
         tools:layout="@layout/fragment_tutorials" />
     <fragment
         android:id="@+id/contactUsFragment"
-        android:name="com.android.stickerpocket.ContactUsFragment"
+        android:name="com.android.stickerpocket.presentation.ContactUsFragment"
         android:label="fragment_contact_us"
         tools:layout="@layout/fragment_contact_us" />
     <fragment
         android:id="@+id/stickerDetailsFragment"
-        android:name="com.android.stickerpocket.StickerDetailsFragment"
+        android:name="com.android.stickerpocket.presentation.StickerDetailsFragment"
         android:label="fragment_sticker_details"
         tools:layout="@layout/fragment_sticker_details" />
 </navigation>

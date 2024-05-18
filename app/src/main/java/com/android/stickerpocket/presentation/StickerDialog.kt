@@ -1,4 +1,4 @@
-package com.android.stickerpocket
+package com.android.stickerpocket.presentation
 
 import android.content.Context
 import android.os.Build
@@ -12,6 +12,7 @@ import coil.ImageLoader
 import coil.decode.GifDecoder
 import coil.decode.ImageDecoderDecoder
 import coil.load
+import com.android.stickerpocket.R
 import com.android.stickerpocket.databinding.CvGifStickerBinding
 import com.facebook.cache.common.CacheKey
 import com.facebook.imagepipeline.cache.DefaultCacheKeyFactory

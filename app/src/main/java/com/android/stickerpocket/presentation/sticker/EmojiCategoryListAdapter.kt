@@ -1,4 +1,4 @@
-package com.android.stickerpocket
+package com.android.stickerpocket.presentation.sticker
 
 import android.graphics.Color
 import android.view.LayoutInflater
@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import com.android.stickerpocket.databinding.CvStickerItemBinding
+import com.android.stickerpocket.presentation.Sticker
 
 class EmojiCategoryListAdapter :
     RecyclerView.Adapter<EmojiCategoryListAdapter.StepperViewHolder>(){

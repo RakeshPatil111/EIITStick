@@ -1,4 +1,4 @@
-package com.android.stickerpocket
+package com.android.stickerpocket.presentation
 
 data class Gifs(
     val parentId: Int,

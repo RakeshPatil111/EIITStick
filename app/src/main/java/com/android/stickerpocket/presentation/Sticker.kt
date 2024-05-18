@@ -1,4 +1,4 @@
-package com.android.stickerpocket
+package com.android.stickerpocket.presentation
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize

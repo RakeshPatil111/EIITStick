@@ -13,6 +13,10 @@ import coil.decode.GifDecoder
 import coil.decode.ImageDecoderDecoder
 import coil.load
 import com.android.stickerpocket.databinding.CvGifStickerBinding
+import com.facebook.cache.common.CacheKey
+import com.facebook.imagepipeline.cache.DefaultCacheKeyFactory
+import com.facebook.imagepipeline.core.ImagePipelineFactory
+import com.facebook.imagepipeline.request.ImageRequest
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
 class StickerDialog : BottomSheetDialogFragment() {
@@ -91,10 +95,19 @@ class StickerDialog : BottomSheetDialogFragment() {
                     )
                 }*/
 
-            sivGifImage.load(gif, imageLoader){
+            sivGifImage.load(gif, imageLoader) {
                 target(
+                    onStart = {
+                        binding!!.loading.visibility = View.VISIBLE
+                    },
                     onSuccess = {
+                        binding!!.loading.visibility = View.GONE
                         sivGifImage.load(gif, imageLoader)
+                    },
+                    onError = {
+                        // Show error image
+                        // Handle this scene
+                        binding!!.loading.visibility = View.GONE
                     }
                 )
             }
@@ -107,6 +120,10 @@ class StickerDialog : BottomSheetDialogFragment() {
             tvShare.setOnClickListener {
                 this@StickerDialog.dismiss()
                 listener?.shareSticker(Sticker(1,gif,"new one"))
+                val url = gif?.replace("giphy.webp", "200w.webp")
+                val imageRequest: ImageRequest? = ImageRequest.fromUri(url)
+                val cacheKey: CacheKey = DefaultCacheKeyFactory.getInstance().getEncodedCacheKey(imageRequest, null)
+                val resource = ImagePipelineFactory.getInstance().mainFileCache.getResource(cacheKey)
             }
         }
     }

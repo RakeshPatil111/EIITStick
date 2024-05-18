@@ -64,5 +64,5 @@ dependencies {
     implementation(libs.lottie)
     implementation(libs.giphy)
     implementation(libs.androidx.emoji2.emojipicker)
-
+    implementation(libs.fresco)
 }

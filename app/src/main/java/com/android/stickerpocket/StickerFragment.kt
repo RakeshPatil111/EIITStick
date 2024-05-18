@@ -1,35 +1,28 @@
 package com.android.stickerpocket
 
-import android.content.Context
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.WindowManager
-import android.widget.ImageView
-import android.widget.PopupWindow
 import android.widget.Toast
-import androidx.core.view.get
 import androidx.core.widget.doAfterTextChanged
-import androidx.fragment.app.Fragment
 import androidx.emoji2.emojipicker.EmojiViewItem
-import coil.load
+import androidx.fragment.app.Fragment
 import com.android.stickerpocket.databinding.FragmentStickerBinding
 import com.giphy.sdk.core.models.Media
 import com.giphy.sdk.core.models.enums.MediaType
 import com.giphy.sdk.ui.pagination.GPHContent
 import com.giphy.sdk.ui.views.GPHGridCallback
+import com.giphy.sdk.ui.views.GPHSearchGridCallback
+import com.giphy.sdk.ui.views.GifView
 import com.giphy.sdk.ui.views.GiphyGridView
-import com.google.android.material.textview.MaterialTextView
 import timber.log.Timber
 
 class StickerFragment : Fragment(),
     StickerCategoryDialog.StickerCategoryDialogListener,
-    EmojiPickerDialog.EmojiPickerDialogListener {
+    EmojiPickerDialog.EmojiPickerDialogListener, GPHGridCallback, GPHSearchGridCallback {
 
     private lateinit var binding: FragmentStickerBinding
     private lateinit var emojiCategoryListAdapter: EmojiCategoryListAdapter
@@ -39,13 +32,23 @@ class StickerFragment : Fragment(),
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentStickerBinding.inflate(inflater, container, false)
+        setClickListeners()
         return binding.root
+    }
+
+    private fun setClickListeners() {
+        binding.apply {
+            cvRecentSticker.setOnClickListener { binding.rvStickers.content = GPHContent.recents }
+            cvFavSticker.setOnClickListener { binding.rvStickers.content = GPHContent.recents }
+            cvDownloadedSticker.setOnClickListener { binding.rvStickers.content = GPHContent.recents }
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.rvStickers.apply {
             showViewOnGiphy = false
+            isLongClickable = false
             spanCount = 3
             direction = GiphyGridView.VERTICAL
             showCheckeredBackground = true
@@ -53,16 +56,7 @@ class StickerFragment : Fragment(),
             cellPadding = 24
         }
         setupEmojiRecyclerView()
-        binding.rvStickers.callback = object : GPHGridCallback {
-            override fun contentDidUpdate(resultCount: Int) {
-                Timber.d("contentDidUpdate $resultCount")
-            }
-
-            override fun didSelectMedia(media: Media) {
-                Timber.d("didSelectMedia ${media.id}")
-                StickerDialog.show(childFragmentManager, "https://i.ibb.co/353QnHz/first.gif")
-            }
-        }
+        binding.rvStickers.callback = this
 
         binding.rvStickers.content = GPHContent.recents
         binding.tietSearch.doAfterTextChanged {
@@ -80,7 +74,6 @@ class StickerFragment : Fragment(),
     private fun setupEmojiRecyclerView() {
         emojiCategoryListAdapter = EmojiCategoryListAdapter()
         binding.rvCategory.adapter = emojiCategoryListAdapter
-
         emojiCategoryListAdapter.stickerActionClick { sticker, _ ->
             binding.rvStickers.content = GPHContent.searchQuery(sticker.title.toString())
         }
@@ -126,5 +119,27 @@ class StickerFragment : Fragment(),
 
     override fun cancel() {
         Unit
+    }
+    override fun contentDidUpdate(resultCount: Int) {
+        Timber.d("contentDidUpdate $resultCount")
+    }
+
+    override fun didSelectMedia(media: Media) {
+        Timber.d("didSelectMedia ${media.id}")
+        media.images.original?.gifUrl?.let {
+            StickerDialog.show(childFragmentManager, it)
+        }
+    }
+
+    override fun didLongPressCell(cell: GifView) {
+        TODO("Not yet implemented")
+    }
+
+    override fun didScroll(dx: Int, dy: Int) {
+        TODO("Not yet implemented")
+    }
+
+    override fun didTapUsername(username: String) {
+        TODO("Not yet implemented")
     }
 }

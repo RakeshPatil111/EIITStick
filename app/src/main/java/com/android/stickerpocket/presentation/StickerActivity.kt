@@ -2,9 +2,7 @@ package com.android.stickerpocket.presentation
 
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
-import android.widget.GridView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
@@ -14,9 +12,7 @@ import androidx.navigation.ui.NavigationUI
 import com.android.stickerpocket.BuildConfig
 import com.android.stickerpocket.R
 import com.android.stickerpocket.databinding.ActivityMainBinding
-import com.facebook.cache.common.CacheKey
 import com.facebook.cache.disk.DiskCacheConfig
-import com.facebook.imagepipeline.cache.CacheKeyFactory
 import com.facebook.imagepipeline.cache.DefaultCacheKeyFactory
 import com.facebook.imagepipeline.core.ImagePipelineConfig
 import com.giphy.sdk.core.models.enums.RenditionType
@@ -26,7 +22,6 @@ import com.giphy.sdk.ui.Giphy
 import com.giphy.sdk.ui.GiphyFrescoHandler
 import com.giphy.sdk.ui.drawables.ImageFormat
 import com.giphy.sdk.ui.themes.GPHTheme
-import com.giphy.sdk.ui.views.dialogview.GiphyDialogView
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
@@ -38,7 +33,7 @@ import java.io.FileOutputStream
 import java.net.URL
 
 
-class MainActivity : AppCompatActivity(), StickerDialog.StickerDialogListener {
+class StickerActivity : AppCompatActivity(), StickerDialog.StickerDialogListener {
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var navController: NavController
@@ -65,7 +60,7 @@ class MainActivity : AppCompatActivity(), StickerDialog.StickerDialogListener {
                 override fun handle(imagePipelineConfigBuilder: ImagePipelineConfig.Builder) {
                     imagePipelineConfigBuilder
                         .setMainDiskCacheConfig(
-                            DiskCacheConfig.newBuilder(this@MainActivity)
+                            DiskCacheConfig.newBuilder(this@StickerActivity)
                                 .setMaxCacheSize(150)
                                 .setMaxCacheSizeOnLowDiskSpace(50)
                                 .setMaxCacheSizeOnVeryLowDiskSpace(10)
@@ -100,14 +95,14 @@ class MainActivity : AppCompatActivity(), StickerDialog.StickerDialogListener {
                 scope.launch {
                     val gifFile = downloadGifAndSaveToCache(applicationContext, stickerUrl)
                     if (gifFile != null) {
-                        val gifUri = FileProvider.getUriForFile(this@MainActivity, BuildConfig.APPLICATION_ID + ".provider",gifFile);
+                        val gifUri = FileProvider.getUriForFile(this@StickerActivity, BuildConfig.APPLICATION_ID + ".provider",gifFile);
                         val shareIntent = Intent(Intent.ACTION_SEND)
                         shareIntent.setType("image/gif")
                         shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                         shareIntent.putExtra(Intent.EXTRA_STREAM, gifUri)
                         startActivity(Intent.createChooser(shareIntent, "Share GIF using"))
                     } else {
-                        Toast.makeText(this@MainActivity, "Please try again", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this@StickerActivity, "Please try again", Toast.LENGTH_SHORT).show()
                     }
                 }
             }

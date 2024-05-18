@@ -6,7 +6,7 @@ import androidx.room.PrimaryKey
 @Entity
 data class Emoji(
     @PrimaryKey(autoGenerate = true)
-    val id: Int,
+    val id: Int? = null,
     val category: String,
     val emoji: String,
     val html: String,

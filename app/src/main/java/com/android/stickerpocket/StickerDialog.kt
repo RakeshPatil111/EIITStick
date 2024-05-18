@@ -7,16 +7,19 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentManager
 import coil.ImageLoader
 import coil.decode.GifDecoder
 import coil.decode.ImageDecoderDecoder
 import coil.load
 import com.android.stickerpocket.databinding.CvGifStickerBinding
-import com.giphy.sdk.core.models.Media
+import com.facebook.cache.common.CacheKey
+import com.facebook.imagepipeline.cache.DefaultCacheKeyFactory
+import com.facebook.imagepipeline.core.ImagePipelineFactory
+import com.facebook.imagepipeline.request.ImageRequest
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
-class StickerDialog : DialogFragment() {
+class StickerDialog : BottomSheetDialogFragment() {
 
     private var _binding: CvGifStickerBinding? = null
     val binding get() = _binding
@@ -92,10 +95,19 @@ class StickerDialog : DialogFragment() {
                     )
                 }*/
 
-            sivGifImage.load(gif, imageLoader){
+            sivGifImage.load(gif, imageLoader) {
                 target(
+                    onStart = {
+                        binding!!.loading.visibility = View.VISIBLE
+                    },
                     onSuccess = {
+                        binding!!.loading.visibility = View.GONE
                         sivGifImage.load(gif, imageLoader)
+                    },
+                    onError = {
+                        // Show error image
+                        // Handle this scene
+                        binding!!.loading.visibility = View.GONE
                     }
                 )
             }
@@ -103,6 +115,15 @@ class StickerDialog : DialogFragment() {
             tvInfo.setOnClickListener {
                 this@StickerDialog.dismiss()
                 listener?.selectedSticker(Sticker(1,gif,"new one"))
+            }
+
+            tvShare.setOnClickListener {
+                this@StickerDialog.dismiss()
+                listener?.shareSticker(Sticker(1,gif,"new one"))
+                val url = gif?.replace("giphy.webp", "200w.webp")
+                val imageRequest: ImageRequest? = ImageRequest.fromUri(url)
+                val cacheKey: CacheKey = DefaultCacheKeyFactory.getInstance().getEncodedCacheKey(imageRequest, null)
+                val resource = ImagePipelineFactory.getInstance().mainFileCache.getResource(cacheKey)
             }
         }
     }
@@ -123,7 +144,6 @@ class StickerDialog : DialogFragment() {
             stickerDialog.show(fragmentManager, TAG)
         }
 
-
         fun dismiss(fragmentManager: FragmentManager) {
             (fragmentManager.findFragmentByTag(TAG) as StickerDialog?)?.dismiss()
         }
@@ -131,6 +151,7 @@ class StickerDialog : DialogFragment() {
 
     interface StickerDialogListener {
         fun selectedSticker(sticker: Sticker)
+        fun shareSticker(sticker: Sticker)
         fun cancel()
     }
 

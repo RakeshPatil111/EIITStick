@@ -1,35 +1,34 @@
 package com.android.stickerpocket
 
-import android.content.Context
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.WindowManager
-import android.widget.ImageView
-import android.widget.PopupWindow
 import android.widget.Toast
-import androidx.core.view.get
 import androidx.core.widget.doAfterTextChanged
-import androidx.fragment.app.Fragment
 import androidx.emoji2.emojipicker.EmojiViewItem
-import coil.load
+import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.android.stickerpocket.databinding.FragmentStickerBinding
+import com.android.stickerpocket.utils.ItemTouchHelperAdapter
+import com.android.stickerpocket.utils.ItemTouchHelperCallback
+import com.android.stickerpocket.utils.ViewExt.shakeMe
 import com.giphy.sdk.core.models.Media
 import com.giphy.sdk.core.models.enums.MediaType
 import com.giphy.sdk.ui.pagination.GPHContent
 import com.giphy.sdk.ui.views.GPHGridCallback
+import com.giphy.sdk.ui.views.GPHSearchGridCallback
+import com.giphy.sdk.ui.views.GifView
 import com.giphy.sdk.ui.views.GiphyGridView
-import com.google.android.material.textview.MaterialTextView
 import timber.log.Timber
 
 class StickerFragment : Fragment(),
     StickerCategoryDialog.StickerCategoryDialogListener,
-    EmojiPickerDialog.EmojiPickerDialogListener, GPHGridCallback, GPHSearchGridCallback {
+    EmojiPickerDialog.EmojiPickerDialogListener, GPHGridCallback, GPHSearchGridCallback, ItemTouchHelperAdapter {
 
     private lateinit var binding: FragmentStickerBinding
     private lateinit var emojiCategoryListAdapter: EmojiCategoryListAdapter

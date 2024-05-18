@@ -11,7 +11,9 @@ import com.android.stickerpocket.domain.model.Emoji
 import com.android.stickerpocket.domain.model.Favourites
 import com.android.stickerpocket.domain.model.RecentSearch
 
-@Database(entities = [RecentSearch::class, Emoji::class, Category::class, Favourites::class], version = 1, exportSchema = false)
+@Database(entities = [RecentSearch::class, Emoji::class, Category::class, Favourites::class],
+    version = 1,
+    exportSchema = false)
 public abstract class StickerDB : RoomDatabase() {
 
     abstract fun recentSearchDAO(): RecentSearchDAO

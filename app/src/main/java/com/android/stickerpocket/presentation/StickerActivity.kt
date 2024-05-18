@@ -12,6 +12,7 @@ import androidx.navigation.ui.NavigationUI
 import com.android.stickerpocket.BuildConfig
 import com.android.stickerpocket.R
 import com.android.stickerpocket.databinding.ActivityMainBinding
+import com.android.stickerpocket.utils.GiphyConfigure
 import com.facebook.cache.disk.DiskCacheConfig
 import com.facebook.imagepipeline.cache.DefaultCacheKeyFactory
 import com.facebook.imagepipeline.core.ImagePipelineConfig
@@ -41,7 +42,7 @@ class StickerActivity : AppCompatActivity(), StickerDialog.StickerDialogListener
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         //Configure Giphy SDK
-        configGiphySDK()
+        GiphyConfigure.configGiphy(this)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.fragment_container) as NavHostFragment
@@ -49,38 +50,6 @@ class StickerActivity : AppCompatActivity(), StickerDialog.StickerDialogListener
 
         val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottom_navigation)
         NavigationUI.setupWithNavController(bottomNavigationView, navController)
-    }
-
-    private fun configGiphySDK() {
-        Giphy.configure(
-            this,
-            BuildConfig.API_KEY,
-            verificationMode = false,
-            frescoHandler = object : GiphyFrescoHandler {
-                override fun handle(imagePipelineConfigBuilder: ImagePipelineConfig.Builder) {
-                    imagePipelineConfigBuilder
-                        .setMainDiskCacheConfig(
-                            DiskCacheConfig.newBuilder(this@StickerActivity)
-                                .setMaxCacheSize(150)
-                                .setMaxCacheSizeOnLowDiskSpace(50)
-                                .setMaxCacheSizeOnVeryLowDiskSpace(10)
-                                .build()
-                        )
-                        .setCacheKeyFactory(DefaultCacheKeyFactory.getInstance())
-                }
-                override fun handle(okHttpClientBuilder: OkHttpClient.Builder) {
-                }
-            })
-
-        val settings = GPHSettings(GPHTheme.Dark)
-        settings.apply {
-            imageFormat = ImageFormat.WEBP
-            showSuggestionsBar = false
-            renditionType = RenditionType.fixedWidth
-            confirmationRenditionType = RenditionType.original
-            selectedContentType = GPHContentType.gif
-            showConfirmationScreen = false
-        }
     }
 
     override fun selectedSticker(sticker: Sticker) {

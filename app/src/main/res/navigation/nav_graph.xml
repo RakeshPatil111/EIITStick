@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/stickerFragment"
-        android:name="com.android.stickerpocket.presentation.StickerFragment"
+        android:name="com.android.stickerpocket.presentation.sticker.StickerFragment"
         android:label="fragment_sticker"
         tools:layout="@layout/fragment_sticker" >
         <action

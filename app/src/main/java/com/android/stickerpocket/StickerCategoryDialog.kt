@@ -43,11 +43,23 @@ class StickerCategoryDialog : BottomSheetDialogFragment() {
                 this@StickerCategoryDialog.dismiss()
                 listener?.addNewCategory()
             }
+
+            tvDeleteCategory.setOnClickListener {
+                this@StickerCategoryDialog.dismiss()
+                listener?.deleteCategory()
+            }
+
+            tvReorganize.setOnClickListener {
+                this@StickerCategoryDialog.dismiss()
+                listener?.reorganizeCategory()
+            }
         }
     }
 
     interface StickerCategoryDialogListener {
         fun addNewCategory()
+        fun reorganizeCategory()
+        fun deleteCategory()
         fun cancel()
     }
 

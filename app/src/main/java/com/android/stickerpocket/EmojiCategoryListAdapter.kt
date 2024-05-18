@@ -8,15 +8,15 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import com.android.stickerpocket.databinding.CvStickerItemBinding
-import com.android.stickerpocket.utils.ViewExt.shakeMe
 
 class EmojiCategoryListAdapter :
-    RecyclerView.Adapter<EmojiCategoryListAdapter.StepperViewHolder>() {
+    RecyclerView.Adapter<EmojiCategoryListAdapter.StepperViewHolder>(){
 
     private var selected = -1
     private var stickerClickAction: ((sticker: Sticker, position: Int) -> Unit)? = null
     private var stickerLongClickAction: ((sticker: Sticker, position: Int) -> Unit)? = null
     private val differ = AsyncListDiffer(this, diffUtilEmoji)
+    private var bindings = mutableListOf<CvStickerItemBinding>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
         StepperViewHolder(
@@ -63,8 +63,7 @@ class EmojiCategoryListAdapter :
                         true
                     }
                 }
-                //shake items once
-                this.root.shakeMe()
+
             }
         }
     }

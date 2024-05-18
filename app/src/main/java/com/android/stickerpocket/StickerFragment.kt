@@ -1,23 +1,30 @@
 package com.android.stickerpocket
 
+import android.content.Context
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
+import android.widget.ImageView
+import android.widget.PopupWindow
 import android.widget.Toast
+import androidx.core.view.get
 import androidx.core.widget.doAfterTextChanged
-import androidx.emoji2.emojipicker.EmojiViewItem
 import androidx.fragment.app.Fragment
+import androidx.emoji2.emojipicker.EmojiViewItem
+import coil.load
 import com.android.stickerpocket.databinding.FragmentStickerBinding
 import com.giphy.sdk.core.models.Media
 import com.giphy.sdk.core.models.enums.MediaType
 import com.giphy.sdk.ui.pagination.GPHContent
 import com.giphy.sdk.ui.views.GPHGridCallback
-import com.giphy.sdk.ui.views.GPHSearchGridCallback
-import com.giphy.sdk.ui.views.GifView
 import com.giphy.sdk.ui.views.GiphyGridView
+import com.google.android.material.textview.MaterialTextView
 import timber.log.Timber
 
 class StickerFragment : Fragment(),
@@ -26,6 +33,8 @@ class StickerFragment : Fragment(),
 
     private lateinit var binding: FragmentStickerBinding
     private lateinit var emojiCategoryListAdapter: EmojiCategoryListAdapter
+    private lateinit var itemTouchHelper: ItemTouchHelper
+    private lateinit var callback: ItemTouchHelperCallback
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -48,7 +57,6 @@ class StickerFragment : Fragment(),
         super.onViewCreated(view, savedInstanceState)
         binding.rvStickers.apply {
             showViewOnGiphy = false
-            isLongClickable = false
             spanCount = 3
             direction = GiphyGridView.VERTICAL
             showCheckeredBackground = true
@@ -74,15 +82,22 @@ class StickerFragment : Fragment(),
     private fun setupEmojiRecyclerView() {
         emojiCategoryListAdapter = EmojiCategoryListAdapter()
         binding.rvCategory.adapter = emojiCategoryListAdapter
+
+        callback = ItemTouchHelperCallback(this)
+        itemTouchHelper = ItemTouchHelper(callback)
+        itemTouchHelper.attachToRecyclerView(binding.rvCategory)
+
         emojiCategoryListAdapter.stickerActionClick { sticker, _ ->
             binding.rvStickers.content = GPHContent.searchQuery(sticker.title.toString())
         }
         emojiCategoryListAdapter.stickerActionLongClick { _, _ ->
-            val stickerCategoryDialog = StickerCategoryDialog()
-            stickerCategoryDialog.setupDialogInformation(
-                listener = this
-            )
-            stickerCategoryDialog.show(childFragmentManager, "StickerCategoryDialog")
+            if (!callback.isDragEnabled){
+                val stickerCategoryDialog = StickerCategoryDialog()
+                stickerCategoryDialog.setupDialogInformation(
+                    listener = this
+                )
+                stickerCategoryDialog.show(childFragmentManager, "StickerCategoryDialog")
+            }
         }
 
         emojiApiCallResponse()
@@ -98,6 +113,7 @@ class StickerFragment : Fragment(),
 
     override fun onResume() {
         super.onResume()
+        callback.isDragEnabled = false
         Handler(Looper.getMainLooper()).postDelayed(
             {
                 gifApiCallResponse()
@@ -111,6 +127,26 @@ class StickerFragment : Fragment(),
             listener = this
         )
         emojiPickerDialog.show(childFragmentManager, "EmojiPickerDialog")
+    }
+
+    override fun reorganizeCategory() {
+        applyShakeAnimation(binding.rvCategory)
+        callback.isDragEnabled = true
+    }
+
+    private fun applyShakeAnimation(rvCategory: RecyclerView) {
+        val layoutManager = rvCategory.layoutManager as LinearLayoutManager
+        val firstVisiblePosition = layoutManager.findFirstVisibleItemPosition()
+        val lastVisiblePosition = layoutManager.findLastVisibleItemPosition()
+
+        for (i in firstVisiblePosition..lastVisiblePosition) {
+            val viewHolder = rvCategory.findViewHolderForAdapterPosition(i)
+            viewHolder?.itemView?.shakeMe()
+        }
+    }
+
+    override fun deleteCategory() {
+
     }
 
     override fun addSelectedCategory(emojiItem: EmojiViewItem) {
@@ -141,5 +177,13 @@ class StickerFragment : Fragment(),
 
     override fun didTapUsername(username: String) {
         TODO("Not yet implemented")
+    }
+
+    override fun onItemMove(fromPosition: Int, toPosition: Int) {
+        emojiCategoryListAdapter.notifyItemMoved(fromPosition, toPosition)
+    }
+
+    override fun onDragComplete() {
+        callback.isDragEnabled = false
     }
 }

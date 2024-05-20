@@ -15,10 +15,12 @@ import coil.load
 import com.android.stickerpocket.R
 import com.android.stickerpocket.databinding.CvGifStickerBinding
 import com.facebook.cache.common.CacheKey
+import com.facebook.drawee.backends.pipeline.Fresco
 import com.facebook.imagepipeline.cache.DefaultCacheKeyFactory
 import com.facebook.imagepipeline.core.ImagePipelineFactory
 import com.facebook.imagepipeline.request.ImageRequest
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import kotlin.random.Random
 
 class StickerDialog : BottomSheetDialogFragment() {
 
@@ -120,11 +122,7 @@ class StickerDialog : BottomSheetDialogFragment() {
 
             tvShare.setOnClickListener {
                 this@StickerDialog.dismiss()
-                listener?.shareSticker(Sticker(1,gif,"new one"))
-                val url = gif?.replace("giphy.webp", "200w.webp")
-                val imageRequest: ImageRequest? = ImageRequest.fromUri(url)
-                val cacheKey: CacheKey = DefaultCacheKeyFactory.getInstance().getEncodedCacheKey(imageRequest, null)
-                val resource = ImagePipelineFactory.getInstance().mainFileCache.getResource(cacheKey)
+                listener?.shareSticker(Sticker(Random.nextInt(), gif,"new one"))
             }
         }
     }

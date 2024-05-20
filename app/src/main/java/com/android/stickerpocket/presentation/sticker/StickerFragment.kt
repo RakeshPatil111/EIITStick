@@ -12,6 +12,7 @@ import android.widget.Toast
 import androidx.core.widget.doAfterTextChanged
 import androidx.emoji2.emojipicker.EmojiViewItem
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -24,6 +25,7 @@ import com.android.stickerpocket.presentation.emoji
 import com.android.stickerpocket.utils.GiphyConfigure
 import com.android.stickerpocket.utils.ItemTouchHelperAdapter
 import com.android.stickerpocket.utils.ItemTouchHelperCallback
+import com.android.stickerpocket.utils.StickerViewModelFactory
 import com.android.stickerpocket.utils.ViewExt.shakeMe
 import com.giphy.sdk.core.models.Media
 import com.giphy.sdk.core.models.enums.MediaType
@@ -52,13 +54,14 @@ class StickerFragment : Fragment(),
     private val interactor by lazy {
         StickerFragmentInteractor()
     }
+    private val viewModel by viewModels<StickerViewModel>()
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentStickerBinding.inflate(inflater, container, false)
         setClickListeners()
-        interactor.initObserver(viewLifecycleOwner)
+        interactor.initObserver(viewLifecycleOwner, viewModel)
         observeInteractor()
         return binding.root
     }

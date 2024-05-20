@@ -7,5 +7,5 @@ import androidx.room.PrimaryKey
 data class RecentSearch(
     @PrimaryKey
     val query: String,
-    val time: Long
+    var time: Long
 )

@@ -4,12 +4,15 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.sqlite.db.SupportSQLiteDatabase
 import com.android.stickerpocket.domain.dao.EmojiDAO
 import com.android.stickerpocket.domain.dao.RecentSearchDAO
 import com.android.stickerpocket.domain.model.Category
 import com.android.stickerpocket.domain.model.Emoji
 import com.android.stickerpocket.domain.model.Favourites
 import com.android.stickerpocket.domain.model.RecentSearch
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 @Database(entities = [RecentSearch::class, Emoji::class, Category::class, Favourites::class],
     version = 1,
@@ -25,7 +28,9 @@ public abstract class StickerDB : RoomDatabase() {
         @Volatile
         private var INSTANCE: StickerDB? = null
 
-        fun getDatabase(context: Context): StickerDB {
+        fun getDatabase(context: Context,
+                        scope: CoroutineScope
+        ): StickerDB {
             // if the INSTANCE is not null, then return it,
             // if it is, then create the database
             return INSTANCE ?: synchronized(this) {

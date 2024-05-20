@@ -1,6 +1,7 @@
 package com.android.stickerpocket.domain.dao
 
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
@@ -14,4 +15,7 @@ interface RecentSearchDAO {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun createOrUpdateRecentSearch(recentSearch: RecentSearch)
+
+    @Delete
+    fun deleteRecentSearch(recentSearch: RecentSearch)
 }

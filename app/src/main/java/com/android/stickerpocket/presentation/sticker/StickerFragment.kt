@@ -31,6 +31,7 @@ import com.giphy.sdk.ui.pagination.GPHContent
 import com.giphy.sdk.ui.views.GPHGridCallback
 import com.giphy.sdk.ui.views.GPHSearchGridCallback
 import com.giphy.sdk.ui.views.GifView
+import com.google.android.material.textfield.TextInputEditText
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.delay
@@ -38,14 +39,15 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class StickerFragment : Fragment(),
-    StickerCategoryDialog.StickerCategoryDialogListener,
-    EmojiPickerDialog.EmojiPickerDialogListener, GPHGridCallback, GPHSearchGridCallback, ItemTouchHelperAdapter {
+    StickerCategoryDialog.StickerCategoryDialogListener, EmojiPickerDialog.EmojiPickerDialogListener,
+    GPHGridCallback, GPHSearchGridCallback, ItemTouchHelperAdapter, TextWatcher {
 
     private lateinit var binding: FragmentStickerBinding
     private lateinit var emojiCategoryListAdapter: EmojiCategoryListAdapter
     private lateinit var itemTouchHelper: ItemTouchHelper
     private lateinit var callback: ItemTouchHelperCallback
     private lateinit var recentSearchAdapter: RecentSearchAdapter
+    var searchJob: Job? = null
 
     private val interactor by lazy {
         StickerFragmentInteractor()
@@ -88,11 +90,13 @@ class StickerFragment : Fragment(),
                     binding.apply {
                         rvRecentSearch.visibility = View.GONE
                         rvStickers.visibility = View.VISIBLE
+                        removeChangeListeners(tietSearch)
                         tietSearch.setText(it.query)
                         tietSearch.setSelection(tietSearch.length())
                         if (rvStickers.content?.searchQuery != it.query) {
                             rvStickers.content = GPHContent.searchQuery(it.query, mediaType = MediaType.gif)
                         }
+                        addChangeListeners(tietSearch)
                     }
                 }
                 is StickerFragmentInteractor.Actions.ShowRecentSearches -> {
@@ -112,6 +116,10 @@ class StickerFragment : Fragment(),
             override fun onRecentSearchClick(position: Int) {
                 interactor.onRecentSearchItemClick(position)
             }
+
+            override fun onRecentSearchRemove(position: Int) {
+                interactor.onRecentSearchRemove(position)
+            }
         })
     }
 
@@ -128,54 +136,25 @@ class StickerFragment : Fragment(),
             cvRecentSticker.setOnClickListener { binding.rvStickers.content = GPHContent.recents }
             cvFavSticker.setOnClickListener { binding.rvStickers.content = GPHContent.recents }
             cvDownloadedSticker.setOnClickListener { binding.rvStickers.content = GPHContent.recents }
-            var searchJob: Job? = null
-            tietSearch.doAfterTextChanged {
-                if (it.toString().isEmpty()) {
-                    rvRecentSearch.visibility = View.GONE
-                    rvStickers.visibility = View.VISIBLE
-                } else {
-                    searchJob?.cancel()
-                    searchJob = MainScope().launch {
-                        delay(2500)
-                        it?.let {
-                            if (it.toString().trim().isNotEmpty() && rvStickers.content?.searchQuery != it.toString()) {
-                                interactor.onQuerySearch(it.toString())
-                            }
-                        }
-                    }
-                }
-            }
-
-            tietSearch.setOnFocusChangeListener { v, hasFocus ->
-                if (hasFocus && tietSearch.isCursorVisible) {
-                    tietSearch.isCursorVisible = true
-                    interactor.onSearchClick()
-                } else {
-                    tietSearch.isCursorVisible = false
-                    rvStickers.content
-                }
-            }
-
-            tietSearch.addTextChangedListener(object : TextWatcher {
-                override fun beforeTextChanged(
-                    s: CharSequence?,
-                    start: Int,
-                    count: Int,
-                    after: Int
-                ) {
-                    tietSearch.isCursorVisible = true
-                }
-
-                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-
-                }
-
-                override fun afterTextChanged(s: Editable?) {
-
-                }
-
-            })
+            addChangeListeners(tietSearch)
         }
+    }
+
+    private fun addChangeListeners(tietSearch: TextInputEditText) {
+        tietSearch.addTextChangedListener(this)
+        tietSearch.setOnFocusChangeListener { v, hasFocus ->
+            tietSearch.isCursorVisible = true
+            if (hasFocus) {
+                interactor.onSearchClick()
+            } else {
+                tietSearch.isCursorVisible = false
+            }
+        }
+    }
+
+    private fun removeChangeListeners(tietSearch: TextInputEditText) {
+        tietSearch.removeTextChangedListener(this)
+        tietSearch.setOnClickListener(null)
     }
 
     private fun setupEmojiRecyclerView() {
@@ -187,11 +166,13 @@ class StickerFragment : Fragment(),
         itemTouchHelper.attachToRecyclerView(binding.rvCategory)
 
         emojiCategoryListAdapter.stickerActionClick { sticker, _ ->
-            binding.tietSearch.setText("")
-            binding.tietSearch.isCursorVisible = false
+            removeChangeListeners(binding.tietSearch)
             binding.rvRecentSearch.visibility = View.GONE
             binding.rvStickers.visibility = View.VISIBLE
             binding.rvStickers.content = GPHContent.searchQuery(sticker.title.toString())
+            binding.tietSearch.clearFocus()
+            binding.tietSearch.text?.clear()
+            addChangeListeners(binding.tietSearch)
         }
         emojiCategoryListAdapter.stickerActionLongClick { _, _ ->
             binding.tietSearch.isCursorVisible = false
@@ -256,7 +237,6 @@ class StickerFragment : Fragment(),
     }
 
     override fun didSelectMedia(media: Media) {
-        Timber.d("didSelectMedia ${media.id}")
         media.images.original?.gifUrl?.let {
             StickerDialog.show(childFragmentManager, it)
         }
@@ -280,5 +260,31 @@ class StickerFragment : Fragment(),
 
     override fun onDragComplete() {
         callback.isDragEnabled = false
+    }
+
+    override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+        interactor.onSearchClick()
+    }
+
+    override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+        interactor.onSearchClick()
+    }
+
+    override fun afterTextChanged(s: Editable?) {
+        if (s.toString().isEmpty()) {
+            binding.rvRecentSearch.visibility = View.VISIBLE
+            binding.rvStickers.visibility = View.GONE
+            interactor.onQueryBlank()
+        } else {
+            searchJob?.cancel()
+            searchJob = MainScope().launch {
+                delay(2500)
+                s?.let {
+                    if (it.toString().trim().isNotEmpty() && binding.rvStickers.content?.searchQuery != it.toString()) {
+                        interactor.onQuerySearch(it.toString())
+                    }
+                }
+            }
+        }
     }
 }

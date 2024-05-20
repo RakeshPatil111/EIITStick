@@ -21,8 +21,11 @@ class RecentSearchAdapter: RecyclerView.Adapter<RecentSearchAdapter.ViewHolder>(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.binding.tvQuery.text = recentSearchList[position].query
-        holder.binding.root.setOnClickListener {
+        holder.binding.tvQuery.setOnClickListener {
             onRecentSearchClickListener.onRecentSearchClick(position)
+        }
+        holder.binding.ivRemove.setOnClickListener {
+            onRecentSearchClickListener.onRecentSearchRemove(position)
         }
     }
 
@@ -37,5 +40,6 @@ class RecentSearchAdapter: RecyclerView.Adapter<RecentSearchAdapter.ViewHolder>(
 
     interface OnRecentSearchClickListener {
         fun onRecentSearchClick(position: Int)
+        fun onRecentSearchRemove(position: Int)
     }
 }

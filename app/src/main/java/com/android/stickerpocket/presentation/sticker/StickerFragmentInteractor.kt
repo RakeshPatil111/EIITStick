@@ -48,4 +48,13 @@ class StickerFragmentInteractor {
         viewModel.saveRecentSearch(query)
         _liveData.value = Actions.ShowGiphyViewForRecentSearch(query)
     }
+
+    fun onRecentSearchRemove(position: Int) {
+        viewModel.removeRecentSearch(position)
+        _liveData.value = Actions.ShowRecentSearches(viewModel.getRecentSearches())
+    }
+
+    fun onQueryBlank() {
+        _liveData.postValue(Actions.ShowRecentSearches(viewModel.getRecentSearches()))
+    }
 }

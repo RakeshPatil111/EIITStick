@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.android.stickerpocket.StickerApplication
 import com.android.stickerpocket.domain.model.RecentSearch
 import com.android.stickerpocket.domain.usecase.CreateOrUpdatedRecentSearchUseCase
+import com.android.stickerpocket.domain.usecase.DeleteRecentSearchUseCase
 import com.android.stickerpocket.domain.usecase.GetRecentSearchUseCase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -23,10 +24,12 @@ class StickerViewModel: ViewModel() {
 
     private var recentSearchUseCase: GetRecentSearchUseCase
     private var createOrUpdatedRecentSearchUseCase: CreateOrUpdatedRecentSearchUseCase
+    private var deleteRecentSearchUseCase: DeleteRecentSearchUseCase
 
 
-    private var recentSearchs: List<RecentSearch> = emptyList()
+    private var recentSearchs: MutableList<RecentSearch> = mutableListOf()
     init {
+        deleteRecentSearchUseCase = DeleteRecentSearchUseCase(StickerApplication.instance.recentSearchRepository)
         recentSearchUseCase = GetRecentSearchUseCase(StickerApplication.instance.recentSearchRepository)
         createOrUpdatedRecentSearchUseCase = CreateOrUpdatedRecentSearchUseCase(StickerApplication.instance.recentSearchRepository)
         fetchRecentSearches()
@@ -36,7 +39,7 @@ class StickerViewModel: ViewModel() {
         CoroutineScope(Dispatchers.Default).launch {
             when (val result = recentSearchUseCase.execute()) {
                 is GetRecentSearchUseCase.Result.Success -> {
-                    recentSearchs = result.items
+                    recentSearchs = result.items.toMutableList()
                 }
                 is GetRecentSearchUseCase.Result.Failure -> {
 
@@ -58,6 +61,15 @@ class StickerViewModel: ViewModel() {
         CoroutineScope(Dispatchers.IO).launch {
             val recentSearch = RecentSearch(query, Date().time)
             createOrUpdatedRecentSearchUseCase.execute(recentSearch)
+            fetchRecentSearches()
+        }
+    }
+
+    fun removeRecentSearch(position: Int) {
+        val recentSearchToDelete = recentSearchs[position]
+        CoroutineScope(Dispatchers.IO).launch {
+            recentSearchs.removeAt(position)
+            deleteRecentSearchUseCase.execute(DeleteRecentSearchUseCase.Params(recentSearch = recentSearchToDelete))
             fetchRecentSearches()
         }
     }

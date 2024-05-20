@@ -104,6 +104,24 @@ class StickerFragment : Fragment(),
                     binding.rvRecentSearch.visibility = View.VISIBLE
                     binding.rvStickers.visibility = View.GONE
                 }
+                is StickerFragmentInteractor.Actions.LoadEmojisForCategory -> {
+                    removeChangeListeners(binding.tietSearch)
+                    binding.rvRecentSearch.visibility = View.GONE
+                    binding.rvStickers.visibility = View.VISIBLE
+                    binding.rvStickers.content = GPHContent.searchQuery(it.query)
+                    binding.tietSearch.clearFocus()
+                    binding.tietSearch.text?.clear()
+                    addChangeListeners(binding.tietSearch)
+                }
+                is StickerFragmentInteractor.Actions.ShowCategoryOptionDialog -> {
+                    if (!callback.isDragEnabled){
+                        val stickerCategoryDialog = StickerCategoryDialog()
+                        stickerCategoryDialog.setupDialogInformation(
+                            listener = this
+                        )
+                        stickerCategoryDialog.show(childFragmentManager, "StickerCategoryDialog")
+                    }
+                }
                 else -> {}
             }
         })
@@ -166,24 +184,12 @@ class StickerFragment : Fragment(),
         itemTouchHelper.attachToRecyclerView(binding.rvCategory)
 
         emojiCategoryListAdapter.stickerActionClick { sticker, _ ->
-            removeChangeListeners(binding.tietSearch)
-            binding.rvRecentSearch.visibility = View.GONE
-            binding.rvStickers.visibility = View.VISIBLE
-            binding.rvStickers.content = GPHContent.searchQuery(sticker.title.toString())
-            binding.tietSearch.clearFocus()
-            binding.tietSearch.text?.clear()
-            addChangeListeners(binding.tietSearch)
+            interactor.onCategoryItemClick(sticker)
         }
         emojiCategoryListAdapter.stickerActionLongClick { _, _ ->
             binding.tietSearch.isCursorVisible = false
             binding.tietSearch.text?.clear()
-            if (!callback.isDragEnabled){
-                val stickerCategoryDialog = StickerCategoryDialog()
-                stickerCategoryDialog.setupDialogInformation(
-                    listener = this
-                )
-                stickerCategoryDialog.show(childFragmentManager, "StickerCategoryDialog")
-            }
+            interactor.onCategoryItemLongClick()
         }
         emojiApiCallResponse()
     }

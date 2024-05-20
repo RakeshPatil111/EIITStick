@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.viewModelScope
 import com.android.stickerpocket.domain.model.RecentSearch
+import com.android.stickerpocket.presentation.Sticker
 import com.android.stickerpocket.presentation.StickerViewModel
 
 class StickerFragmentInteractor {
@@ -16,6 +17,8 @@ class StickerFragmentInteractor {
         object ShowGiphyGridView: Actions()
         data class ShowRecentSearches(val recentSearches: List<RecentSearch>): Actions()
         data class ShowGiphyViewForRecentSearch(val query: String) : Actions()
+        data class LoadEmojisForCategory(val query: String) : Actions()
+        object ShowCategoryOptionDialog : Actions()
     }
     private val _liveData = MutableLiveData<Actions>()
     val liveData = _liveData
@@ -56,5 +59,13 @@ class StickerFragmentInteractor {
 
     fun onQueryBlank() {
         _liveData.postValue(Actions.ShowRecentSearches(viewModel.getRecentSearches()))
+    }
+
+    fun onCategoryItemClick(sticker: Sticker) {
+        _liveData.value = Actions.LoadEmojisForCategory(sticker.title!!)
+    }
+
+    fun onCategoryItemLongClick() {
+        _liveData.value = Actions.ShowCategoryOptionDialog
     }
 }

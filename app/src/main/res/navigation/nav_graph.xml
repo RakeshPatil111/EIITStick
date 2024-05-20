@@ -20,7 +20,7 @@
     </fragment>
     <fragment
         android:id="@+id/searchStickerFragment"
-        android:name="com.android.stickerpocket.presentation.SearchStickerFragment"
+        android:name="com.android.stickerpocket.presentation.MoreStickersFragment"
         android:label="fragment_search_sticker"
         tools:layout="@layout/fragment_search_sticker" />
     <fragment

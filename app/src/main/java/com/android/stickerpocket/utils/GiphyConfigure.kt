@@ -1,10 +1,17 @@
 package com.android.stickerpocket.utils
 
 import android.content.Context
+import android.net.Uri
 import com.android.stickerpocket.BuildConfig
+import com.facebook.cache.common.CacheKey
 import com.facebook.cache.disk.DiskCacheConfig
+import com.facebook.common.util.ByteConstants
+import com.facebook.drawee.backends.pipeline.Fresco
+import com.facebook.imagepipeline.cache.CacheKeyFactory
 import com.facebook.imagepipeline.cache.DefaultCacheKeyFactory
+import com.facebook.imagepipeline.cache.DefaultEncodedMemoryCacheParamsSupplier
 import com.facebook.imagepipeline.core.ImagePipelineConfig
+import com.facebook.imagepipeline.request.ImageRequest
 import com.giphy.sdk.core.models.enums.RenditionType
 import com.giphy.sdk.ui.GPHContentType
 import com.giphy.sdk.ui.GPHSettings
@@ -26,20 +33,19 @@ object GiphyConfigure {
             verificationMode = false,
             frescoHandler = object : GiphyFrescoHandler {
                 override fun handle(imagePipelineConfigBuilder: ImagePipelineConfig.Builder) {
+                    val previewsDiskConfig = DiskCacheConfig.newBuilder(context)
+                        .setMaxCacheSize(250L * ByteConstants.MB).build()
+                    val qualityDiskConfig = DiskCacheConfig.newBuilder(context)
+                        .setMaxCacheSize(250L * ByteConstants.MB).build()
                     imagePipelineConfigBuilder
-                        .setMainDiskCacheConfig(
-                            DiskCacheConfig.newBuilder(context)
-                                .setMaxCacheSize(150)
-                                .setMaxCacheSizeOnLowDiskSpace(50)
-                                .setMaxCacheSizeOnVeryLowDiskSpace(10)
-                                .build()
-                        )
+                        .setSmallImageDiskCacheConfig(previewsDiskConfig)
+                        .setMainDiskCacheConfig(qualityDiskConfig)
                         .setCacheKeyFactory(DefaultCacheKeyFactory.getInstance())
+                        .build()
                 }
                 override fun handle(okHttpClientBuilder: OkHttpClient.Builder) {
                 }
             })
-
         val settings = GPHSettings(GPHTheme.Dark)
         settings.apply {
             imageFormat = ImageFormat.WEBP

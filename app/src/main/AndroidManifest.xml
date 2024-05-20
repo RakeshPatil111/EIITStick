@@ -18,7 +18,7 @@
         android:theme="@style/Theme.StickerPocket"
         tools:targetApi="31">
         <activity
-            android:name=".presentation.StickerActivity"
+            android:name=".presentation.sticker.StickerActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

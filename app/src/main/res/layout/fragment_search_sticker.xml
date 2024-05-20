@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/color_primary"
-    tools:context=".presentation.SearchStickerFragment">
+    tools:context=".presentation.MoreStickersFragment">
 
     <ImageView
         android:id="@+id/img_app_icon"
@@ -70,17 +70,39 @@
         app:layout_constraintTop_toTopOf="@+id/til_search"
         android:contentDescription="@string/filter_image_button" />
 
-    <androidx.recyclerview.widget.RecyclerView
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/tv_trending_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/trending"
+        android:textStyle="italic"
+        android:layout_marginStart="@dimen/dimen_8dp"
+        android:layout_marginTop="@dimen/dimen_16dp"
+        android:textAppearance="?attr/textAppearanceCaption"
+        android:textColor="@color/color_primary_variant"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/til_search"/>
+
+    <TextView
+        android:id="@+id/tv_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?attr/textAppearanceSubtitle2"
+        android:textColor="@color/color_primary_variant"
+        android:text="Power by Giphy"
+        app:layout_constraintBottom_toBottomOf="@+id/tv_trending_title"
+        app:layout_constraintStart_toEndOf="@+id/tv_trending_title"
+        app:layout_constraintTop_toTopOf="@+id/tv_trending_title" />
+
+    <com.giphy.sdk.ui.views.GiphyGridView
         android:id="@+id/rv_sticker_section"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:clipToPadding="false"
-        android:paddingBottom="@dimen/dimen_32dp"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:gphSpanCount="6"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/img_screen_bg"
-        tools:itemCount="2"
+        app:layout_constraintTop_toBottomOf="@+id/tv_trending_title"
         tools:listitem="@layout/cv_sticker_section_item" />
 </androidx.constraintlayout.widget.ConstraintLayout>

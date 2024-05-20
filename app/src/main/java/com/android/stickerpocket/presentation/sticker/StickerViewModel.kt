@@ -1,8 +1,7 @@
-package com.android.stickerpocket.presentation
+package com.android.stickerpocket.presentation.sticker
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.android.stickerpocket.StickerApplication
 import com.android.stickerpocket.domain.model.RecentSearch
 import com.android.stickerpocket.domain.usecase.CreateOrUpdatedRecentSearchUseCase

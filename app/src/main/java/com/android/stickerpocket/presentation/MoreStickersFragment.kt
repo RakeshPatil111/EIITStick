@@ -6,8 +6,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.android.stickerpocket.databinding.FragmentSearchStickerBinding
+import com.giphy.sdk.ui.pagination.GPHContent
 
-class SearchStickerFragment : Fragment() {
+class MoreStickersFragment : Fragment() {
 
     private lateinit var binding: FragmentSearchStickerBinding
     private lateinit var stickerSectionListAdapter: StickerSectionListAdapter
@@ -25,7 +26,8 @@ class SearchStickerFragment : Fragment() {
         stickerSectionListAdapter = StickerSectionListAdapter()
         stickerSectionListAdapter.updateList(sectionStickers, requireActivity())
         binding.apply {
-            rvStickerSection.adapter = stickerSectionListAdapter
+            rvStickerSection.content = GPHContent.trendingGifs
+            rvStickerSection.fixedSizeCells = true
         }
     }
 }

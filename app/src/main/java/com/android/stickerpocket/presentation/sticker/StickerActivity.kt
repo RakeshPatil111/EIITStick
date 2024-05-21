@@ -1,6 +1,5 @@
 package com.android.stickerpocket.presentation.sticker
 
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
@@ -8,6 +7,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.NavigationUI
@@ -19,13 +19,8 @@ import com.android.stickerpocket.presentation.StickerDetailsNavDirections
 import com.android.stickerpocket.presentation.StickerDialog
 import com.android.stickerpocket.utils.GiphyConfigure
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import java.io.File
-import java.io.FileOutputStream
-import java.net.URL
 
 
 class StickerActivity : AppCompatActivity(), StickerDialog.StickerDialogListener {
@@ -44,10 +39,16 @@ class StickerActivity : AppCompatActivity(), StickerDialog.StickerDialogListener
         setContentView(binding.root)
         initObserver()
         initNavigation()
+
+        lifecycleScope.launch {
+            delay(5000)
+            interactor.saveEmojiToLocalDB(R.raw.emojis)
+        }
     }
 
     private fun initNavigation() {
-        val navHostFragment = supportFragmentManager.findFragmentById(R.id.fragment_container) as NavHostFragment
+        val navHostFragment =
+            supportFragmentManager.findFragmentById(R.id.fragment_container) as NavHostFragment
         navController = navHostFragment.navController
 
         val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottom_navigation)
@@ -61,14 +62,19 @@ class StickerActivity : AppCompatActivity(), StickerDialog.StickerDialogListener
                 is StickerActivityInteractor.Actions.ShareSticker -> {
                     binding.progressBar.visibility = android.view.View.GONE
                     if (it.file != null) {
-                        val gifUri = FileProvider.getUriForFile(this@StickerActivity, BuildConfig.APPLICATION_ID + ".provider", it.file);
+                        val gifUri = FileProvider.getUriForFile(
+                            this@StickerActivity,
+                            BuildConfig.APPLICATION_ID + ".provider",
+                            it.file
+                        );
                         val shareIntent = Intent(Intent.ACTION_SEND)
                         shareIntent.setType("image/gif")
                         shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                         shareIntent.putExtra(Intent.EXTRA_STREAM, gifUri)
                         startActivity(Intent.createChooser(shareIntent, "Share GIF using"))
                     } else {
-                        Toast.makeText(this@StickerActivity, "Please try again", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this@StickerActivity, "Please try again", Toast.LENGTH_SHORT)
+                            .show()
                     }
                 }
 

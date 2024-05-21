@@ -30,4 +30,8 @@ class StickerActivityInteractor {
         _liveData.value = Actions.ShowLoading
         viewModel.downloadSticker(sticker)
     }
+
+    suspend fun saveEmojiToLocalDB(resourceId: Int){
+        viewModel.loadAndSaveEmoji(resourceId)
+    }
 }

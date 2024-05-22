@@ -2,6 +2,7 @@ package com.android.stickerpocket.presentation.sticker
 
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.MutableLiveData
+import com.android.stickerpocket.domain.model.Emoji
 import com.android.stickerpocket.presentation.Sticker
 import java.io.File
 
@@ -33,5 +34,9 @@ class StickerActivityInteractor {
 
     suspend fun saveEmojiToLocalDB(resourceId: Int){
         viewModel.loadAndSaveEmoji(resourceId)
+    }
+
+    suspend fun getLocalEmoji(): MutableList<Emoji>{
+        return viewModel.getLocalEmoji()
     }
 }

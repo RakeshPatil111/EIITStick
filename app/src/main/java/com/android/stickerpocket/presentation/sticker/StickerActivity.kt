@@ -2,6 +2,7 @@ package com.android.stickerpocket.presentation.sticker
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -19,6 +20,8 @@ import com.android.stickerpocket.presentation.StickerDetailsNavDirections
 import com.android.stickerpocket.presentation.StickerDialog
 import com.android.stickerpocket.utils.GiphyConfigure
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -40,9 +43,12 @@ class StickerActivity : AppCompatActivity(), StickerDialog.StickerDialogListener
         initObserver()
         initNavigation()
 
-        lifecycleScope.launch {
+        CoroutineScope(Dispatchers.IO).launch {
             delay(5000)
-            interactor.saveEmojiToLocalDB(R.raw.emojis)
+            if (interactor.getLocalEmoji().size == 0){
+                interactor.saveEmojiToLocalDB(R.raw.emojis)
+            }
+            Log.d("Emoji list size:", interactor.getLocalEmoji().size.toString())
         }
     }
 

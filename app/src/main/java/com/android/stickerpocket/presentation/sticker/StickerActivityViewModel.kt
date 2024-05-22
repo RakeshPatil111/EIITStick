@@ -1,10 +1,10 @@
 package com.android.stickerpocket.presentation.sticker
 
-import android.app.Application
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.android.stickerpocket.StickerApplication
 import com.android.stickerpocket.domain.model.Emoji
+import com.android.stickerpocket.domain.usecase.GetLocalEmojiUseCase
 import com.android.stickerpocket.domain.usecase.SaveEmojiOnLocalUseCase
 import com.android.stickerpocket.network.response.Emojis
 import com.android.stickerpocket.presentation.Sticker
@@ -25,6 +25,9 @@ class StickerActivityViewModel: ViewModel() {
 
     private var saveEmojiOnLocalUseCase =
         SaveEmojiOnLocalUseCase(StickerApplication.instance.emojisRepository)
+
+    private var getLocalEmojiUseCase =
+        GetLocalEmojiUseCase(StickerApplication.instance.emojisRepository)
 
     sealed class Result {
         data class StickerDownloaded(val gifFile: File) : Result()
@@ -92,5 +95,9 @@ class StickerActivityViewModel: ViewModel() {
             e.printStackTrace()
             null
         }
+    }
+
+    suspend fun getLocalEmoji(): MutableList<Emoji>{
+        return getLocalEmojiUseCase.execute()
     }
 }

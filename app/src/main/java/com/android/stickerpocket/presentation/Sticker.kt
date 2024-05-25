@@ -7,7 +7,11 @@ import kotlinx.parcelize.Parcelize
 data class Sticker(
     val id: Int,
     val thumbnail: String?,
-    val title: String?
+    val title: String?,
+    val creator: String? = null,
+    val source: String? = null,
+    val tags: List<String>? = null,
+    val mediaId: String? = null
 ): Parcelable
 
 val smiley = Sticker(

@@ -138,9 +138,13 @@
                     style="@style/Widget.AppCompat.TextView.Options"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:padding="@dimen/dimen_4dp"
-                    android:text="Unknown"
                     android:layout_alignParentEnd="true"
+                    android:gravity="end"
+                    android:layout_marginStart="@dimen/dimen_8dp"
+                    android:layout_toEndOf="@+id/tv_source_title"
+                    android:padding="@dimen/dimen_4dp"
+                    android:textSize="@dimen/text_dimen_14sp"
+                    android:text="Unknown"
                     android:textColor="@android:color/black" />
 
             </RelativeLayout>
@@ -166,9 +170,13 @@
                     style="@style/Widget.AppCompat.TextView.Options"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:padding="@dimen/dimen_4dp"
-                    android:text="Unknown"
                     android:layout_alignParentEnd="true"
+                    android:gravity="end"
+                    android:layout_marginStart="@dimen/dimen_8dp"
+                    android:layout_toEndOf="@+id/tv_creator_title"
+                    android:padding="@dimen/dimen_4dp"
+                    android:textSize="@dimen/text_dimen_14sp"
+                    android:text="Unknown"
                     android:textColor="@android:color/black" />
 
             </RelativeLayout>

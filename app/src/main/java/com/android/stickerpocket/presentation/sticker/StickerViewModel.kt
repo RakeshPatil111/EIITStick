@@ -7,9 +7,13 @@ import com.android.stickerpocket.domain.model.RecentSearch
 import com.android.stickerpocket.domain.usecase.CreateOrUpdatedRecentSearchUseCase
 import com.android.stickerpocket.domain.usecase.DeleteRecentSearchUseCase
 import com.android.stickerpocket.domain.usecase.GetRecentSearchUseCase
+import com.android.stickerpocket.presentation.Sticker
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.io.File
+import java.io.FileOutputStream
+import java.net.URL
 import java.util.Date
 
 class StickerViewModel: ViewModel() {
@@ -70,6 +74,33 @@ class StickerViewModel: ViewModel() {
             recentSearchs.removeAt(position)
             deleteRecentSearchUseCase.execute(DeleteRecentSearchUseCase.Params(recentSearch = recentSearchToDelete))
             fetchRecentSearches()
+        }
+    }
+    fun downloadSticker(sticker: Sticker) {
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val url = URL(sticker.thumbnail)
+                val connection = url.openConnection()
+                connection.connect()
+
+                // Create a temporary file in the cache directory
+                val gifFile = File(StickerApplication.instance.cacheDir, sticker.title!! + ".gif")
+
+                val inputStream = connection.getInputStream()
+                val outputStream = FileOutputStream(gifFile)
+
+                val buffer = ByteArray(1024)
+                var bytesRead: Int
+                while (inputStream.read(buffer).also { bytesRead = it } != -1) {
+                    outputStream.write(buffer, 0, bytesRead)
+                }
+
+                outputStream.close()
+                inputStream.close()
+            } catch (e: Exception) {
+                e.printStackTrace()
+                null
+            }
         }
     }
 }

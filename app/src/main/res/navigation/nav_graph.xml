@@ -49,5 +49,10 @@
         android:id="@+id/stickerDetailsFragment"
         android:name="com.android.stickerpocket.presentation.StickerDetailsFragment"
         android:label="fragment_sticker_details"
-        tools:layout="@layout/fragment_sticker_details" />
+        tools:layout="@layout/fragment_sticker_details" >
+        <action
+            android:id="@+id/action_stickerDetailsFragment_to_stickerFragment"
+            app:destination="@id/stickerFragment"
+            app:popUpTo="@id/stickerFragment" />
+    </fragment>
 </navigation>

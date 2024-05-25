@@ -60,20 +60,20 @@ class StickerFragment : Fragment(),
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentStickerBinding.inflate(inflater, container, false)
-        setClickListeners()
-        interactor.initObserver(viewLifecycleOwner, viewModel)
         observeInteractor()
+        setClickListeners()
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        interactor.initObserver(viewLifecycleOwner, viewModel)
         interactor.onViewCreated()
     }
 
     private fun observeInteractor() {
         interactor.liveData.observe(viewLifecycleOwner, Observer {
-            when (it) {
+            when (val action = it.getContentIfNotHandled()) {
                 is StickerFragmentInteractor.Actions.InitGiphyView -> {
                     initGiphyView()
                 }
@@ -94,16 +94,16 @@ class StickerFragment : Fragment(),
                         rvRecentSearch.visibility = View.GONE
                         rvStickers.visibility = View.VISIBLE
                         removeChangeListeners(tietSearch)
-                        tietSearch.setText(it.query)
+                        tietSearch.setText(action.query)
                         tietSearch.setSelection(tietSearch.length())
-                        if (rvStickers.content?.searchQuery != it.query) {
-                            rvStickers.content = GPHContent.searchQuery(it.query, mediaType = MediaType.gif)
+                        if (rvStickers.content?.searchQuery != action.query) {
+                            rvStickers.content = GPHContent.searchQuery(action.query, mediaType = MediaType.gif)
                         }
                         addChangeListeners(tietSearch)
                     }
                 }
                 is StickerFragmentInteractor.Actions.ShowRecentSearches -> {
-                    recentSearchAdapter.updateList(it.recentSearches)
+                    recentSearchAdapter.updateList(action.recentSearches)
                     binding.rvRecentSearch.visibility = View.VISIBLE
                     binding.rvStickers.visibility = View.GONE
                 }
@@ -111,7 +111,7 @@ class StickerFragment : Fragment(),
                     removeChangeListeners(binding.tietSearch)
                     binding.rvRecentSearch.visibility = View.GONE
                     binding.rvStickers.visibility = View.VISIBLE
-                    binding.rvStickers.content = GPHContent.searchQuery(it.query)
+                    binding.rvStickers.content = GPHContent.searchQuery(action.query)
                     binding.tietSearch.clearFocus()
                     binding.tietSearch.text?.clear()
                     addChangeListeners(binding.tietSearch)
@@ -154,9 +154,22 @@ class StickerFragment : Fragment(),
 
     private fun setClickListeners() {
         binding.apply {
-            cvRecentSticker.setOnClickListener { binding.rvStickers.content = GPHContent.recents }
-            cvFavSticker.setOnClickListener { binding.rvStickers.content = GPHContent.recents }
-            cvDownloadedSticker.setOnClickListener { binding.rvStickers.content = GPHContent.recents }
+            cvRecentSticker.setOnClickListener {
+                binding.rvStickers.content = GPHContent.recents
+                binding.rvRecentSearch.visibility = View.GONE
+                binding.rvStickers.visibility = View.VISIBLE
+
+            }
+            cvFavSticker.setOnClickListener {
+                binding.rvStickers.content = GPHContent.recents
+                binding.rvRecentSearch.visibility = View.GONE
+                binding.rvStickers.visibility = View.VISIBLE
+            }
+            cvDownloadedSticker.setOnClickListener {
+                binding.rvStickers.content = GPHContent.recents
+                binding.rvRecentSearch.visibility = View.GONE
+                binding.rvStickers.visibility = View.VISIBLE
+            }
             addChangeListeners(tietSearch)
         }
     }
@@ -272,15 +285,17 @@ class StickerFragment : Fragment(),
     }
 
     override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-        interactor.onSearchClick()
+        if (binding.tietSearch.hasFocus()) {
+            interactor.onSearchClick()
+        }
     }
 
     override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-        interactor.onSearchClick()
+
     }
 
     override fun afterTextChanged(s: Editable?) {
-        if (s.toString().isEmpty()) {
+        if (s.toString().isEmpty() && binding.tietSearch.hasFocus()) {
             binding.rvRecentSearch.visibility = View.VISIBLE
             binding.rvStickers.visibility = View.GONE
             interactor.onQueryBlank()

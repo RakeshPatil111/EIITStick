@@ -31,21 +31,22 @@ object GiphyConfigure {
             context,
             BuildConfig.API_KEY,
             verificationMode = false,
-            frescoHandler = object : GiphyFrescoHandler {
-                override fun handle(imagePipelineConfigBuilder: ImagePipelineConfig.Builder) {
-                    val previewsDiskConfig = DiskCacheConfig.newBuilder(context)
-                        .setMaxCacheSize(250L * ByteConstants.MB).build()
-                    val qualityDiskConfig = DiskCacheConfig.newBuilder(context)
-                        .setMaxCacheSize(250L * ByteConstants.MB).build()
-                    imagePipelineConfigBuilder
-                        .setSmallImageDiskCacheConfig(previewsDiskConfig)
-                        .setMainDiskCacheConfig(qualityDiskConfig)
-                        .setCacheKeyFactory(DefaultCacheKeyFactory.getInstance())
-                        .build()
-                }
-                override fun handle(okHttpClientBuilder: OkHttpClient.Builder) {
-                }
-            })
+//            frescoHandler = object : GiphyFrescoHandler {
+//                override fun handle(imagePipelineConfigBuilder: ImagePipelineConfig.Builder) {
+//                    val previewsDiskConfig = DiskCacheConfig.newBuilder(context)
+//                        .setMaxCacheSize(250L * ByteConstants.MB).build()
+//                    val qualityDiskConfig = DiskCacheConfig.newBuilder(context)
+//                        .setMaxCacheSize(250L * ByteConstants.MB).build()
+//                    imagePipelineConfigBuilder
+//                        .setSmallImageDiskCacheConfig(previewsDiskConfig)
+//                        .setMainDiskCacheConfig(qualityDiskConfig)
+//                        .setCacheKeyFactory(DefaultCacheKeyFactory.getInstance())
+//                        .build()
+//                }
+//                override fun handle(okHttpClientBuilder: OkHttpClient.Builder) {
+//                }
+//            })
+        )
         val settings = GPHSettings(GPHTheme.Dark)
         settings.apply {
             imageFormat = ImageFormat.WEBP

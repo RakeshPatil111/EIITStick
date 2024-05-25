@@ -59,17 +59,7 @@ class StickerActivity : AppCompatActivity(), StickerDialog.StickerDialogListener
         interactor.liveData.observe(this, Observer {
             when (it) {
                 is StickerActivityInteractor.Actions.ShareSticker -> {
-                    binding.progressBar.visibility = android.view.View.GONE
-                    if (it.file != null) {
-                        val gifUri = FileProvider.getUriForFile(this@StickerActivity, BuildConfig.APPLICATION_ID + ".provider", it.file);
-                        val shareIntent = Intent(Intent.ACTION_SEND)
-                        shareIntent.setType("image/gif")
-                        shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                        shareIntent.putExtra(Intent.EXTRA_STREAM, gifUri)
-                        startActivity(Intent.createChooser(shareIntent, "Share GIF using"))
-                    } else {
-                        Toast.makeText(this@StickerActivity, "Please try again", Toast.LENGTH_SHORT).show()
-                    }
+
                 }
 
                 is StickerActivityInteractor.Actions.ShowLoading -> {
@@ -79,16 +69,16 @@ class StickerActivity : AppCompatActivity(), StickerDialog.StickerDialogListener
         })
     }
 
-    override fun selectedSticker(sticker: Sticker) {
+    override fun onStickerInfoClick(sticker: Sticker) {
         val action = StickerDetailsNavDirections(sticker)
         navController.navigate(action)
     }
 
-    override fun shareSticker(sticker: Sticker) {
+    override fun onShareSticker(sticker: Sticker) {
         interactor.onShareSticker(sticker)
     }
 
-    override fun cancel() {
+    override fun onCancelClick() {
     }
 
 }

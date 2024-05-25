@@ -11,12 +11,13 @@ import coil.decode.GifDecoder
 import coil.decode.ImageDecoderDecoder
 import coil.load
 import com.android.stickerpocket.databinding.FragmentStickerDetailsBinding
+import com.android.stickerpocket.utils.StickerExt.toFile
 
 class StickerDetailsFragment : Fragment() {
 
     private lateinit var binding: FragmentStickerDetailsBinding
     private lateinit var imageLoader: ImageLoader
-
+    private var sticker: Sticker? = null
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -33,7 +34,7 @@ class StickerDetailsFragment : Fragment() {
                 }
             }
             .build()
-
+        sticker = arguments?.getParcelable("sticker")
         return binding.root
     }
 
@@ -41,12 +42,26 @@ class StickerDetailsFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.apply {
-            sivGifImage.load("https://i.ibb.co/353QnHz/first.gif", imageLoader){
-                target(
-                    onSuccess = {
-                        sivGifImage.load("https://i.ibb.co/353QnHz/first.gif", imageLoader)
-                    }
-                )
+            sticker?.let {
+                val file = it.toFile()
+                val url = if (file.length() > 0) file else it.thumbnail
+                sivGifImage.load(url, imageLoader) {
+                    target(
+                        onSuccess = {
+                            sivGifImage.load(url, imageLoader)
+                        }
+                    )
+                }
+                tvId.text = "${it.id}"
+                it.source?.let { s ->
+                    tvSource.text = s
+                }
+                it.creator?.let { s ->
+                    tvCreator.text = s
+                }
+                it.tags?.let { s ->
+                    tvTagList.text = s.joinToString { "," }
+                }
             }
         }
     }

@@ -1,8 +1,8 @@
 package com.android.stickerpocket.presentation.sticker
 
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -19,8 +19,9 @@ import com.android.stickerpocket.presentation.StickerDetailsNavDirections
 import com.android.stickerpocket.presentation.StickerDialog
 import com.android.stickerpocket.utils.GiphyConfigure
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
@@ -44,10 +45,19 @@ class StickerActivity : AppCompatActivity(), StickerDialog.StickerDialogListener
         setContentView(binding.root)
         initObserver()
         initNavigation()
+
+        CoroutineScope(Dispatchers.IO).launch {
+            delay(5000)
+            if (interactor.fetchEmojiCount() == 0){
+                interactor.saveEmojiToLocalDB(R.raw.emojis)
+            }
+            Log.d("Emoji list size:", interactor.fetchEmojiCount().toString())
+        }
     }
 
     private fun initNavigation() {
-        val navHostFragment = supportFragmentManager.findFragmentById(R.id.fragment_container) as NavHostFragment
+        val navHostFragment =
+            supportFragmentManager.findFragmentById(R.id.fragment_container) as NavHostFragment
         navController = navHostFragment.navController
 
         val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottom_navigation)

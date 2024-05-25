@@ -1,6 +1,5 @@
 package com.android.stickerpocket.domain.dao
 
-import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
@@ -14,4 +13,7 @@ interface EmojiDAO {
 
     @Query("SELECT name FROM emoji WHERE unicode = :unicode")
     fun getEmojiName(unicode: String): String?
+
+    @Query("SELECT COUNT(*) FROM emoji")
+    fun fetchEmojiCount(): Int
 }

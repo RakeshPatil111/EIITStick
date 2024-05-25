@@ -1,5 +1,6 @@
 package com.android.stickerpocket.presentation.sticker
 
+import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -9,17 +10,22 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.content.FileProvider
 import androidx.core.widget.doAfterTextChanged
 import androidx.emoji2.emojipicker.EmojiViewItem
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.android.stickerpocket.BuildConfig
 import com.android.stickerpocket.EmojiPickerDialog
 import com.android.stickerpocket.databinding.FragmentStickerBinding
+import com.android.stickerpocket.presentation.Sticker
 import com.android.stickerpocket.presentation.StickerCategoryDialog
+import com.android.stickerpocket.presentation.StickerDetailsNavDirections
 import com.android.stickerpocket.presentation.StickerDialog
 import com.android.stickerpocket.presentation.emoji
 import com.android.stickerpocket.utils.GiphyConfigure
@@ -39,9 +45,10 @@ import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import kotlin.random.Random
 
-class StickerFragment : Fragment(),
-    StickerCategoryDialog.StickerCategoryDialogListener, EmojiPickerDialog.EmojiPickerDialogListener,
+class StickerFragment : Fragment(), EmojiPickerDialog.EmojiPickerDialogListener,
+    StickerCategoryDialog.StickerCategoryDialogListener,
     GPHGridCallback, GPHSearchGridCallback, ItemTouchHelperAdapter, TextWatcher {
 
     private lateinit var binding: FragmentStickerBinding
@@ -89,6 +96,7 @@ class StickerFragment : Fragment(),
                         rvStickers.visibility = View.GONE
                     }
                 }
+
                 is StickerFragmentInteractor.Actions.ShowGiphyViewForRecentSearch -> {
                     binding.apply {
                         rvRecentSearch.visibility = View.GONE
@@ -97,16 +105,19 @@ class StickerFragment : Fragment(),
                         tietSearch.setText(action.query)
                         tietSearch.setSelection(tietSearch.length())
                         if (rvStickers.content?.searchQuery != action.query) {
-                            rvStickers.content = GPHContent.searchQuery(action.query, mediaType = MediaType.gif)
+                            rvStickers.content =
+                                GPHContent.searchQuery(action.query, mediaType = MediaType.gif)
                         }
                         addChangeListeners(tietSearch)
                     }
                 }
+
                 is StickerFragmentInteractor.Actions.ShowRecentSearches -> {
                     recentSearchAdapter.updateList(action.recentSearches)
                     binding.rvRecentSearch.visibility = View.VISIBLE
                     binding.rvStickers.visibility = View.GONE
                 }
+
                 is StickerFragmentInteractor.Actions.LoadEmojisForCategory -> {
                     removeChangeListeners(binding.tietSearch)
                     binding.rvRecentSearch.visibility = View.GONE
@@ -116,14 +127,52 @@ class StickerFragment : Fragment(),
                     binding.tietSearch.text?.clear()
                     addChangeListeners(binding.tietSearch)
                 }
+
                 is StickerFragmentInteractor.Actions.ShowCategoryOptionDialog -> {
-                    if (!callback.isDragEnabled){
+                    if (!callback.isDragEnabled) {
                         val stickerCategoryDialog = StickerCategoryDialog()
                         stickerCategoryDialog.setupDialogInformation(
                             listener = this
                         )
                         stickerCategoryDialog.show(childFragmentManager, "StickerCategoryDialog")
                     }
+                }
+
+                is StickerFragmentInteractor.Actions.ShowStickerDialog -> {
+                    val stickerDialog = StickerDialog()
+                    stickerDialog.setSticker(action.sticker)
+                    stickerDialog.setListener(object : StickerDialog.StickerDialogListener {
+                        override fun onStickerInfoClick(sticker: Sticker) {
+                            interactor.onStickerInfoClick(sticker)
+                        }
+
+                        override fun onShareSticker(sticker: Sticker) {
+                            interactor.onStickerShare(sticker)
+                        }
+
+                        override fun onCancelClick() {
+                            stickerDialog.dismiss()
+                        }
+
+                    })
+                    stickerDialog.show(childFragmentManager, "StickerDialog")
+                }
+
+                is StickerFragmentInteractor.Actions.ShareSticker -> {
+                    val gifUri = FileProvider.getUriForFile(
+                        requireContext(),
+                        BuildConfig.APPLICATION_ID + ".provider",
+                        action.gifFile
+                    );
+                    val shareIntent = Intent(Intent.ACTION_SEND)
+                    shareIntent.setType("image/gif")
+                    shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                    shareIntent.putExtra(Intent.EXTRA_STREAM, gifUri)
+                    startActivity(Intent.createChooser(shareIntent, "Share GIF using"))
+                }
+                is StickerFragmentInteractor.Actions.NavigateToStickerInfo -> {
+                    val direction = StickerDetailsNavDirections(action.sticker)
+                    findNavController().navigate(direction)
                 }
                 else -> {}
             }
@@ -133,7 +182,8 @@ class StickerFragment : Fragment(),
     private fun setupRecentSearchRecyclerView() {
         recentSearchAdapter = RecentSearchAdapter()
         binding.rvRecentSearch.adapter = recentSearchAdapter
-        recentSearchAdapter.setOnRecentSearchClickListener(object : RecentSearchAdapter.OnRecentSearchClickListener {
+        recentSearchAdapter.setOnRecentSearchClickListener(object :
+            RecentSearchAdapter.OnRecentSearchClickListener {
             override fun onRecentSearchClick(position: Int) {
                 interactor.onRecentSearchItemClick(position)
             }
@@ -254,14 +304,19 @@ class StickerFragment : Fragment(),
     override fun cancel() {
         Unit
     }
+
     override fun contentDidUpdate(resultCount: Int) {
         Timber.d("contentDidUpdate $resultCount")
     }
 
     override fun didSelectMedia(media: Media) {
         media.images.original?.gifUrl?.let {
-            StickerDialog.show(childFragmentManager, it)
+            interactor.onMediaClick(media)
         }
+
+//        media.images.original?.gifUrl?.let {
+//            StickerDialog.show(childFragmentManager, it)
+//        }
     }
 
     override fun didLongPressCell(cell: GifView) {
@@ -304,7 +359,9 @@ class StickerFragment : Fragment(),
             searchJob = MainScope().launch {
                 delay(2500)
                 s?.let {
-                    if (it.toString().trim().isNotEmpty() && binding.rvStickers.content?.searchQuery != it.toString()) {
+                    if (it.toString().trim()
+                            .isNotEmpty() && binding.rvStickers.content?.searchQuery != it.toString()
+                    ) {
                         interactor.onQuerySearch(it.toString())
                     }
                 }

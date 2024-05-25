@@ -36,7 +36,7 @@ class StickerActivityInteractor {
         viewModel.loadAndSaveEmoji(resourceId)
     }
 
-    suspend fun getLocalEmoji(): MutableList<Emoji>{
-        return viewModel.getLocalEmoji()
+    suspend fun fetchEmojiCount(): Int{
+        return viewModel.fetchEmojiCount()
     }
 }

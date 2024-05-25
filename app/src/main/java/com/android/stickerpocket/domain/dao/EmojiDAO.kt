@@ -14,6 +14,6 @@ interface EmojiDAO {
     @Query("SELECT name FROM emoji WHERE unicode = :unicode")
     fun getEmojiName(unicode: String): String?
 
-    @Query("SELECT * FROM emoji")
-    fun getAllEmojiName(): MutableList<Emoji>
+    @Query("SELECT COUNT(*) FROM emoji")
+    fun fetchEmojiCount(): Int
 }

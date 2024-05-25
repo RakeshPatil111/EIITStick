@@ -8,7 +8,6 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
 import androidx.lifecycle.Observer
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.NavigationUI
@@ -45,10 +44,10 @@ class StickerActivity : AppCompatActivity(), StickerDialog.StickerDialogListener
 
         CoroutineScope(Dispatchers.IO).launch {
             delay(5000)
-            if (interactor.getLocalEmoji().size == 0){
+            if (interactor.fetchEmojiCount() == 0){
                 interactor.saveEmojiToLocalDB(R.raw.emojis)
             }
-            Log.d("Emoji list size:", interactor.getLocalEmoji().size.toString())
+            Log.d("Emoji list size:", interactor.fetchEmojiCount().toString())
         }
     }
 

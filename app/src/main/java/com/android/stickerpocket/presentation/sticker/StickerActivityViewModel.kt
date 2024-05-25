@@ -4,8 +4,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.android.stickerpocket.StickerApplication
 import com.android.stickerpocket.domain.model.Emoji
-import com.android.stickerpocket.domain.usecase.GetLocalEmojiUseCase
-import com.android.stickerpocket.domain.usecase.SaveEmojiOnLocalUseCase
+import com.android.stickerpocket.domain.usecase.FetchEmojiCountUseCase
+import com.android.stickerpocket.domain.usecase.SaveEmojiUseCase
 import com.android.stickerpocket.network.response.Emojis
 import com.android.stickerpocket.presentation.Sticker
 import com.android.stickerpocket.utils.toEmoji
@@ -23,11 +23,11 @@ class StickerActivityViewModel: ViewModel() {
     private val _liveData = MutableLiveData<Result>()
     val liveData: MutableLiveData<Result> = _liveData
 
-    private var saveEmojiOnLocalUseCase =
-        SaveEmojiOnLocalUseCase(StickerApplication.instance.emojisRepository)
+    private var saveEmojiUseCase =
+        SaveEmojiUseCase(StickerApplication.instance.emojisRepository)
 
-    private var getLocalEmojiUseCase =
-        GetLocalEmojiUseCase(StickerApplication.instance.emojisRepository)
+    private var fetchEmojiCountUseCase =
+        FetchEmojiCountUseCase(StickerApplication.instance.emojisRepository)
 
     sealed class Result {
         data class StickerDownloaded(val gifFile: File) : Result()
@@ -72,7 +72,7 @@ class StickerActivityViewModel: ViewModel() {
                 for (emoji in emojis.emojis){
                     emojiList.add(emoji.toEmoji())
                 }
-                saveEmojiOnLocalUseCase.execute(emojiList)
+                saveEmojiUseCase.execute(emojiList)
             } catch (e: Exception) {
                 e.printStackTrace()
                 null
@@ -97,7 +97,7 @@ class StickerActivityViewModel: ViewModel() {
         }
     }
 
-    suspend fun getLocalEmoji(): MutableList<Emoji>{
-        return getLocalEmojiUseCase.execute()
+    suspend fun fetchEmojiCount(): Int{
+        return fetchEmojiCountUseCase.execute()
     }
 }

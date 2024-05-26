@@ -1,26 +1,14 @@
 package com.android.stickerpocket.utils
 
 import android.content.Context
-import android.net.Uri
 import com.android.stickerpocket.BuildConfig
-import com.facebook.cache.common.CacheKey
-import com.facebook.cache.disk.DiskCacheConfig
-import com.facebook.common.util.ByteConstants
-import com.facebook.drawee.backends.pipeline.Fresco
-import com.facebook.imagepipeline.cache.CacheKeyFactory
-import com.facebook.imagepipeline.cache.DefaultCacheKeyFactory
-import com.facebook.imagepipeline.cache.DefaultEncodedMemoryCacheParamsSupplier
-import com.facebook.imagepipeline.core.ImagePipelineConfig
-import com.facebook.imagepipeline.request.ImageRequest
 import com.giphy.sdk.core.models.enums.RenditionType
 import com.giphy.sdk.ui.GPHContentType
 import com.giphy.sdk.ui.GPHSettings
 import com.giphy.sdk.ui.Giphy
-import com.giphy.sdk.ui.GiphyFrescoHandler
 import com.giphy.sdk.ui.drawables.ImageFormat
 import com.giphy.sdk.ui.themes.GPHTheme
 import com.giphy.sdk.ui.views.GiphyGridView
-import okhttp3.OkHttpClient
 
 object GiphyConfigure {
     const val SPAN_COUNT = 3

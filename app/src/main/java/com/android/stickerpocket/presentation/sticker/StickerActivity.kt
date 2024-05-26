@@ -1,17 +1,13 @@
 package com.android.stickerpocket.presentation.sticker
 
-import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.FileProvider
 import androidx.lifecycle.Observer
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.NavigationUI
-import com.android.stickerpocket.BuildConfig
 import com.android.stickerpocket.R
 import com.android.stickerpocket.databinding.ActivityMainBinding
 import com.android.stickerpocket.presentation.Sticker
@@ -23,10 +19,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import java.io.File
-import java.io.FileOutputStream
-import java.net.URL
 
 
 class StickerActivity : AppCompatActivity(), StickerDialog.StickerDialogListener {

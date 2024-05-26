@@ -2,7 +2,6 @@ package com.android.stickerpocket.presentation.sticker
 
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.MutableLiveData
-import com.android.stickerpocket.domain.model.Emoji
 import com.android.stickerpocket.presentation.Sticker
 import java.io.File
 

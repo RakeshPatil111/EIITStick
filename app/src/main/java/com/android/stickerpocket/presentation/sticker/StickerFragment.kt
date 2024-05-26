@@ -45,7 +45,6 @@ import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import kotlin.random.Random
 
 class StickerFragment : Fragment(), EmojiPickerDialog.EmojiPickerDialogListener,
     StickerCategoryDialog.StickerCategoryDialogListener,

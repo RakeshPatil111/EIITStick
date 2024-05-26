@@ -3,18 +3,13 @@ package com.android.stickerpocket.presentation.sticker
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelStoreOwner
-import com.android.stickerpocket.StickerApplication
 import com.android.stickerpocket.domain.model.RecentSearch
 import com.android.stickerpocket.presentation.Sticker
 import com.android.stickerpocket.utils.Event
 import com.android.stickerpocket.utils.StickerExt.toFile
 import com.android.stickerpocket.utils.StickerExt.toSticker
-import com.android.stickerpocket.utils.StickerViewModelFactory
 import com.giphy.sdk.core.models.Media
 import java.io.File
-import kotlin.random.Random
 
 class StickerFragmentInteractor {
 

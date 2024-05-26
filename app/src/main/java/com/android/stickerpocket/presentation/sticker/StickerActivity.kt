@@ -10,9 +10,6 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.NavigationUI
 import com.android.stickerpocket.R
 import com.android.stickerpocket.databinding.ActivityMainBinding
-import com.android.stickerpocket.presentation.Sticker
-import com.android.stickerpocket.presentation.StickerDetailsNavDirections
-import com.android.stickerpocket.presentation.StickerDialog
 import com.android.stickerpocket.utils.GiphyConfigure
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.coroutines.CoroutineScope
@@ -21,7 +18,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 
-class StickerActivity : AppCompatActivity(), StickerDialog.StickerDialogListener {
+class StickerActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var navController: NavController
@@ -70,17 +67,4 @@ class StickerActivity : AppCompatActivity(), StickerDialog.StickerDialogListener
             }
         })
     }
-
-    override fun onStickerInfoClick(sticker: Sticker) {
-        val action = StickerDetailsNavDirections(sticker)
-        navController.navigate(action)
-    }
-
-    override fun onShareSticker(sticker: Sticker) {
-        interactor.onShareSticker(sticker)
-    }
-
-    override fun onCancelClick() {
-    }
-
 }

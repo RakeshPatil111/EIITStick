@@ -3,9 +3,11 @@ package com.android.stickerpocket.presentation.sticker
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
+import com.android.stickerpocket.domain.model.Favourites
 import com.android.stickerpocket.domain.model.RecentSearch
 import com.android.stickerpocket.presentation.Sticker
 import com.android.stickerpocket.utils.Event
+import com.android.stickerpocket.utils.StickerExt.toFavorite
 import com.android.stickerpocket.utils.StickerExt.toFile
 import com.android.stickerpocket.utils.StickerExt.toSticker
 import com.giphy.sdk.core.models.Media
@@ -25,6 +27,7 @@ class StickerFragmentInteractor {
         data class ShowStickerDialog(val sticker: Sticker) : Actions()
         data class ShareSticker(val gifFile: File) : Actions()
         data class NavigateToStickerInfo(val sticker: Sticker) : Actions()
+        data class ShowFavoritesSticker(val favoriteStickers: List<Favourites>): Actions()
     }
     private val _liveData = MutableLiveData<Event<Actions>>()
     val liveData = _liveData
@@ -85,5 +88,13 @@ class StickerFragmentInteractor {
 
     fun onStickerShare(sticker: Sticker) {
         _liveData.value = Event(Actions.ShareSticker(sticker.toFile()))
+    }
+
+    fun onAddStickerToFavoritesClick(sticker: Sticker) {
+        viewModel.addToFavorites(sticker.toFavorite())
+    }
+
+    fun onShowFavoriteStickers() {
+
     }
 }

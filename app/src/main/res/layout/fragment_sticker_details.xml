@@ -77,15 +77,18 @@
                     android:layout_width="48dp"
                     android:layout_height="48dp"
                     android:scaleType="centerCrop"
-                    android:src="@drawable/ic_add_circle"
+                    app:tint="@color/color_primary"
+                    android:src="@drawable/ic_share"
+                    android:layout_marginEnd="@dimen/dimen_24dp"
                     android:backgroundTint="@android:color/transparent"/>
 
                 <ImageButton
                     android:id="@+id/ibtn_save"
                     android:layout_width="48dp"
                     android:layout_height="48dp"
+                    app:tint="@color/color_primary"
                     android:scaleType="centerCrop"
-                    android:src="@drawable/ic_add_circle"
+                    android:src="@drawable/ic_favorite_border"
                     android:backgroundTint="@android:color/transparent"/>
             </LinearLayout>
 
@@ -102,8 +105,7 @@
                     android:layout_height="wrap_content"
                     android:padding="@dimen/dimen_4dp"
                     android:text="@string/id"
-                    android:layout_alignParentStart="true"
-                    android:textColor="@android:color/black" />
+                    android:layout_alignParentStart="true" />
 
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/tv_id"
@@ -112,8 +114,7 @@
                     android:layout_height="wrap_content"
                     android:padding="@dimen/dimen_4dp"
                     android:text="1712065096"
-                    android:layout_alignParentEnd="true"
-                    android:textColor="@android:color/black" />
+                    android:layout_alignParentEnd="true"/>
 
             </RelativeLayout>
 
@@ -130,8 +131,7 @@
                     android:layout_height="wrap_content"
                     android:padding="@dimen/dimen_4dp"
                     android:text="@string/source"
-                    android:layout_alignParentStart="true"
-                    android:textColor="@android:color/black" />
+                    android:layout_alignParentStart="true"/>
 
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/tv_source"
@@ -144,8 +144,7 @@
                     android:layout_toEndOf="@+id/tv_source_title"
                     android:padding="@dimen/dimen_4dp"
                     android:textSize="@dimen/text_dimen_14sp"
-                    android:text="Unknown"
-                    android:textColor="@android:color/black" />
+                    android:text="Unknown"/>
 
             </RelativeLayout>
 
@@ -162,8 +161,7 @@
                     android:layout_height="wrap_content"
                     android:padding="@dimen/dimen_4dp"
                     android:text="@string/creator"
-                    android:layout_alignParentStart="true"
-                    android:textColor="@android:color/black" />
+                    android:layout_alignParentStart="true" />
 
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/tv_creator"
@@ -176,8 +174,7 @@
                     android:layout_toEndOf="@+id/tv_creator_title"
                     android:padding="@dimen/dimen_4dp"
                     android:textSize="@dimen/text_dimen_14sp"
-                    android:text="Unknown"
-                    android:textColor="@android:color/black" />
+                    android:text="Unknown"/>
 
             </RelativeLayout>
 
@@ -194,8 +191,7 @@
                     android:layout_height="wrap_content"
                     android:padding="@dimen/dimen_4dp"
                     android:text="@string/tags"
-                    android:layout_alignParentStart="true"
-                    android:textColor="@android:color/black" />
+                    android:layout_alignParentStart="true" />
 
                 <com.google.android.material.button.MaterialButton
                     android:layout_width="wrap_content"
@@ -212,8 +208,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="26dp"
-                android:text="Baby, Annoyed"
-                android:textColor="@android:color/black" />
+                android:text="Baby, Annoyed" />
         </LinearLayout>
     </ScrollView>
 

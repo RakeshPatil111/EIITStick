@@ -19,8 +19,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:shapeAppearance="@style/ShapeAppearance.ImageView"
-        app:strokeColor="@color/color_primary_variant"
-        app:strokeWidth="@dimen/dimen_2dp"
         tools:src="@tools:sample/avatars" />
 
     <com.airbnb.lottie.LottieAnimationView

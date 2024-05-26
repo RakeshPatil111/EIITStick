@@ -7,7 +7,7 @@ import androidx.room.PrimaryKey
 class Favourites(
     @PrimaryKey(autoGenerate = true)
     val id: Int? = null,
-    val mediaId: String,
-    val url: String,
+    val mediaId: String?,
+    val url: String?,
     val position: Int = 0
 )

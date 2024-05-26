@@ -6,6 +6,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.android.stickerpocket.domain.dao.EmojiDAO
 import com.android.stickerpocket.domain.dao.RecentSearchDAO
+import com.android.stickerpocket.domain.dao.StickerDAO
 import com.android.stickerpocket.domain.model.Category
 import com.android.stickerpocket.domain.model.Emoji
 import com.android.stickerpocket.domain.model.Favourites
@@ -19,6 +20,7 @@ public abstract class StickerDB : RoomDatabase() {
 
     abstract fun recentSearchDAO(): RecentSearchDAO
     abstract fun emojiDAO(): EmojiDAO
+    abstract fun stickerDAO(): StickerDAO
 
     companion object {
         // Singleton prevents multiple instances of database opening at the

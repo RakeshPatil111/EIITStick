@@ -149,6 +149,10 @@ class StickerFragment : Fragment(), EmojiPickerDialog.EmojiPickerDialogListener,
                             interactor.onStickerShare(sticker)
                         }
 
+                        override fun onAddStickerToFavoritesClick(sticker: Sticker) {
+                            interactor.onAddStickerToFavoritesClick(sticker)
+                        }
+
                         override fun onCancelClick() {
                             stickerDialog.dismiss()
                         }

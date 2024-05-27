@@ -2,6 +2,7 @@ package com.android.stickerpocket.domain.model
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import java.util.Date
 
 @Entity
 class Favourites(
@@ -9,5 +10,7 @@ class Favourites(
     val id: Int? = null,
     val mediaId: String?,
     val url: String?,
-    val position: Int = 0
+    val position: Int = 0,
+    val name: String,
+    val date: Long = Date().time
 )

@@ -40,7 +40,7 @@ class StickerSectionListAdapter :
                 tvTitle.text = stickerSection.title
                 val gifListAdapter = GifListAdapter()
                 rvGifs.adapter = gifListAdapter
-                gifListAdapter.updateList(gifs, context, "HORIZONTAL")
+                //gifListAdapter.updateList(gifs, context, "HORIZONTAL")
             }
         }
     }

@@ -2,6 +2,7 @@ package com.android.stickerpocket.presentation.sticker
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.android.stickerpocket.StickerApplication
 import com.android.stickerpocket.domain.model.Favourites
 import com.android.stickerpocket.domain.model.RecentSearch
@@ -13,6 +14,7 @@ import com.android.stickerpocket.domain.usecase.GetRecentSearchUseCase
 import com.android.stickerpocket.presentation.Sticker
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
@@ -36,6 +38,7 @@ class StickerViewModel : ViewModel() {
     private var fetchAllFavoritesUseCase: FetchAllFavoritesUseCase
 
     private var recentSearches: MutableList<RecentSearch> = mutableListOf()
+    private var favourites: MutableList<Favourites> = mutableListOf()
 
     init {
         deleteRecentSearchUseCase =
@@ -49,6 +52,7 @@ class StickerViewModel : ViewModel() {
         fetchAllFavoritesUseCase =
             FetchAllFavoritesUseCase(StickerApplication.instance.stickerRepository)
         fetchRecentSearches()
+        fetchAllFavorites()
     }
 
     private fun fetchRecentSearches() {
@@ -126,9 +130,19 @@ class StickerViewModel : ViewModel() {
         }
     }
 
-    /*fun fetchAllFavorites(): List<Favourites>{
-        return withContext(Dispatchers.IO){
+    fun fetchAllFavorites() {
+        viewModelScope.launch {
             fetchAllFavoritesUseCase.execute()
+                .collectLatest {
+                    when (it) {
+                        is FetchAllFavoritesUseCase.Result.Success -> {
+                            favourites = it.data.toMutableList()
+                        }
+                        else -> {}
+                    }
+                }
         }
-    }*/
+    }
+
+    fun getFavourites() = favourites
 }

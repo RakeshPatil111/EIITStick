@@ -14,36 +14,23 @@ import coil.ImageLoader
 import coil.decode.GifDecoder
 import coil.decode.ImageDecoderDecoder
 import coil.load
+import com.android.stickerpocket.StickerApplication
 import com.android.stickerpocket.databinding.CvGifItemBinding
+import com.android.stickerpocket.domain.model.Favourites
+import java.io.File
 import java.util.*
 
 class GifListAdapter : RecyclerView.Adapter<GifListAdapter.GifListViewHolder>() {
 
     private val differ = AsyncListDiffer(this, diffUtilGifs)
     private lateinit var context: Context
-    private var gifClickAction: ((gifs: Gifs, position: Int) -> Unit)? = null
+    private var gifClickAction: ((fav: Favourites, position: Int) -> Unit)? = null
     private lateinit var imageLoader: ImageLoader
     private lateinit var scrollType: String
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
-        GifListViewHolder(
-            CvGifItemBinding.inflate(
-                LayoutInflater.from(parent.context),
-                parent,
-                false
-            )
-        )
-
-    override fun getItemCount() = differ.currentList.size
-
-    override fun onBindViewHolder(holder: GifListViewHolder, position: Int) = holder.bind(differ.currentList[position])
-
-    fun updateList(gifs: ArrayList<Gifs>, context: Context, scrollType: String) {
-        this.context = context
-        this.scrollType = scrollType
-        differ.submitList(gifs)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GifListViewHolder {
         imageLoader = ImageLoader
-        .Builder(context)
+            .Builder(parent.context)
             .components {
                 if (SDK_INT >= 28) {
                     add(ImageDecoderDecoder.Factory())
@@ -52,55 +39,63 @@ class GifListAdapter : RecyclerView.Adapter<GifListAdapter.GifListViewHolder>() 
                 }
             }
             .build()
+        return GifListViewHolder(
+            CvGifItemBinding.inflate(
+                LayoutInflater.from(parent.context),
+                parent,
+                false
+            )
+        )
     }
 
+    override fun getItemCount() = differ.currentList.size
+
+    override fun onBindViewHolder(holder: GifListViewHolder, position: Int) = holder.bind(differ.currentList[position])
+
+    fun updateList(list: List<Favourites>) {
+        differ.submitList(list)
+        notifyDataSetChanged()
+    }
     inner class GifListViewHolder(private val binding: CvGifItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        fun bind(gifs: Gifs) {
+        fun bind(fav: Favourites) {
             binding.apply {
-
-                if (scrollType == "HORIZONTAL"){
-                    val layoutParams = ConstraintLayout.LayoutParams(170,170)
-                    layoutParams.marginStart = 8
-                    layoutParams.marginEnd = 4
-                    layoutParams.topMargin = 4
-                    layoutParams.bottomMargin = 8
-                    root.layoutParams = layoutParams
-                }
-
-                sivGifImage.load(gifs.thumbnail, imageLoader){
+                val cachedFile = File(StickerApplication.instance.cacheDir, fav.name + ".gif")
+                val url = if (cachedFile.length() > 0) cachedFile else fav.url
+                sivGifImage.load(url, imageLoader){
                     target(
                         onStart = {
                             loader.visibility = VISIBLE
                         },
                         onSuccess = {
                             loader.visibility = GONE
-                            sivGifImage.load(gifs.thumbnail, imageLoader)
+                            sivGifImage.load(url, imageLoader)
                         }
                     )
                 }
                 gifClickAction?.let { gif ->
                     sivGifImage.setOnClickListener {
-                        gif(gifs, adapterPosition)
+                        gif(fav, adapterPosition)
                     }
                 }
             }
         }
     }
 
-    fun gifActionClick(action: (gif: Gifs, position: Int) -> Unit){
+    fun gifActionClick(action: (gif: Favourites, position: Int) -> Unit){
         this.gifClickAction = action
     }
 
     companion object{
-        val diffUtilGifs = object: DiffUtil.ItemCallback<Gifs>(){
-            override fun areItemsTheSame(oldItem: Gifs, newItem: Gifs): Boolean {
+        val diffUtilGifs = object: DiffUtil.ItemCallback<Favourites>(){
+            override fun areItemsTheSame(oldItem: Favourites, newItem: Favourites): Boolean {
                 return oldItem == newItem
             }
 
-            override fun areContentsTheSame(oldItem: Gifs, newItem: Gifs): Boolean {
+            override fun areContentsTheSame(oldItem: Favourites, newItem: Favourites): Boolean {
                 return oldItem == newItem
             }
+
         }
     }
 }

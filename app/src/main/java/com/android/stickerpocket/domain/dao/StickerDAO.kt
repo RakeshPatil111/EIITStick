@@ -5,6 +5,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.android.stickerpocket.domain.model.Favourites
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface StickerDAO {
@@ -12,6 +13,6 @@ interface StickerDAO {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun addToFavorites(favourites: Favourites)
 
-    @Query("SELECT * FROM Favourites")
-    fun fetchAllFavorites(): List<Favourites>
+    @Query("SELECT * FROM Favourites ORDER BY date DESC")
+    fun fetchAllFavorites(): Flow<List<Favourites>>
 }

@@ -26,7 +26,8 @@ object StickerExt {
             id = Random.nextInt(),
             mediaId = this.mediaId,
             url = this.thumbnail,
-            position = 0
+            position = 0,
+            name = this.title!!
         )
     }
 }

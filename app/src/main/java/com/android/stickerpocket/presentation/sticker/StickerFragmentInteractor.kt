@@ -91,10 +91,10 @@ class StickerFragmentInteractor {
     }
 
     fun onAddStickerToFavoritesClick(sticker: Sticker) {
+        viewModel.downloadSticker(sticker)
         viewModel.addToFavorites(sticker.toFavorite())
     }
-
-    fun onShowFavoriteStickers() {
-
+    fun onFavClick() {
+        _liveData.value = Event(Actions.ShowFavoritesSticker(viewModel.getFavourites()))
     }
 }

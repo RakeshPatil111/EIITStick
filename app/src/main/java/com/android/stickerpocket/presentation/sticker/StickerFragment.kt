@@ -23,6 +23,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.android.stickerpocket.BuildConfig
 import com.android.stickerpocket.EmojiPickerDialog
 import com.android.stickerpocket.databinding.FragmentStickerBinding
+import com.android.stickerpocket.presentation.GifListAdapter
 import com.android.stickerpocket.presentation.Sticker
 import com.android.stickerpocket.presentation.StickerCategoryDialog
 import com.android.stickerpocket.presentation.StickerDetailsNavDirections
@@ -55,6 +56,7 @@ class StickerFragment : Fragment(), EmojiPickerDialog.EmojiPickerDialogListener,
     private lateinit var itemTouchHelper: ItemTouchHelper
     private lateinit var callback: ItemTouchHelperCallback
     private lateinit var recentSearchAdapter: RecentSearchAdapter
+    private lateinit var gifAdapter: GifListAdapter
     var searchJob: Job? = null
 
     private val interactor by lazy {
@@ -87,12 +89,15 @@ class StickerFragment : Fragment(), EmojiPickerDialog.EmojiPickerDialogListener,
                 is StickerFragmentInteractor.Actions.InitCategoryView -> {
                     setupEmojiRecyclerView()
                     setupRecentSearchRecyclerView()
+                    gifAdapter = GifListAdapter()
+                    binding.rvFavourites.adapter = gifAdapter
                 }
 
                 is StickerFragmentInteractor.Actions.HideGiphyGridViewAndShowRecentSearches -> {
                     binding.apply {
                         rvRecentSearch.visibility = View.VISIBLE
                         rvStickers.visibility = View.GONE
+                        rvFavourites.visibility = View.GONE
                     }
                 }
 
@@ -100,6 +105,7 @@ class StickerFragment : Fragment(), EmojiPickerDialog.EmojiPickerDialogListener,
                     binding.apply {
                         rvRecentSearch.visibility = View.GONE
                         rvStickers.visibility = View.VISIBLE
+                        binding.rvFavourites.visibility = View.GONE
                         removeChangeListeners(tietSearch)
                         tietSearch.setText(action.query)
                         tietSearch.setSelection(tietSearch.length())
@@ -115,12 +121,14 @@ class StickerFragment : Fragment(), EmojiPickerDialog.EmojiPickerDialogListener,
                     recentSearchAdapter.updateList(action.recentSearches)
                     binding.rvRecentSearch.visibility = View.VISIBLE
                     binding.rvStickers.visibility = View.GONE
+                    binding.rvFavourites.visibility = View.GONE
                 }
 
                 is StickerFragmentInteractor.Actions.LoadEmojisForCategory -> {
                     removeChangeListeners(binding.tietSearch)
                     binding.rvRecentSearch.visibility = View.GONE
                     binding.rvStickers.visibility = View.VISIBLE
+                    binding.rvFavourites.visibility = View.GONE
                     binding.rvStickers.content = GPHContent.searchQuery(action.query)
                     binding.tietSearch.clearFocus()
                     binding.tietSearch.text?.clear()
@@ -177,6 +185,14 @@ class StickerFragment : Fragment(), EmojiPickerDialog.EmojiPickerDialogListener,
                     val direction = StickerDetailsNavDirections(action.sticker)
                     findNavController().navigate(direction)
                 }
+                is StickerFragmentInteractor.Actions.ShowFavoritesSticker -> {
+                    binding.apply {
+                        rvRecentSearch.visibility = View.GONE
+                        rvStickers.visibility = View.GONE
+                        rvFavourites.visibility = View.VISIBLE
+                        gifAdapter.updateList(action.favoriteStickers)
+                    }
+                }
                 else -> {}
             }
         })
@@ -211,17 +227,17 @@ class StickerFragment : Fragment(), EmojiPickerDialog.EmojiPickerDialogListener,
                 binding.rvStickers.content = GPHContent.recents
                 binding.rvRecentSearch.visibility = View.GONE
                 binding.rvStickers.visibility = View.VISIBLE
+                binding.rvFavourites.visibility = View.GONE
 
             }
             cvFavSticker.setOnClickListener {
-                binding.rvStickers.content = GPHContent.recents
-                binding.rvRecentSearch.visibility = View.GONE
-                binding.rvStickers.visibility = View.VISIBLE
+                interactor.onFavClick()
             }
             cvDownloadedSticker.setOnClickListener {
                 binding.rvStickers.content = GPHContent.recents
                 binding.rvRecentSearch.visibility = View.GONE
                 binding.rvStickers.visibility = View.VISIBLE
+                binding.rvFavourites.visibility = View.GONE
             }
             addChangeListeners(tietSearch)
         }
@@ -356,6 +372,7 @@ class StickerFragment : Fragment(), EmojiPickerDialog.EmojiPickerDialogListener,
         if (s.toString().isEmpty() && binding.tietSearch.hasFocus()) {
             binding.rvRecentSearch.visibility = View.VISIBLE
             binding.rvStickers.visibility = View.GONE
+            binding.rvFavourites.visibility = View.GONE
             interactor.onQueryBlank()
         } else {
             searchJob?.cancel()

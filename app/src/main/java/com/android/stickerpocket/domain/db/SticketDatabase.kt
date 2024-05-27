@@ -51,7 +51,8 @@ abstract class StickerDB : RoomDatabase() {
         }
         val MIGRATION_1_2 = object : Migration(1, 2) {
             override fun migrate(database: SupportSQLiteDatabase) {
-                database.execSQL("CREATE TABLE `Favourites` (`id` INTEGER, `mediaId` TEXT, `url` TEXT, `position` INTEGER " +
+                database.execSQL("CREATE TABLE `Favourites` (`id` INTEGER, `mediaId` TEXT, `url` TEXT, " +
+                        "`position` INTEGER, `name` TEXT, `date` Long " +
                         "PRIMARY KEY(`id`))")
             }
         }

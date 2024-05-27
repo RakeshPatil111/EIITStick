@@ -6,7 +6,9 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStoreOwner
 import com.android.stickerpocket.StickerApplication
+import com.android.stickerpocket.domain.model.Category
 import com.android.stickerpocket.domain.model.RecentSearch
+import com.android.stickerpocket.dtos.getCategories
 import com.android.stickerpocket.presentation.Sticker
 import com.android.stickerpocket.utils.Event
 import com.android.stickerpocket.utils.StickerExt.toFile
@@ -20,7 +22,7 @@ class StickerFragmentInteractor {
 
     sealed class Actions {
         object InitGiphyView: Actions()
-        object InitCategoryView: Actions()
+        data class InitCategoryView(val categories: List<Category>): Actions()
         object HideGiphyGridViewAndShowRecentSearches: Actions()
         object ShowGiphyGridView: Actions()
         data class ShowRecentSearches(val recentSearches: List<RecentSearch>): Actions()
@@ -42,8 +44,8 @@ class StickerFragmentInteractor {
     }
 
     fun onViewCreated() {
-        _liveData.value = Event(Actions.InitCategoryView)
-        _liveData.postValue(Event(Actions.InitGiphyView))
+        //_liveData.value = (Event(Actions.InitGiphyView))
+        _liveData.value = (Event(Actions.InitCategoryView(viewModel.getEmojiCategories().ifEmpty { getCategories() })))
     }
 
     fun onSearchClick() {
@@ -70,8 +72,8 @@ class StickerFragmentInteractor {
         _liveData.postValue(Event(Actions.ShowRecentSearches(viewModel.getRecentSearches())))
     }
 
-    fun onCategoryItemClick(sticker: Sticker) {
-        _liveData.value = Event(Actions.LoadEmojisForCategory(sticker.title!!))
+    fun onCategoryItemClick(category: Category) {
+        _liveData.value = Event(Actions.LoadEmojisForCategory(category.name))
     }
 
     fun onCategoryItemLongClick() {

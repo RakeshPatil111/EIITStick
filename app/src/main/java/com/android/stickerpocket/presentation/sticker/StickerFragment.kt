@@ -2,16 +2,12 @@ package com.android.stickerpocket.presentation.sticker
 
 import android.content.Intent
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.core.content.FileProvider
-import androidx.core.widget.doAfterTextChanged
 import androidx.emoji2.emojipicker.EmojiViewItem
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -23,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.android.stickerpocket.BuildConfig
 import com.android.stickerpocket.EmojiPickerDialog
 import com.android.stickerpocket.databinding.FragmentStickerBinding
+import com.android.stickerpocket.domain.model.Category
 import com.android.stickerpocket.presentation.Sticker
 import com.android.stickerpocket.presentation.StickerCategoryDialog
 import com.android.stickerpocket.presentation.StickerDetailsNavDirections
@@ -31,7 +28,6 @@ import com.android.stickerpocket.presentation.emoji
 import com.android.stickerpocket.utils.GiphyConfigure
 import com.android.stickerpocket.utils.ItemTouchHelperAdapter
 import com.android.stickerpocket.utils.ItemTouchHelperCallback
-import com.android.stickerpocket.utils.StickerViewModelFactory
 import com.android.stickerpocket.utils.ViewExt.shakeMe
 import com.giphy.sdk.core.models.Media
 import com.giphy.sdk.core.models.enums.MediaType
@@ -45,7 +41,6 @@ import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import kotlin.random.Random
 
 class StickerFragment : Fragment(), EmojiPickerDialog.EmojiPickerDialogListener,
     StickerCategoryDialog.StickerCategoryDialogListener,
@@ -69,6 +64,7 @@ class StickerFragment : Fragment(), EmojiPickerDialog.EmojiPickerDialogListener,
         binding = FragmentStickerBinding.inflate(inflater, container, false)
         observeInteractor()
         setClickListeners()
+        initGiphyView()
         return binding.root
     }
 
@@ -82,11 +78,11 @@ class StickerFragment : Fragment(), EmojiPickerDialog.EmojiPickerDialogListener,
         interactor.liveData.observe(viewLifecycleOwner, Observer {
             when (val action = it.getContentIfNotHandled()) {
                 is StickerFragmentInteractor.Actions.InitGiphyView -> {
-                    initGiphyView()
+                    //initGiphyView()
                 }
 
                 is StickerFragmentInteractor.Actions.InitCategoryView -> {
-                    setupEmojiRecyclerView()
+                    setupEmojiRecyclerView(action.categories)
                     setupRecentSearchRecyclerView()
                 }
 
@@ -241,7 +237,7 @@ class StickerFragment : Fragment(), EmojiPickerDialog.EmojiPickerDialogListener,
         tietSearch.setOnClickListener(null)
     }
 
-    private fun setupEmojiRecyclerView() {
+    private fun setupEmojiRecyclerView(categories: List<Category>) {
         emojiCategoryListAdapter = EmojiCategoryListAdapter()
         binding.rvCategory.adapter = emojiCategoryListAdapter
 
@@ -257,11 +253,9 @@ class StickerFragment : Fragment(), EmojiPickerDialog.EmojiPickerDialogListener,
             binding.tietSearch.text?.clear()
             interactor.onCategoryItemLongClick()
         }
-        emojiApiCallResponse()
-    }
-
-    private fun emojiApiCallResponse() {
-        emojiCategoryListAdapter.updateList(emoji)
+        emojiCategoryListAdapter.updateList(categories)
+        // Also load highlighted emojis by default
+        binding.rvStickers.content = GPHContent.searchQuery(categories.filter { it.isHighlighted }.first().name, mediaType = MediaType.gif)
     }
 
     override fun onResume() {

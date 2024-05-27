@@ -7,6 +7,8 @@ import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
+import androidx.emoji2.bundled.BundledEmojiCompatConfig
+import androidx.emoji2.text.EmojiCompat
 import androidx.lifecycle.Observer
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
@@ -41,18 +43,11 @@ class StickerActivity : AppCompatActivity(), StickerDialog.StickerDialogListener
         super.onCreate(savedInstanceState)
         //Configure Giphy SDK
         GiphyConfigure.configGiphy(this)
+        EmojiCompat.init(BundledEmojiCompatConfig(this))
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         initObserver()
         initNavigation()
-
-        CoroutineScope(Dispatchers.IO).launch {
-            delay(5000)
-            if (interactor.fetchEmojiCount() == 0){
-                interactor.saveEmojiToLocalDB(R.raw.emojis)
-            }
-            Log.d("Emoji list size:", interactor.fetchEmojiCount().toString())
-        }
     }
 
     private fun initNavigation() {

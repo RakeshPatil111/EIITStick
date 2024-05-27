@@ -5,6 +5,7 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
+import com.android.stickerpocket.domain.dao.CategoryDAO
 import com.android.stickerpocket.domain.dao.EmojiDAO
 import com.android.stickerpocket.domain.dao.RecentSearchDAO
 import com.android.stickerpocket.domain.model.Category
@@ -21,6 +22,7 @@ public abstract class StickerDB : RoomDatabase() {
 
     abstract fun recentSearchDAO(): RecentSearchDAO
     abstract fun emojiDAO(): EmojiDAO
+    abstract fun categoryDAO(): CategoryDAO
 
     companion object {
         // Singleton prevents multiple instances of database opening at the

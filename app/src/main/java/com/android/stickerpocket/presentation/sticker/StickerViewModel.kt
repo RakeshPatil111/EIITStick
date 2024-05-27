@@ -2,14 +2,20 @@ package com.android.stickerpocket.presentation.sticker
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.android.stickerpocket.StickerApplication
+import com.android.stickerpocket.domain.model.Category
 import com.android.stickerpocket.domain.model.RecentSearch
 import com.android.stickerpocket.domain.usecase.CreateOrUpdatedRecentSearchUseCase
 import com.android.stickerpocket.domain.usecase.DeleteRecentSearchUseCase
+import com.android.stickerpocket.domain.usecase.FetchCategoriesUseCase
 import com.android.stickerpocket.domain.usecase.GetRecentSearchUseCase
+import com.android.stickerpocket.dtos.getCategories
 import com.android.stickerpocket.presentation.Sticker
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import java.io.File
 import java.io.FileOutputStream
@@ -28,14 +34,36 @@ class StickerViewModel: ViewModel() {
     private var recentSearchUseCase: GetRecentSearchUseCase
     private var createOrUpdatedRecentSearchUseCase: CreateOrUpdatedRecentSearchUseCase
     private var deleteRecentSearchUseCase: DeleteRecentSearchUseCase
+    private var fetchCategory: FetchCategoriesUseCase
 
 
     private var recentSearchs: MutableList<RecentSearch> = mutableListOf()
+    private var categories = listOf<Category>()
     init {
         deleteRecentSearchUseCase = DeleteRecentSearchUseCase(StickerApplication.instance.recentSearchRepository)
         recentSearchUseCase = GetRecentSearchUseCase(StickerApplication.instance.recentSearchRepository)
         createOrUpdatedRecentSearchUseCase = CreateOrUpdatedRecentSearchUseCase(StickerApplication.instance.recentSearchRepository)
+        fetchCategory = FetchCategoriesUseCase(StickerApplication.instance.categoryRepository)
         fetchRecentSearches()
+        fetchCategories()
+    }
+
+    private fun fetchCategories() {
+        viewModelScope.launch {
+            fetchCategory.execute()
+                .collectLatest {
+                    when (it) {
+                        is FetchCategoriesUseCase.Result.Success -> {
+                            categories = it.categories.ifEmpty { getCategories() }
+                        }
+
+                        is FetchCategoriesUseCase.Result.Failure -> {
+                            categories = getCategories()
+                        }
+                    }
+                }
+
+        }
     }
 
     private fun fetchRecentSearches() {
@@ -103,4 +131,6 @@ class StickerViewModel: ViewModel() {
             }
         }
     }
+
+    fun getEmojiCategories() = categories
 }

@@ -3,9 +3,6 @@ package com.android.stickerpocket.presentation.sticker
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelStoreOwner
-import com.android.stickerpocket.StickerApplication
 import com.android.stickerpocket.domain.model.Category
 import com.android.stickerpocket.domain.model.RecentSearch
 import com.android.stickerpocket.dtos.getCategories
@@ -13,10 +10,8 @@ import com.android.stickerpocket.presentation.Sticker
 import com.android.stickerpocket.utils.Event
 import com.android.stickerpocket.utils.StickerExt.toFile
 import com.android.stickerpocket.utils.StickerExt.toSticker
-import com.android.stickerpocket.utils.StickerViewModelFactory
 import com.giphy.sdk.core.models.Media
 import java.io.File
-import kotlin.random.Random
 
 class StickerFragmentInteractor {
 
@@ -28,7 +23,7 @@ class StickerFragmentInteractor {
         data class ShowRecentSearches(val recentSearches: List<RecentSearch>): Actions()
         data class ShowGiphyViewForRecentSearch(val query: String) : Actions()
         data class LoadEmojisForCategory(val query: String) : Actions()
-        object ShowCategoryOptionDialog : Actions()
+        data class ShowCategoryOptionDialog(val category: Category) : Actions()
         data class ShowStickerDialog(val sticker: Sticker) : Actions()
         data class ShareSticker(val gifFile: File) : Actions()
         data class NavigateToStickerInfo(val sticker: Sticker) : Actions()
@@ -44,7 +39,6 @@ class StickerFragmentInteractor {
     }
 
     fun onViewCreated() {
-        //_liveData.value = (Event(Actions.InitGiphyView))
         _liveData.value = (Event(Actions.InitCategoryView(viewModel.getEmojiCategories().ifEmpty { getCategories() })))
     }
 
@@ -76,8 +70,8 @@ class StickerFragmentInteractor {
         _liveData.value = Event(Actions.LoadEmojisForCategory(category.name))
     }
 
-    fun onCategoryItemLongClick() {
-        _liveData.value = Event(Actions.ShowCategoryOptionDialog)
+    fun onCategoryItemLongClick(category: Category) {
+        _liveData.value = Event(Actions.ShowCategoryOptionDialog(category))
     }
 
     fun onMediaClick(media: Media) {

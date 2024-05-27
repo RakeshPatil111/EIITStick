@@ -1,19 +1,12 @@
 package com.android.stickerpocket.presentation.sticker
 
-import android.content.Intent
 import android.os.Bundle
-import android.util.Log
-import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.FileProvider
-import androidx.emoji2.bundled.BundledEmojiCompatConfig
-import androidx.emoji2.text.EmojiCompat
 import androidx.lifecycle.Observer
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.NavigationUI
-import com.android.stickerpocket.BuildConfig
 import com.android.stickerpocket.R
 import com.android.stickerpocket.databinding.ActivityMainBinding
 import com.android.stickerpocket.presentation.Sticker
@@ -43,7 +36,6 @@ class StickerActivity : AppCompatActivity(), StickerDialog.StickerDialogListener
         super.onCreate(savedInstanceState)
         //Configure Giphy SDK
         GiphyConfigure.configGiphy(this)
-        EmojiCompat.init(BundledEmojiCompatConfig(this))
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         initObserver()

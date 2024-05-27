@@ -42,26 +42,26 @@ class StickerCategoryDialog : BottomSheetDialogFragment() {
 
             tvNewCategory.setOnClickListener {
                 this@StickerCategoryDialog.dismiss()
-                listener?.addNewCategory()
+                listener?.onAddNewCategory()
             }
 
             tvDeleteCategory.setOnClickListener {
                 this@StickerCategoryDialog.dismiss()
-                listener?.deleteCategory()
+                listener?.onDelete()
             }
 
             tvReorganize.setOnClickListener {
                 this@StickerCategoryDialog.dismiss()
-                listener?.reorganizeCategory()
+                listener?.onReorganize()
             }
         }
     }
 
     interface StickerCategoryDialogListener {
-        fun addNewCategory()
-        fun reorganizeCategory()
-        fun deleteCategory()
-        fun cancel()
+        fun onAddNewCategory()
+        fun onReorganize()
+        fun onDelete()
+        fun onCancel()
     }
 
     override fun getTheme(): Int {

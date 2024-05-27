@@ -38,7 +38,7 @@ class StickerViewModel: ViewModel() {
 
 
     private var recentSearchs: MutableList<RecentSearch> = mutableListOf()
-    private var categories = listOf<Category>()
+    private var categories = mutableListOf<Category>()
     init {
         deleteRecentSearchUseCase = DeleteRecentSearchUseCase(StickerApplication.instance.recentSearchRepository)
         recentSearchUseCase = GetRecentSearchUseCase(StickerApplication.instance.recentSearchRepository)
@@ -54,11 +54,11 @@ class StickerViewModel: ViewModel() {
                 .collectLatest {
                     when (it) {
                         is FetchCategoriesUseCase.Result.Success -> {
-                            categories = it.categories.ifEmpty { getCategories() }
+                            categories = it.categories.toMutableList().ifEmpty { getCategories().toMutableList() }
                         }
 
                         is FetchCategoriesUseCase.Result.Failure -> {
-                            categories = getCategories()
+                            categories = getCategories().toMutableList()
                         }
                     }
                 }

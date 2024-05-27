@@ -1,16 +1,13 @@
 package com.android.stickerpocket.presentation.sticker
 
 import android.graphics.Color
-import android.text.Html
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.emoji2.text.EmojiCompat
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.android.stickerpocket.databinding.CvStickerItemBinding
 import com.android.stickerpocket.domain.model.Category
-import com.android.stickerpocket.utils.ViewExt.decodeHex
 
 class EmojiCategoryListAdapter :
     RecyclerView.Adapter<EmojiCategoryListAdapter.StepperViewHolder>(){

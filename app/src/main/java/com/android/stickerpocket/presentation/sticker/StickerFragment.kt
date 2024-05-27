@@ -24,7 +24,6 @@ import com.android.stickerpocket.presentation.Sticker
 import com.android.stickerpocket.presentation.StickerCategoryDialog
 import com.android.stickerpocket.presentation.StickerDetailsNavDirections
 import com.android.stickerpocket.presentation.StickerDialog
-import com.android.stickerpocket.presentation.emoji
 import com.android.stickerpocket.utils.GiphyConfigure
 import com.android.stickerpocket.utils.ItemTouchHelperAdapter
 import com.android.stickerpocket.utils.ItemTouchHelperCallback
@@ -42,10 +41,8 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
-class StickerFragment : Fragment(), EmojiPickerDialog.EmojiPickerDialogListener,
-    StickerCategoryDialog.StickerCategoryDialogListener,
-    GPHGridCallback, GPHSearchGridCallback, ItemTouchHelperAdapter, TextWatcher {
-
+class StickerFragment : Fragment(),GPHGridCallback, GPHSearchGridCallback,
+    ItemTouchHelperAdapter, TextWatcher {
     private lateinit var binding: FragmentStickerBinding
     private lateinit var emojiCategoryListAdapter: EmojiCategoryListAdapter
     private lateinit var itemTouchHelper: ItemTouchHelper
@@ -77,10 +74,6 @@ class StickerFragment : Fragment(), EmojiPickerDialog.EmojiPickerDialogListener,
     private fun observeInteractor() {
         interactor.liveData.observe(viewLifecycleOwner, Observer {
             when (val action = it.getContentIfNotHandled()) {
-                is StickerFragmentInteractor.Actions.InitGiphyView -> {
-                    //initGiphyView()
-                }
-
                 is StickerFragmentInteractor.Actions.InitCategoryView -> {
                     setupEmojiRecyclerView(action.categories)
                     setupRecentSearchRecyclerView()
@@ -128,7 +121,38 @@ class StickerFragment : Fragment(), EmojiPickerDialog.EmojiPickerDialogListener,
                     if (!callback.isDragEnabled) {
                         val stickerCategoryDialog = StickerCategoryDialog()
                         stickerCategoryDialog.setupDialogInformation(
-                            listener = this
+                            object : StickerCategoryDialog.StickerCategoryDialogListener {
+                                override fun onAddNewCategory() {
+                                    val emojiPickerDialog = EmojiPickerDialog()
+                                    emojiPickerDialog.setDialogListener(
+                                        object : EmojiPickerDialog.EmojiPickerDialogListener {
+                                            override fun addSelectedCategory(emojiItem: EmojiViewItem) {
+
+                                            }
+
+                                            override fun cancel() {
+                                                emojiPickerDialog.dismiss()
+                                            }
+
+                                        }
+                                    )
+                                    emojiPickerDialog.show(childFragmentManager, "EmojiPickerDialog")
+                                }
+
+                                override fun onReorganize() {
+                                    applyShakeAnimation(binding.rvCategory)
+                                    callback.isDragEnabled = true
+                                }
+
+                                override fun onDelete() {
+
+                                }
+
+                                override fun onCancel() {
+                                    stickerCategoryDialog.dismiss()
+                                }
+
+                            }
                         )
                         stickerCategoryDialog.show(childFragmentManager, "StickerCategoryDialog")
                     }
@@ -248,10 +272,10 @@ class StickerFragment : Fragment(), EmojiPickerDialog.EmojiPickerDialogListener,
         emojiCategoryListAdapter.stickerActionClick { sticker, _ ->
             interactor.onCategoryItemClick(sticker)
         }
-        emojiCategoryListAdapter.stickerActionLongClick { _, _ ->
+        emojiCategoryListAdapter.stickerActionLongClick { category, _ ->
             binding.tietSearch.isCursorVisible = false
             binding.tietSearch.text?.clear()
-            interactor.onCategoryItemLongClick()
+            interactor.onCategoryItemLongClick(category)
         }
         emojiCategoryListAdapter.updateList(categories)
         // Also load highlighted emojis by default
@@ -261,19 +285,6 @@ class StickerFragment : Fragment(), EmojiPickerDialog.EmojiPickerDialogListener,
     override fun onResume() {
         super.onResume()
         callback.isDragEnabled = false
-    }
-
-    override fun addNewCategory() {
-        val emojiPickerDialog = EmojiPickerDialog()
-        emojiPickerDialog.setDialogListener(
-            listener = this
-        )
-        emojiPickerDialog.show(childFragmentManager, "EmojiPickerDialog")
-    }
-
-    override fun reorganizeCategory() {
-        applyShakeAnimation(binding.rvCategory)
-        callback.isDragEnabled = true
     }
 
     private fun applyShakeAnimation(rvCategory: RecyclerView) {
@@ -287,18 +298,6 @@ class StickerFragment : Fragment(), EmojiPickerDialog.EmojiPickerDialogListener,
         }
     }
 
-    override fun deleteCategory() {
-
-    }
-
-    override fun addSelectedCategory(emojiItem: EmojiViewItem) {
-
-    }
-
-    override fun cancel() {
-        Unit
-    }
-
     override fun contentDidUpdate(resultCount: Int) {
         Timber.d("contentDidUpdate $resultCount")
     }
@@ -307,10 +306,6 @@ class StickerFragment : Fragment(), EmojiPickerDialog.EmojiPickerDialogListener,
         media.images.original?.gifUrl?.let {
             interactor.onMediaClick(media)
         }
-
-//        media.images.original?.gifUrl?.let {
-//            StickerDialog.show(childFragmentManager, it)
-//        }
     }
 
     override fun didLongPressCell(cell: GifView) {

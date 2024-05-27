@@ -127,8 +127,8 @@ class StickerViewModel : ViewModel() {
     }
 
     /*fun fetchAllFavorites(): List<Favourites>{
-        *//*return withContext(Dispatchers.IO){
+        return withContext(Dispatchers.IO){
             fetchAllFavoritesUseCase.execute()
-        }*//*
+        }
     }*/
 }

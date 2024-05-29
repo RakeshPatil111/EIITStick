@@ -5,11 +5,12 @@ import androidx.room.PrimaryKey
 
 @Entity
 data class Category(
-    @PrimaryKey(autoGenerate = true)
     val id: Int? = null,
     val name: String,
+    @PrimaryKey
     val unicode: String,
-    val position: Int,
-    val isHighlighted: Boolean = false,
-    val isDeleted: Boolean = false
+    var position: Int,
+    var isHighlighted: Boolean = false,
+    var isDeleted: Boolean = false,
+    var html: String = ""
 )

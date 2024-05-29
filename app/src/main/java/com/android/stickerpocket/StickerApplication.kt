@@ -2,6 +2,7 @@ package com.android.stickerpocket
 
 import android.app.Application
 import com.android.stickerpocket.domain.db.StickerDB
+import com.android.stickerpocket.domain.repository.CategoryRepository
 import com.android.stickerpocket.domain.repository.EmojiRepository
 import com.android.stickerpocket.domain.repository.RecentSearchRepository
 import kotlinx.coroutines.CoroutineScope
@@ -20,4 +21,5 @@ class StickerApplication: Application() {
     val database by lazy { StickerDB.getDatabase(this, applicationScope) }
     val recentSearchRepository by lazy { RecentSearchRepository(database.recentSearchDAO()) }
     val emojisRepository by lazy { EmojiRepository(database.emojiDAO()) }
+    val categoryRepository by lazy { CategoryRepository(database.categoryDAO()) }
 }

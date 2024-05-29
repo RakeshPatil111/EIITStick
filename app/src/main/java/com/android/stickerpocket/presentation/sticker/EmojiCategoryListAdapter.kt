@@ -1,6 +1,5 @@
 package com.android.stickerpocket.presentation.sticker
 
-import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.AsyncListDiffer
@@ -9,6 +8,8 @@ import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import com.android.stickerpocket.databinding.CvStickerItemBinding
 import com.android.stickerpocket.presentation.Sticker
+import com.android.stickerpocket.utils.ViewExt.removeBorder
+import com.android.stickerpocket.utils.ViewExt.setBorder
 
 class EmojiCategoryListAdapter :
     RecyclerView.Adapter<EmojiCategoryListAdapter.StepperViewHolder>(){
@@ -17,7 +18,6 @@ class EmojiCategoryListAdapter :
     private var stickerClickAction: ((sticker: Sticker, position: Int) -> Unit)? = null
     private var stickerLongClickAction: ((sticker: Sticker, position: Int) -> Unit)? = null
     private val differ = AsyncListDiffer(this, diffUtilEmoji)
-    private var bindings = mutableListOf<CvStickerItemBinding>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
         StepperViewHolder(
@@ -45,10 +45,9 @@ class EmojiCategoryListAdapter :
                 ivStickerThumbnail.load(selectedSticker.thumbnail)
 
                 if (selected == adapterPosition) {
-                    cvSticker.strokeColor = Color.GREEN
-                    cvSticker.strokeWidth = 6
+                    cvSticker.setBorder()
                 } else {
-                    cvSticker.strokeColor = Color.TRANSPARENT
+                    cvSticker.removeBorder()
                 }
 
                 stickerClickAction?.let { sticker ->
@@ -83,6 +82,14 @@ class EmojiCategoryListAdapter :
             selected = position
             notifyItemChanged(previousSelectedPosition)
             notifyItemChanged(selected)
+        }
+    }
+
+    fun clearSelection() {
+        if (selected != RecyclerView.NO_POSITION) {
+            val previousSelectedPosition = selected
+            selected = RecyclerView.NO_POSITION
+            notifyItemChanged(previousSelectedPosition)
         }
     }
 

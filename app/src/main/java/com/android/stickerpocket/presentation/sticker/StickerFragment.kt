@@ -2,16 +2,12 @@ package com.android.stickerpocket.presentation.sticker
 
 import android.content.Intent
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.core.content.FileProvider
-import androidx.core.widget.doAfterTextChanged
 import androidx.emoji2.emojipicker.EmojiViewItem
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -32,7 +28,8 @@ import com.android.stickerpocket.presentation.emoji
 import com.android.stickerpocket.utils.GiphyConfigure
 import com.android.stickerpocket.utils.ItemTouchHelperAdapter
 import com.android.stickerpocket.utils.ItemTouchHelperCallback
-import com.android.stickerpocket.utils.StickerViewModelFactory
+import com.android.stickerpocket.utils.ViewExt.removeBorder
+import com.android.stickerpocket.utils.ViewExt.setBorder
 import com.android.stickerpocket.utils.ViewExt.shakeMe
 import com.giphy.sdk.core.models.Media
 import com.giphy.sdk.core.models.enums.MediaType
@@ -187,6 +184,7 @@ class StickerFragment : Fragment(), EmojiPickerDialog.EmojiPickerDialogListener,
                 }
                 is StickerFragmentInteractor.Actions.ShowFavoritesSticker -> {
                     binding.apply {
+                        setStaticPagesBorder(action)
                         rvRecentSearch.visibility = View.GONE
                         rvStickers.visibility = View.GONE
                         rvFavourites.visibility = View.VISIBLE
@@ -196,6 +194,22 @@ class StickerFragment : Fragment(), EmojiPickerDialog.EmojiPickerDialogListener,
                 else -> {}
             }
         })
+    }
+
+    private fun setStaticPagesBorder(action: StickerFragmentInteractor.Actions) {
+        emojiCategoryListAdapter.clearSelection()
+        when(action){
+            is StickerFragmentInteractor.Actions.ShowFavoritesSticker ->{
+                binding.apply {
+                    cvFavSticker.setBorder()
+                    cvDownloadedSticker.removeBorder()
+                    cvRecentSticker.removeBorder()
+                }
+            }
+            else ->{
+                clearStaticPagesBorder()
+            }
+        }
     }
 
     private fun setupRecentSearchRecyclerView() {
@@ -270,6 +284,7 @@ class StickerFragment : Fragment(), EmojiPickerDialog.EmojiPickerDialogListener,
 
         emojiCategoryListAdapter.stickerActionClick { sticker, _ ->
             interactor.onCategoryItemClick(sticker)
+            clearStaticPagesBorder()
         }
         emojiCategoryListAdapter.stickerActionLongClick { _, _ ->
             binding.tietSearch.isCursorVisible = false
@@ -277,6 +292,14 @@ class StickerFragment : Fragment(), EmojiPickerDialog.EmojiPickerDialogListener,
             interactor.onCategoryItemLongClick()
         }
         emojiApiCallResponse()
+    }
+
+    private fun clearStaticPagesBorder() {
+        binding.apply {
+            cvFavSticker.removeBorder()
+            cvRecentSticker.removeBorder()
+            cvDownloadedSticker.removeBorder()
+        }
     }
 
     private fun emojiApiCallResponse() {

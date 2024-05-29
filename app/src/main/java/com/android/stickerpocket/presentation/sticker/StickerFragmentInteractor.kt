@@ -29,6 +29,7 @@ class StickerFragmentInteractor {
         data class ShareSticker(val gifFile: File) : Actions()
         data class NavigateToStickerInfo(val sticker: Sticker) : Actions()
         data class ReloadCategories(val categories: List<Category>) : Actions()
+        data class ShowMessage(val message: String): Actions()
     }
     private val _liveData = MutableLiveData<Event<Actions>>()
     val liveData = _liveData
@@ -39,6 +40,9 @@ class StickerFragmentInteractor {
             when (it) {
                 is StickerViewModel.Result.CategoryCreated -> {
                     _liveData.value = Event(Actions.ReloadCategories(viewModel.getEmojiCategories()))
+                }
+                is StickerViewModel.Result.CreateCatFailure -> {
+                    _liveData.value = Event(Actions.ShowMessage("Emoji not found, Can not create category"))
                 }
                 else -> {}
             }
@@ -98,12 +102,7 @@ class StickerFragmentInteractor {
 
     fun onAddNewCategory(emojiItem: EmojiViewItem, category: Category, pos: Int, previous: Int) {
         viewModel.getEmojiCategories().get(previous).isHighlighted = false
-        val unicode = if (emojiItem.emoji.length == 4) {
-            "${Integer.toHexString(emojiItem.emoji.codePointAt(0))}-${Integer.toHexString(emojiItem.emoji.codePointAt(2))}"
-        } else {
-            Integer.toHexString(emojiItem.emoji.codePointAt(0))
-        }
-        viewModel.createCategory(unicode, pos)
+        viewModel.createCategory(emojiItem.emoji, pos)
     }
 
     fun onItemMove(fromPosition: Int, toPosition: Int) {

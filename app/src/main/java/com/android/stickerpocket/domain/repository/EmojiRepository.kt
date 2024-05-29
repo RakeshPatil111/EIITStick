@@ -9,5 +9,5 @@ class EmojiRepository(private val dao: EmojiDAO) {
     suspend fun saveEmojis(emojis: List<Emoji>) = dao.saveEmojis(emojis)
 
     suspend fun doesEmojisExist() = dao.doesEmojisExist()
-    suspend fun fetchEmojiByUnicode(unicode: String) = dao.fetchEmojiByUnicode(unicode)
+    suspend fun fetchEmojiByEmojiIcon(unicode: String) = dao.fetchEmojiByIcon(unicode)
 }

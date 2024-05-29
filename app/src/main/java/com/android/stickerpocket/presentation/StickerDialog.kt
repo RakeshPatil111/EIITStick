@@ -5,17 +5,14 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.FragmentManager
 import coil.ImageLoader
 import coil.decode.GifDecoder
 import coil.decode.ImageDecoderDecoder
 import coil.load
 import com.android.stickerpocket.R
-import com.android.stickerpocket.StickerApplication
 import com.android.stickerpocket.databinding.CvGifStickerBinding
 import com.android.stickerpocket.utils.StickerExt.toFile
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import java.io.File
 
 class StickerDialog : BottomSheetDialogFragment() {
 

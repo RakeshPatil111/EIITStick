@@ -9,7 +9,7 @@ import com.android.stickerpocket.domain.model.RecentSearch
 import com.android.stickerpocket.domain.usecase.CreateOrUpdatedRecentSearchUseCase
 import com.android.stickerpocket.domain.usecase.DeleteRecentSearchUseCase
 import com.android.stickerpocket.domain.usecase.FetchCategoriesUseCase
-import com.android.stickerpocket.domain.usecase.FetchEmojiByUnicodeUseCase
+import com.android.stickerpocket.domain.usecase.FetchEmojiByEmojiIcon
 import com.android.stickerpocket.domain.usecase.GetRecentSearchUseCase
 import com.android.stickerpocket.domain.usecase.InsertOrReplaceCategoriesUseCase
 import com.android.stickerpocket.dtos.getCategories
@@ -28,6 +28,7 @@ class StickerViewModel: ViewModel() {
     sealed class Result {
         data class RecentSearches(val recentSearches: List<RecentSearch>): Result()
         object CategoryCreated: Result()
+        object CreateCatFailure: Result()
     }
 
     private val _liveData = MutableLiveData<Result>()
@@ -38,7 +39,7 @@ class StickerViewModel: ViewModel() {
     private var deleteRecentSearchUseCase: DeleteRecentSearchUseCase
     private var fetchCategory: FetchCategoriesUseCase
     private var insertCategoriesUseCase: InsertOrReplaceCategoriesUseCase
-    private var fetchEmojiByUnicode: FetchEmojiByUnicodeUseCase
+    private var fetchEMojiByIcon: FetchEmojiByEmojiIcon
 
 
     private var recentSearchs: MutableList<RecentSearch> = mutableListOf()
@@ -51,7 +52,7 @@ class StickerViewModel: ViewModel() {
         createOrUpdatedRecentSearchUseCase = CreateOrUpdatedRecentSearchUseCase(StickerApplication.instance.recentSearchRepository)
         fetchCategory = FetchCategoriesUseCase(StickerApplication.instance.categoryRepository)
         insertCategoriesUseCase = InsertOrReplaceCategoriesUseCase(StickerApplication.instance.categoryRepository)
-        fetchEmojiByUnicode = FetchEmojiByUnicodeUseCase(StickerApplication.instance.emojisRepository)
+        fetchEMojiByIcon = FetchEmojiByEmojiIcon(StickerApplication.instance.emojisRepository)
         fetchRecentSearches()
         fetchCategories()
     }
@@ -144,7 +145,7 @@ class StickerViewModel: ViewModel() {
     fun getEmojiCategories() = categories
     fun createCategory(unicode: String, pos: Int) {
         CoroutineScope(Dispatchers.Default).launch {
-            fetchEmojiByUnicode.execute(unicode.lowercase())?.let {
+            fetchEMojiByIcon.execute(unicode.lowercase())?.let {
                 val newCategory = Category(
                     unicode = unicode,
                     position = pos,
@@ -159,7 +160,7 @@ class StickerViewModel: ViewModel() {
                     category.position = index
                 }
                updateCategories()
-            }
+            } ?: _liveData.postValue(Result.CreateCatFailure)
         }
     }
 

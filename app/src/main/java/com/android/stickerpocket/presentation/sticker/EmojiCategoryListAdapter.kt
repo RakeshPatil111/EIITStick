@@ -2,7 +2,6 @@ package com.android.stickerpocket.presentation.sticker
 
 import android.graphics.Color
 import android.text.Html
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.AsyncListDiffer
@@ -34,12 +33,10 @@ class EmojiCategoryListAdapter :
     override fun onBindViewHolder(holder: StepperViewHolder, position: Int) {
         val category = differ.currentList[position]
         holder.bind(category, position)
-
     }
 
     fun updateList(list: List<Category>) {
         differ.submitList(list)
-        Log.d("TAG", "onViewCreated: Adapter")
         notifyDataSetChanged()
     }
 
@@ -47,7 +44,6 @@ class EmojiCategoryListAdapter :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(category: Category, position: Int) {
             binding.apply {
-                Log.d("TAG", "OnBind")
                 ivStickerThumbnail.text = Html.fromHtml(category.html)
                 if (category.isHighlighted) {
                     selected = position

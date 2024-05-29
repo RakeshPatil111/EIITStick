@@ -16,6 +16,6 @@ interface EmojiDAO {
 
     @Query("SELECT EXISTS (SELECT * FROM emoji)")
     fun doesEmojisExist(): Boolean
-    @Query("SELECT * FROM emoji where unicode = :unicode")
-    fun fetchEmojiByUnicode(unicode: String): Emoji?
+    @Query("SELECT * FROM emoji where emoji = :emoji")
+    fun fetchEmojiByIcon(emoji: String): Emoji?
 }

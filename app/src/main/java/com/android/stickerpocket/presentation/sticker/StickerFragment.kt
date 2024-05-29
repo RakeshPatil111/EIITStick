@@ -7,6 +7,7 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.content.FileProvider
 import androidx.emoji2.emojipicker.EmojiViewItem
 import androidx.fragment.app.Fragment
@@ -41,8 +42,8 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
-class StickerFragment : Fragment(),GPHGridCallback, GPHSearchGridCallback,
-    ItemTouchHelperAdapter, TextWatcher {
+class StickerFragment : Fragment(), GPHGridCallback, GPHSearchGridCallback,
+        ItemTouchHelperAdapter, TextWatcher {
     private lateinit var binding: FragmentStickerBinding
     private lateinit var emojiCategoryListAdapter: EmojiCategoryListAdapter
     private lateinit var itemTouchHelper: ItemTouchHelper
@@ -127,7 +128,12 @@ class StickerFragment : Fragment(),GPHGridCallback, GPHSearchGridCallback,
                                     emojiPickerDialog.setDialogListener(
                                         object : EmojiPickerDialog.EmojiPickerDialogListener {
                                             override fun addSelectedCategory(emojiItem: EmojiViewItem) {
-                                                interactor.onAddNewCategory(emojiItem, action.category, action.pos, action.previous)
+                                                interactor.onAddNewCategory(
+                                                    emojiItem,
+                                                    action.category,
+                                                    action.pos,
+                                                    action.previous
+                                                )
                                             }
 
                                             override fun cancel() {
@@ -136,7 +142,10 @@ class StickerFragment : Fragment(),GPHGridCallback, GPHSearchGridCallback,
 
                                         }
                                     )
-                                    emojiPickerDialog.show(childFragmentManager, "EmojiPickerDialog")
+                                    emojiPickerDialog.show(
+                                        childFragmentManager,
+                                        "EmojiPickerDialog"
+                                    )
                                 }
 
                                 override fun onReorganize() {
@@ -145,7 +154,10 @@ class StickerFragment : Fragment(),GPHGridCallback, GPHSearchGridCallback,
                                 }
 
                                 override fun onDelete() {
-                                    interactor.onDeleteCategory(category = action.category, pos = action.pos)
+                                    interactor.onDeleteCategory(
+                                        category = action.category,
+                                        pos = action.pos
+                                    )
                                 }
 
                                 override fun onCancel() {
@@ -154,7 +166,10 @@ class StickerFragment : Fragment(),GPHGridCallback, GPHSearchGridCallback,
 
                             }
                         )
-                        stickerCategoryDialog.show(childFragmentManager, "StickerCategoryDialog")
+                        stickerCategoryDialog.show(
+                            childFragmentManager,
+                            "StickerCategoryDialog"
+                        )
                     }
                 }
 
@@ -190,15 +205,22 @@ class StickerFragment : Fragment(),GPHGridCallback, GPHSearchGridCallback,
                     shareIntent.putExtra(Intent.EXTRA_STREAM, gifUri)
                     startActivity(Intent.createChooser(shareIntent, "Share GIF using"))
                 }
+
                 is StickerFragmentInteractor.Actions.NavigateToStickerInfo -> {
                     val direction = StickerDetailsNavDirections(action.sticker)
                     findNavController().navigate(direction)
                 }
+
                 is StickerFragmentInteractor.Actions.ReloadCategories -> {
                     // Also load highlighted emojis by default
-                    val category = action.categories.filter { it.isHighlighted }.firstOrNull() ?: action.categories[0]
-                    binding.rvStickers.content = GPHContent.searchQuery(category.name, mediaType = MediaType.gif)
+                    val category = action.categories.filter { it.isHighlighted }.firstOrNull()
+                        ?: action.categories[0]
+                    binding.rvStickers.content =
+                        GPHContent.searchQuery(category.name, mediaType = MediaType.gif)
                     emojiCategoryListAdapter.updateList(action.categories)
+                }
+                is StickerFragmentInteractor.Actions.ShowMessage -> {
+                    Toast.makeText(requireContext(), action.message, Toast.LENGTH_SHORT).show()
                 }
                 else -> {}
             }
@@ -275,7 +297,7 @@ class StickerFragment : Fragment(),GPHGridCallback, GPHSearchGridCallback,
         itemTouchHelper = ItemTouchHelper(callback)
         itemTouchHelper.attachToRecyclerView(binding.rvCategory)
 
-        emojiCategoryListAdapter.stickerActionClick { sticker,_, previouslySelected->
+        emojiCategoryListAdapter.stickerActionClick { sticker, _, previouslySelected ->
             interactor.onCategoryItemClick(sticker, previouslySelected)
         }
         emojiCategoryListAdapter.stickerActionLongClick { category, pos, previous ->
@@ -285,7 +307,10 @@ class StickerFragment : Fragment(),GPHGridCallback, GPHSearchGridCallback,
         }
         emojiCategoryListAdapter.updateList(categories)
         // Also load highlighted emojis by default
-        binding.rvStickers.content = GPHContent.searchQuery(categories.filter { it.isHighlighted }.first().name, mediaType = MediaType.gif)
+        binding.rvStickers.content = GPHContent.searchQuery(
+            categories.filter { it.isHighlighted }.first().name,
+            mediaType = MediaType.gif
+        )
     }
 
     override fun onResume() {

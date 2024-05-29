@@ -9,7 +9,8 @@ val defaultCategories = listOf(
         name = "clapping hands",
         isDeleted = false,
         isHighlighted = true,
-        unicode = "1F44F"
+        unicode = "1F44F",
+        html = "&#128079;"
     ),
     Category(
         id = 2,
@@ -17,7 +18,8 @@ val defaultCategories = listOf(
         name = "smiling face with heart-eyes",
         isDeleted = false,
         isHighlighted = false,
-        unicode = "1F60D"
+        unicode = "1F60D",
+        html = "&#128525;"
     ),
     Category(
         id = 3,
@@ -25,7 +27,8 @@ val defaultCategories = listOf(
         name = "Face with tears of joy",
         isDeleted = false,
         isHighlighted = false,
-        unicode = "1F602"
+        unicode = "1F602",
+        html = "&#128514;"
     ),
     Category(
         id = 4,
@@ -33,7 +36,8 @@ val defaultCategories = listOf(
         name = "sleepy face",
         isDeleted = false,
         isHighlighted = false,
-        unicode = "1F62A"
+        unicode = "1F62A",
+        html = "&#128554;"
     ),
     Category(
         id = 5,
@@ -41,7 +45,8 @@ val defaultCategories = listOf(
         name = "sleeping face",
         isDeleted = false,
         isHighlighted = false,
-        unicode = "1F634"
+        unicode = "1F634",
+        html = "&#128564;"
     ),
     Category(
         id = 6,
@@ -49,7 +54,8 @@ val defaultCategories = listOf(
         name = "face savoring food",
         isDeleted = false,
         isHighlighted = false,
-        unicode = "1F60B"
+        unicode = "1F60B",
+        html = "&#128523;"
     ),
     Category(
         id = 7,
@@ -57,7 +63,8 @@ val defaultCategories = listOf(
         name = "angry face",
         isDeleted = false,
         isHighlighted = false,
-        unicode = "1F620"
+        unicode = "1F620",
+        html = "&#128544;"
     ),
     Category(
         id = 8,
@@ -65,7 +72,8 @@ val defaultCategories = listOf(
         name = "handshake",
         isDeleted = false,
         isHighlighted = false,
-        unicode = "1F91D"
+        unicode = "1F91D",
+        html = "&#x1F91D;"
     )
 )
 

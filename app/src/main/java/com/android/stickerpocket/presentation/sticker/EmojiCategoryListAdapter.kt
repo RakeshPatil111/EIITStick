@@ -1,6 +1,8 @@
 package com.android.stickerpocket.presentation.sticker
 
 import android.graphics.Color
+import android.text.Html
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.AsyncListDiffer
@@ -13,8 +15,8 @@ class EmojiCategoryListAdapter :
     RecyclerView.Adapter<EmojiCategoryListAdapter.StepperViewHolder>(){
 
     private var selected = -1
-    private var stickerClickAction: ((category: Category, position: Int) -> Unit)? = null
-    private var stickerLongClickAction: ((category: Category, position: Int) -> Unit)? = null
+    private var stickerClickAction: ((category: Category, position: Int, previouslySelected: Int) -> Unit)? = null
+    private var stickerLongClickAction: ((category: Category, position: Int, previouslySelected: Int) -> Unit)? = null
     private val differ = AsyncListDiffer(this, diffUtilEmoji)
     private var bindings = mutableListOf<CvStickerItemBinding>()
 
@@ -30,14 +32,14 @@ class EmojiCategoryListAdapter :
     override fun getItemCount() = differ.currentList.size
 
     override fun onBindViewHolder(holder: StepperViewHolder, position: Int) {
-        differ.currentList.forEach {
-            if (it.position == position)
-                holder.bind(it, position)
-        }
+        val category = differ.currentList[position]
+        holder.bind(category, position)
+
     }
 
     fun updateList(list: List<Category>) {
         differ.submitList(list)
+        Log.d("TAG", "onViewCreated: Adapter")
         notifyDataSetChanged()
     }
 
@@ -45,37 +47,25 @@ class EmojiCategoryListAdapter :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(category: Category, position: Int) {
             binding.apply {
-                //ivStickerThumbnail.load(selectedSticker.thumbnail)
-                ivStickerThumbnail.text = String(Character.toChars(category.unicode.toInt(16)))
+                Log.d("TAG", "OnBind")
+                ivStickerThumbnail.text = Html.fromHtml(category.html)
                 if (category.isHighlighted) {
+                    selected = position
                     cvSticker.strokeColor = Color.GREEN
                     cvSticker.strokeWidth = 6
                 } else {
                     cvSticker.strokeColor = Color.TRANSPARENT
                 }
-//                if (selected == position) {
-//                    cvSticker.strokeColor = Color.GREEN
-//                    cvSticker.strokeWidth = 6
-//                } else {
-//                    cvSticker.strokeColor = Color.TRANSPARENT
-//                }
-//
-//                stickerClickAction?.let { category ->
-//                    cvSticker.setOnClickListener {
-//                        category(category, position)
-//                        setSelectedItem(adapterPosition)
-//                    }
-//                }
 
                 stickerLongClickAction?.let { c ->
                     cvSticker.setOnLongClickListener {
-                        c.invoke(category, position)
+                        c.invoke(category, position, selected)
                         true
                     }
                 }
                 stickerClickAction?.let { c ->
                     cvSticker.setOnClickListener {
-                        c.invoke(category, adapterPosition)
+                        c.invoke(category, adapterPosition, selected)
                         setSelectedItem(position)
                     }
                 }
@@ -83,11 +73,11 @@ class EmojiCategoryListAdapter :
         }
     }
 
-    fun stickerActionClick(action: (category: Category, position: Int) -> Unit) {
+    fun stickerActionClick(action: (category: Category, position: Int, previouslySelected: Int) -> Unit) {
         this.stickerClickAction = action
     }
 
-    fun stickerActionLongClick(action: (category: Category, position: Int) -> Unit) {
+    fun stickerActionLongClick(action: (category: Category, position: Int, previouslySelected: Int) -> Unit) {
         this.stickerLongClickAction = action
     }
 

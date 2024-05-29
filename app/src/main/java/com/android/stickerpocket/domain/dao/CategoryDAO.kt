@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface CategoryDAO {
-    @Query("SELECT * FROM Category")
+    @Query("SELECT * FROM Category where isDeleted == 0 ORDER BY position ASC")
     fun fetchAll(): Flow< List<Category>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)

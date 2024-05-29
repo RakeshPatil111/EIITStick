@@ -127,7 +127,7 @@ class StickerFragment : Fragment(),GPHGridCallback, GPHSearchGridCallback,
                                     emojiPickerDialog.setDialogListener(
                                         object : EmojiPickerDialog.EmojiPickerDialogListener {
                                             override fun addSelectedCategory(emojiItem: EmojiViewItem) {
-
+                                                interactor.onAddNewCategory(emojiItem, action.category, action.pos, action.previous)
                                             }
 
                                             override fun cancel() {
@@ -145,7 +145,7 @@ class StickerFragment : Fragment(),GPHGridCallback, GPHSearchGridCallback,
                                 }
 
                                 override fun onDelete() {
-
+                                    interactor.onDeleteCategory(category = action.category, pos = action.pos)
                                 }
 
                                 override fun onCancel() {
@@ -193,6 +193,12 @@ class StickerFragment : Fragment(),GPHGridCallback, GPHSearchGridCallback,
                 is StickerFragmentInteractor.Actions.NavigateToStickerInfo -> {
                     val direction = StickerDetailsNavDirections(action.sticker)
                     findNavController().navigate(direction)
+                }
+                is StickerFragmentInteractor.Actions.ReloadCategories -> {
+                    // Also load highlighted emojis by default
+                    val category = action.categories.filter { it.isHighlighted }.firstOrNull() ?: action.categories[0]
+                    binding.rvStickers.content = GPHContent.searchQuery(category.name, mediaType = MediaType.gif)
+                    emojiCategoryListAdapter.updateList(action.categories)
                 }
                 else -> {}
             }
@@ -269,13 +275,13 @@ class StickerFragment : Fragment(),GPHGridCallback, GPHSearchGridCallback,
         itemTouchHelper = ItemTouchHelper(callback)
         itemTouchHelper.attachToRecyclerView(binding.rvCategory)
 
-        emojiCategoryListAdapter.stickerActionClick { sticker, _ ->
-            interactor.onCategoryItemClick(sticker)
+        emojiCategoryListAdapter.stickerActionClick { sticker,_, previouslySelected->
+            interactor.onCategoryItemClick(sticker, previouslySelected)
         }
-        emojiCategoryListAdapter.stickerActionLongClick { category, _ ->
+        emojiCategoryListAdapter.stickerActionLongClick { category, pos, previous ->
             binding.tietSearch.isCursorVisible = false
             binding.tietSearch.text?.clear()
-            interactor.onCategoryItemLongClick(category)
+            interactor.onCategoryItemLongClick(category, pos, previous)
         }
         emojiCategoryListAdapter.updateList(categories)
         // Also load highlighted emojis by default
@@ -322,10 +328,12 @@ class StickerFragment : Fragment(),GPHGridCallback, GPHSearchGridCallback,
 
     override fun onItemMove(fromPosition: Int, toPosition: Int) {
         emojiCategoryListAdapter.notifyItemMoved(fromPosition, toPosition)
+        interactor.onItemMove(fromPosition, toPosition)
     }
 
     override fun onDragComplete() {
         callback.isDragEnabled = false
+        interactor.onDragComplete()
     }
 
     override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {

@@ -9,7 +9,7 @@ fun Emoji.toEmoji(): ModelEmoji {
         id = Random.nextInt(),
         category = this.category,
         name = this.name,
-        unicode = this.unicode,
+        unicode = this.unicode.lowercase(),
         shortname = this.shortname,
         html = this.html,
         emoji = this.emoji,

@@ -24,6 +24,7 @@
         android:layout_width="0dp"
         app:endIconMode="clear_text"
         app:hintEnabled="false"
+        app:endIconDrawable="@drawable/ic_outline_cancel"
         app:layout_constraintEnd_toStartOf="@+id/image_button"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"

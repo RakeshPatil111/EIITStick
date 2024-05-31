@@ -239,6 +239,10 @@ class StickerFragment : Fragment(), GPHGridCallback, GPHSearchGridCallback,
             override fun onRecentSearchRemove(position: Int) {
                 interactor.onRecentSearchRemove(position)
             }
+
+            override fun onClearRecentSearchClick() {
+
+            }
         })
     }
 

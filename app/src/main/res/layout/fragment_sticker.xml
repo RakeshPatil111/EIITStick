@@ -23,6 +23,7 @@
         style="@style/Widget.App.TextInputLayout.Dark"
         app:endIconMode="clear_text"
         app:hintEnabled="false"
+        app:endIconDrawable="@drawable/ic_outline_cancel"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/img_app_icon"

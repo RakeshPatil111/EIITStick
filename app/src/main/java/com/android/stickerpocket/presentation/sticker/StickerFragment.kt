@@ -222,6 +222,12 @@ class StickerFragment : Fragment(), GPHGridCallback, GPHSearchGridCallback,
                 is StickerFragmentInteractor.Actions.ShowMessage -> {
                     Toast.makeText(requireContext(), action.message, Toast.LENGTH_SHORT).show()
                 }
+                is StickerFragmentInteractor.Actions.clearAllRecentSearchAndHideView ->{
+                    binding.apply {
+                        rvRecentSearch.visibility = View.GONE
+                        rvStickers.visibility = View.VISIBLE
+                    }
+                }
                 else -> {}
             }
         })
@@ -238,6 +244,10 @@ class StickerFragment : Fragment(), GPHGridCallback, GPHSearchGridCallback,
 
             override fun onRecentSearchRemove(position: Int) {
                 interactor.onRecentSearchRemove(position)
+            }
+
+            override fun onClearRecentSearchClick() {
+                interactor.onClearAllRecentSearch()
             }
         })
     }

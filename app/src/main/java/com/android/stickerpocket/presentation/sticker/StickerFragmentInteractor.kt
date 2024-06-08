@@ -21,6 +21,7 @@ class StickerFragmentInteractor {
         data class InitCategoryView(val categories: List<Category>): Actions()
         object HideGiphyGridViewAndShowRecentSearches: Actions()
         object ShowGiphyGridView: Actions()
+        object clearAllRecentSearchAndHideView : Actions()
         data class ShowRecentSearches(val recentSearches: List<RecentSearch>): Actions()
         data class ShowGiphyViewForRecentSearch(val query: String) : Actions()
         data class LoadEmojisForCategory(val query: String) : Actions()
@@ -71,6 +72,11 @@ class StickerFragmentInteractor {
     fun onRecentSearchRemove(position: Int) {
         viewModel.removeRecentSearch(position)
         _liveData.value = Event(Actions.ShowRecentSearches(viewModel.getRecentSearches()))
+    }
+
+    fun onClearAllRecentSearch() {
+        viewModel.clearAllRecentSearch()
+        _liveData.value = Event(Actions.clearAllRecentSearchAndHideView)
     }
 
     fun onQueryBlank() {

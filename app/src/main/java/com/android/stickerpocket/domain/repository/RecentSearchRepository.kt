@@ -19,4 +19,7 @@ class RecentSearchRepository(private val dao: RecentSearchDAO) {
         dao.deleteRecentSearch(recentSearch)
     }
 
+    suspend fun deleteAllRecentSearch() {
+        dao.deleteAllRecentSearch()
+    }
 }

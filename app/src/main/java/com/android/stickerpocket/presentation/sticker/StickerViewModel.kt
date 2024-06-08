@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.android.stickerpocket.StickerApplication
 import com.android.stickerpocket.domain.model.Category
 import com.android.stickerpocket.domain.model.RecentSearch
+import com.android.stickerpocket.domain.usecase.ClearAllRecentSearchUseCase
 import com.android.stickerpocket.domain.usecase.CreateOrUpdatedRecentSearchUseCase
 import com.android.stickerpocket.domain.usecase.DeleteRecentSearchUseCase
 import com.android.stickerpocket.domain.usecase.FetchCategoriesUseCase
@@ -39,6 +40,7 @@ class StickerViewModel: ViewModel() {
     private var deleteRecentSearchUseCase: DeleteRecentSearchUseCase
     private var fetchCategory: FetchCategoriesUseCase
     private var insertCategoriesUseCase: InsertOrReplaceCategoriesUseCase
+    private var clearAllRecentSearchUseCase: ClearAllRecentSearchUseCase
     private var fetchEMojiByIcon: FetchEmojiByEmojiIcon
 
 
@@ -52,6 +54,7 @@ class StickerViewModel: ViewModel() {
         createOrUpdatedRecentSearchUseCase = CreateOrUpdatedRecentSearchUseCase(StickerApplication.instance.recentSearchRepository)
         fetchCategory = FetchCategoriesUseCase(StickerApplication.instance.categoryRepository)
         insertCategoriesUseCase = InsertOrReplaceCategoriesUseCase(StickerApplication.instance.categoryRepository)
+        clearAllRecentSearchUseCase = ClearAllRecentSearchUseCase(StickerApplication.instance.recentSearchRepository)
         fetchEMojiByIcon = FetchEmojiByEmojiIcon(StickerApplication.instance.emojisRepository)
         fetchRecentSearches()
         fetchCategories()
@@ -114,6 +117,14 @@ class StickerViewModel: ViewModel() {
             fetchRecentSearches()
         }
     }
+
+    fun clearAllRecentSearch() {
+        CoroutineScope(Dispatchers.IO).launch {
+            recentSearchs.clear()
+            clearAllRecentSearchUseCase.execute()
+        }
+    }
+
     fun downloadSticker(sticker: Sticker) {
         CoroutineScope(Dispatchers.IO).launch {
             try {

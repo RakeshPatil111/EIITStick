@@ -17,4 +17,7 @@ interface RecentSearchDAO {
 
     @Delete
     fun deleteRecentSearch(recentSearch: RecentSearch)
+
+    @Query("DELETE FROM RecentSearch")
+    fun deleteAllRecentSearch()
 }

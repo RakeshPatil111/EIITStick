@@ -4,11 +4,13 @@ import androidx.emoji2.emojipicker.EmojiViewItem
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
+import com.android.stickerpocket.domain.model.Favourites
 import com.android.stickerpocket.domain.model.Category
 import com.android.stickerpocket.domain.model.RecentSearch
 import com.android.stickerpocket.dtos.getCategories
 import com.android.stickerpocket.presentation.Sticker
 import com.android.stickerpocket.utils.Event
+import com.android.stickerpocket.utils.StickerExt.toFavorite
 import com.android.stickerpocket.utils.StickerExt.toFile
 import com.android.stickerpocket.utils.StickerExt.toSticker
 import com.giphy.sdk.core.models.Media
@@ -29,6 +31,7 @@ class StickerFragmentInteractor {
         data class ShowStickerDialog(val sticker: Sticker) : Actions()
         data class ShareSticker(val gifFile: File) : Actions()
         data class NavigateToStickerInfo(val sticker: Sticker) : Actions()
+        data class ShowFavoritesSticker(val favoriteStickers: List<Favourites>): Actions()
         data class ReloadCategories(val categories: List<Category>) : Actions()
         data class ShowMessage(val message: String): Actions()
     }
@@ -106,6 +109,13 @@ class StickerFragmentInteractor {
         _liveData.value = Event(Actions.ShareSticker(sticker.toFile()))
     }
 
+    fun onAddStickerToFavoritesClick(sticker: Sticker) {
+        viewModel.downloadSticker(sticker)
+        viewModel.addToFavorites(sticker.toFavorite())
+    }
+    fun onFavClick() {
+        _liveData.value = Event(Actions.ShowFavoritesSticker(viewModel.getFavourites()))
+    }
     fun onAddNewCategory(emojiItem: EmojiViewItem, category: Category, pos: Int, previous: Int) {
         viewModel.getEmojiCategories().get(previous).isHighlighted = false
         viewModel.createCategory(emojiItem.emoji, pos)

@@ -5,10 +5,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.android.stickerpocket.StickerApplication
 import com.android.stickerpocket.domain.model.Category
+import com.android.stickerpocket.domain.model.Favourites
 import com.android.stickerpocket.domain.model.RecentSearch
+import com.android.stickerpocket.domain.usecase.AddToFavoritesUseCase
 import com.android.stickerpocket.domain.usecase.ClearAllRecentSearchUseCase
 import com.android.stickerpocket.domain.usecase.CreateOrUpdatedRecentSearchUseCase
 import com.android.stickerpocket.domain.usecase.DeleteRecentSearchUseCase
+import com.android.stickerpocket.domain.usecase.FetchAllFavoritesUseCase
 import com.android.stickerpocket.domain.usecase.FetchCategoriesUseCase
 import com.android.stickerpocket.domain.usecase.FetchEmojiByEmojiIcon
 import com.android.stickerpocket.domain.usecase.GetRecentSearchUseCase
@@ -24,12 +27,12 @@ import java.io.FileOutputStream
 import java.net.URL
 import java.util.Date
 
-class StickerViewModel: ViewModel() {
+class StickerViewModel : ViewModel() {
 
     sealed class Result {
-        data class RecentSearches(val recentSearches: List<RecentSearch>): Result()
-        object CategoryCreated: Result()
-        object CreateCatFailure: Result()
+        data class RecentSearches(val recentSearches: List<RecentSearch>) : Result()
+        object CategoryCreated : Result()
+        object CreateCatFailure : Result()
     }
 
     private val _liveData = MutableLiveData<Result>()
@@ -38,24 +41,36 @@ class StickerViewModel: ViewModel() {
     private var recentSearchUseCase: GetRecentSearchUseCase
     private var createOrUpdatedRecentSearchUseCase: CreateOrUpdatedRecentSearchUseCase
     private var deleteRecentSearchUseCase: DeleteRecentSearchUseCase
+    private var addToFavoritesUseCase: AddToFavoritesUseCase
+    private var fetchAllFavoritesUseCase: FetchAllFavoritesUseCase
     private var fetchCategory: FetchCategoriesUseCase
     private var insertCategoriesUseCase: InsertOrReplaceCategoriesUseCase
     private var clearAllRecentSearchUseCase: ClearAllRecentSearchUseCase
     private var fetchEMojiByIcon: FetchEmojiByEmojiIcon
-
-
+    private var recentSearches: MutableList<RecentSearch> = mutableListOf()
+    private var favourites: MutableList<Favourites> = mutableListOf()
     private var recentSearchs: MutableList<RecentSearch> = mutableListOf()
     private var categories = mutableListOf<Category>()
     private var fromPosition: Int? = null
     private var toPosition = 0
+
     init {
-        deleteRecentSearchUseCase = DeleteRecentSearchUseCase(StickerApplication.instance.recentSearchRepository)
-        recentSearchUseCase = GetRecentSearchUseCase(StickerApplication.instance.recentSearchRepository)
-        createOrUpdatedRecentSearchUseCase = CreateOrUpdatedRecentSearchUseCase(StickerApplication.instance.recentSearchRepository)
+        deleteRecentSearchUseCase =
+            DeleteRecentSearchUseCase(StickerApplication.instance.recentSearchRepository)
+        recentSearchUseCase =
+            GetRecentSearchUseCase(StickerApplication.instance.recentSearchRepository)
+        createOrUpdatedRecentSearchUseCase =
+            CreateOrUpdatedRecentSearchUseCase(StickerApplication.instance.recentSearchRepository)
         fetchCategory = FetchCategoriesUseCase(StickerApplication.instance.categoryRepository)
-        insertCategoriesUseCase = InsertOrReplaceCategoriesUseCase(StickerApplication.instance.categoryRepository)
-        clearAllRecentSearchUseCase = ClearAllRecentSearchUseCase(StickerApplication.instance.recentSearchRepository)
+        insertCategoriesUseCase =
+            InsertOrReplaceCategoriesUseCase(StickerApplication.instance.categoryRepository)
+        clearAllRecentSearchUseCase =
+            ClearAllRecentSearchUseCase(StickerApplication.instance.recentSearchRepository)
         fetchEMojiByIcon = FetchEmojiByEmojiIcon(StickerApplication.instance.emojisRepository)
+        addToFavoritesUseCase =
+            AddToFavoritesUseCase(StickerApplication.instance.stickerRepository)
+        fetchAllFavoritesUseCase =
+            FetchAllFavoritesUseCase(StickerApplication.instance.stickerRepository)
         fetchRecentSearches()
         fetchCategories()
     }
@@ -66,7 +81,8 @@ class StickerViewModel: ViewModel() {
                 .collectLatest {
                     when (it) {
                         is FetchCategoriesUseCase.Result.Success -> {
-                            categories = it.categories.toMutableList().ifEmpty { getCategories().toMutableList() }
+                            categories = it.categories.toMutableList()
+                                .ifEmpty { getCategories().toMutableList() }
                             _liveData.postValue(Result.CategoryCreated)
                         }
 
@@ -83,18 +99,20 @@ class StickerViewModel: ViewModel() {
         CoroutineScope(Dispatchers.Default).launch {
             when (val result = recentSearchUseCase.execute()) {
                 is GetRecentSearchUseCase.Result.Success -> {
-                    recentSearchs = result.items.toMutableList()
+                    recentSearches = result.items.toMutableList()
                 }
+
                 is GetRecentSearchUseCase.Result.Failure -> {
 
                 }
             }
         }
     }
-    fun getRecentSearches() = recentSearchs
+
+    fun getRecentSearches() = recentSearches
     fun updateRecentSearch(position: Int) {
         CoroutineScope(Dispatchers.IO).launch {
-            val recentSearch = recentSearchs[position].apply {
+            val recentSearch = recentSearches[position].apply {
                 this.time = Date().time
             }
             createOrUpdatedRecentSearchUseCase.execute(recentSearch)
@@ -110,9 +128,9 @@ class StickerViewModel: ViewModel() {
     }
 
     fun removeRecentSearch(position: Int) {
-        val recentSearchToDelete = recentSearchs[position]
+        val recentSearchToDelete = recentSearches[position]
         CoroutineScope(Dispatchers.IO).launch {
-            recentSearchs.removeAt(position)
+            recentSearches.removeAt(position)
             deleteRecentSearchUseCase.execute(DeleteRecentSearchUseCase.Params(recentSearch = recentSearchToDelete))
             fetchRecentSearches()
         }
@@ -133,7 +151,8 @@ class StickerViewModel: ViewModel() {
                 connection.connect()
 
                 // Create a temporary file in the cache directory
-                val gifFile = File(StickerApplication.instance.cacheDir, sticker.title!! + ".gif")
+                val gifFile =
+                    File(StickerApplication.instance.cacheDir, sticker.title!! + ".gif")
 
                 val inputStream = connection.getInputStream()
                 val outputStream = FileOutputStream(gifFile)
@@ -153,7 +172,31 @@ class StickerViewModel: ViewModel() {
         }
     }
 
+    fun addToFavorites(favourites: Favourites) {
+        CoroutineScope(Dispatchers.IO).launch {
+            addToFavoritesUseCase.execute(favourites)
+        }
+    }
+
+    fun fetchAllFavorites() {
+        viewModelScope.launch {
+            fetchAllFavoritesUseCase.execute()
+                .collectLatest {
+                    when (it) {
+                        is FetchAllFavoritesUseCase.Result.Success -> {
+                            favourites = it.data.toMutableList()
+                        }
+
+                        else -> {}
+                    }
+                }
+        }
+    }
+
+    fun getFavourites() = favourites
+
     fun getEmojiCategories() = categories
+
     fun createCategory(unicode: String, pos: Int) {
         CoroutineScope(Dispatchers.Default).launch {
             fetchEMojiByIcon.execute(unicode.lowercase())?.let {
@@ -170,7 +213,7 @@ class StickerViewModel: ViewModel() {
                 categories.forEachIndexed { index, category ->
                     category.position = index
                 }
-               updateCategories()
+                updateCategories()
             } ?: _liveData.postValue(Result.CreateCatFailure)
         }
     }

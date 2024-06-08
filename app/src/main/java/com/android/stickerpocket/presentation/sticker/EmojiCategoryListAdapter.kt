@@ -9,6 +9,9 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.android.stickerpocket.databinding.CvStickerItemBinding
 import com.android.stickerpocket.domain.model.Category
+import com.android.stickerpocket.presentation.Sticker
+import com.android.stickerpocket.utils.ViewExt.removeBorder
+import com.android.stickerpocket.utils.ViewExt.setBorder
 
 class EmojiCategoryListAdapter :
     RecyclerView.Adapter<EmojiCategoryListAdapter.StepperViewHolder>(){
@@ -17,7 +20,6 @@ class EmojiCategoryListAdapter :
     private var stickerClickAction: ((category: Category, position: Int, previouslySelected: Int) -> Unit)? = null
     private var stickerLongClickAction: ((category: Category, position: Int, previouslySelected: Int) -> Unit)? = null
     private val differ = AsyncListDiffer(this, diffUtilEmoji)
-    private var bindings = mutableListOf<CvStickerItemBinding>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
         StepperViewHolder(
@@ -46,13 +48,10 @@ class EmojiCategoryListAdapter :
             binding.apply {
                 ivStickerThumbnail.text = Html.fromHtml(category.html)
                 if (category.isHighlighted) {
-                    selected = position
-                    cvSticker.strokeColor = Color.GREEN
-                    cvSticker.strokeWidth = 6
+                    cvSticker.setBorder()
                 } else {
-                    cvSticker.strokeColor = Color.TRANSPARENT
+                    cvSticker.removeBorder()
                 }
-
                 stickerLongClickAction?.let { c ->
                     cvSticker.setOnLongClickListener {
                         c.invoke(category, position, selected)
@@ -83,6 +82,14 @@ class EmojiCategoryListAdapter :
             selected = position
             notifyItemChanged(previousSelectedPosition)
             notifyItemChanged(selected)
+        }
+    }
+
+    fun clearSelection() {
+        if (selected != RecyclerView.NO_POSITION) {
+            val previousSelectedPosition = selected
+            selected = RecyclerView.NO_POSITION
+            notifyItemChanged(previousSelectedPosition)
         }
     }
 

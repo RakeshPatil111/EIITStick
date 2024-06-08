@@ -11,7 +11,6 @@ import com.giphy.sdk.ui.pagination.GPHContent
 class MoreStickersFragment : Fragment() {
 
     private lateinit var binding: FragmentSearchStickerBinding
-    private lateinit var stickerSectionListAdapter: StickerSectionListAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -23,8 +22,6 @@ class MoreStickersFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        stickerSectionListAdapter = StickerSectionListAdapter()
-        stickerSectionListAdapter.updateList(sectionStickers, requireActivity())
         binding.apply {
             rvStickerSection.content = GPHContent.trendingGifs
             rvStickerSection.fixedSizeCells = true

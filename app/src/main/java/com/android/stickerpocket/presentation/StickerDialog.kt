@@ -79,6 +79,11 @@ class StickerDialog : BottomSheetDialogFragment() {
                 this@StickerDialog.dismiss()
                 listener?.onShareSticker(sticker)
             }
+
+            tvAddToFav.setOnClickListener {
+                this@StickerDialog.dismiss()
+                listener?.onAddStickerToFavoritesClick(sticker)
+            }
         }
     }
 
@@ -90,6 +95,7 @@ class StickerDialog : BottomSheetDialogFragment() {
     interface StickerDialogListener {
         fun onStickerInfoClick(sticker: Sticker)
         fun onShareSticker(sticker: Sticker)
+        fun onAddStickerToFavoritesClick(sticker: Sticker)
         fun onCancelClick()
     }
 

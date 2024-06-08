@@ -31,7 +31,6 @@ class EmojiPickerDialog: BottomSheetDialogFragment() {
 
         binding?.apply {
             emojiPickerView.setOnEmojiPickedListener{ emojiItem ->
-                val title = emojiItem.emoji[1].toString()
                 this@EmojiPickerDialog.dismiss()
                 listener?.addSelectedCategory(emojiItem)
             }

@@ -1,21 +1,21 @@
 package com.android.stickerpocket.presentation.sticker
 
 import android.graphics.Color
+import android.text.Html
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import coil.load
 import com.android.stickerpocket.databinding.CvStickerItemBinding
-import com.android.stickerpocket.presentation.Sticker
+import com.android.stickerpocket.domain.model.Category
 
 class EmojiCategoryListAdapter :
     RecyclerView.Adapter<EmojiCategoryListAdapter.StepperViewHolder>(){
 
     private var selected = -1
-    private var stickerClickAction: ((sticker: Sticker, position: Int) -> Unit)? = null
-    private var stickerLongClickAction: ((sticker: Sticker, position: Int) -> Unit)? = null
+    private var stickerClickAction: ((category: Category, position: Int, previouslySelected: Int) -> Unit)? = null
+    private var stickerLongClickAction: ((category: Category, position: Int, previouslySelected: Int) -> Unit)? = null
     private val differ = AsyncListDiffer(this, diffUtilEmoji)
     private var bindings = mutableListOf<CvStickerItemBinding>()
 
@@ -30,50 +30,50 @@ class EmojiCategoryListAdapter :
 
     override fun getItemCount() = differ.currentList.size
 
-    override fun onBindViewHolder(holder: StepperViewHolder, position: Int) =
-        holder.bind(differ.currentList[position])
+    override fun onBindViewHolder(holder: StepperViewHolder, position: Int) {
+        val category = differ.currentList[position]
+        holder.bind(category, position)
+    }
 
-    fun updateList(stickers: ArrayList<Sticker>) {
-        differ.submitList(stickers)
+    fun updateList(list: List<Category>) {
+        differ.submitList(list)
         notifyDataSetChanged()
     }
 
     inner class StepperViewHolder(private val binding: CvStickerItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        fun bind(selectedSticker: Sticker) {
+        fun bind(category: Category, position: Int) {
             binding.apply {
-                ivStickerThumbnail.load(selectedSticker.thumbnail)
-
-                if (selected == adapterPosition) {
+                ivStickerThumbnail.text = Html.fromHtml(category.html)
+                if (category.isHighlighted) {
+                    selected = position
                     cvSticker.strokeColor = Color.GREEN
                     cvSticker.strokeWidth = 6
                 } else {
                     cvSticker.strokeColor = Color.TRANSPARENT
                 }
 
-                stickerClickAction?.let { sticker ->
-                    cvSticker.setOnClickListener {
-                        sticker(selectedSticker, adapterPosition)
-                        setSelectedItem(adapterPosition)
-                    }
-                }
-
-                stickerLongClickAction?.let { sticker ->
+                stickerLongClickAction?.let { c ->
                     cvSticker.setOnLongClickListener {
-                        sticker(selectedSticker, adapterPosition)
+                        c.invoke(category, position, selected)
                         true
                     }
                 }
-
+                stickerClickAction?.let { c ->
+                    cvSticker.setOnClickListener {
+                        c.invoke(category, adapterPosition, selected)
+                        setSelectedItem(position)
+                    }
+                }
             }
         }
     }
 
-    fun stickerActionClick(action: (sticker: Sticker, position: Int) -> Unit) {
+    fun stickerActionClick(action: (category: Category, position: Int, previouslySelected: Int) -> Unit) {
         this.stickerClickAction = action
     }
 
-    fun stickerActionLongClick(action: (sticker: Sticker, position: Int) -> Unit) {
+    fun stickerActionLongClick(action: (category: Category, position: Int, previouslySelected: Int) -> Unit) {
         this.stickerLongClickAction = action
     }
 
@@ -87,12 +87,12 @@ class EmojiCategoryListAdapter :
     }
 
     companion object {
-        val diffUtilEmoji = object : DiffUtil.ItemCallback<Sticker>() {
-            override fun areItemsTheSame(oldItem: Sticker, newItem: Sticker): Boolean {
+        val diffUtilEmoji = object : DiffUtil.ItemCallback<Category>() {
+            override fun areItemsTheSame(oldItem: Category, newItem: Category): Boolean {
                 return oldItem == newItem
             }
 
-            override fun areContentsTheSame(oldItem: Sticker, newItem: Sticker): Boolean {
+            override fun areContentsTheSame(oldItem: Category, newItem: Category): Boolean {
                 return oldItem == newItem
             }
         }

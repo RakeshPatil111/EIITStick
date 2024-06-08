@@ -51,4 +51,6 @@
     <string name="add">Add</string>
     <string name="choose_an_emoji">Choose an Emoji</string>
     <string name="ok">ok</string>
+    <string name="clear_all">Clear All</string>
+    <string name="recent_searches">Recent Searches</string>
 </resources>

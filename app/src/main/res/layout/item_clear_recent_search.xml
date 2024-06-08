@@ -8,28 +8,17 @@
     android:background="@color/color_primary">
 
     <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/tv_query"
+        android:id="@+id/tv_clear_title"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:padding="@dimen/dimen_10dp"
-        android:text="Hello World!"
+        android:text="@string/recent_searches"
         android:textColor="@color/white"
         android:textSize="16sp"
         android:gravity="start"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/iv_remove"
+        app:layout_constraintEnd_toStartOf="@id/btn_clear_all"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <androidx.appcompat.widget.AppCompatImageView
-        android:id="@+id/iv_remove"
-        android:src="@drawable/ic_outline_cancel"
-        android:tint="@color/white"
-        android:padding="@dimen/dimen_12dp"
-        android:layout_width="@dimen/dimen_48dp"
-        android:layout_height="@dimen/dimen_48dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <com.google.android.material.button.MaterialButton
@@ -39,7 +28,6 @@
         android:layout_height="wrap_content"
         android:text="@string/clear_all"
         android:textAllCaps="false"
-        android:visibility="gone"
         android:layout_marginEnd="@dimen/dimen_12dp"
         android:backgroundTint="@color/item_color_inactive"
         android:textColor="@color/white"

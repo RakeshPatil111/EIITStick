@@ -23,6 +23,7 @@
         style="@style/Widget.App.TextInputLayout.Dark"
         app:endIconMode="clear_text"
         app:hintEnabled="false"
+        app:endIconDrawable="@drawable/ic_outline_cancel"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/img_app_icon"
@@ -153,13 +154,13 @@
         android:visibility="gone"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         android:orientation="vertical"
+        android:paddingHorizontal="@dimen/dimen_2dp"
         tools:itemCount="10"
         tools:listitem="@layout/item_recent_search"
         android:background="@color/color_primary"
-        android:layout_marginStart="@dimen/dimen_4dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/rv_category"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/img_screen_bg"/>
 
     <androidx.recyclerview.widget.RecyclerView

@@ -29,6 +29,8 @@ import com.android.stickerpocket.presentation.StickerDialog
 import com.android.stickerpocket.utils.GiphyConfigure
 import com.android.stickerpocket.utils.ItemTouchHelperAdapter
 import com.android.stickerpocket.utils.ItemTouchHelperCallback
+import com.android.stickerpocket.utils.ViewExt.removeBorder
+import com.android.stickerpocket.utils.ViewExt.setBorder
 import com.android.stickerpocket.utils.ViewExt.shakeMe
 import com.giphy.sdk.core.models.Media
 import com.giphy.sdk.core.models.enums.MediaType
@@ -224,6 +226,7 @@ class StickerFragment : Fragment(), GPHGridCallback, GPHSearchGridCallback,
                 }
                 is StickerFragmentInteractor.Actions.ShowFavoritesSticker -> {
                     binding.apply {
+                        setStaticPagesBorder(action)
                         rvRecentSearch.visibility = View.GONE
                         rvStickers.visibility = View.GONE
                         rvFavourites.visibility = View.VISIBLE
@@ -251,6 +254,22 @@ class StickerFragment : Fragment(), GPHGridCallback, GPHSearchGridCallback,
                 else -> {}
             }
         })
+    }
+
+    private fun setStaticPagesBorder(action: StickerFragmentInteractor.Actions) {
+        emojiCategoryListAdapter.clearSelection()
+        when(action){
+            is StickerFragmentInteractor.Actions.ShowFavoritesSticker ->{
+                binding.apply {
+                    cvFavSticker.setBorder()
+                    cvDownloadedSticker.removeBorder()
+                    cvRecentSticker.removeBorder()
+                }
+            }
+            else ->{
+                clearStaticPagesBorder()
+            }
+        }
     }
 
     private fun setupRecentSearchRecyclerView() {
@@ -327,8 +346,9 @@ class StickerFragment : Fragment(), GPHGridCallback, GPHSearchGridCallback,
         itemTouchHelper = ItemTouchHelper(callback)
         itemTouchHelper.attachToRecyclerView(binding.rvCategory)
 
-        emojiCategoryListAdapter.stickerActionClick { sticker, _, previouslySelected ->
-            interactor.onCategoryItemClick(sticker, previouslySelected)
+        emojiCategoryListAdapter.stickerActionClick { sticker, _, previous ->
+            interactor.onCategoryItemClick(sticker, previous)
+            clearStaticPagesBorder()
         }
         emojiCategoryListAdapter.stickerActionLongClick { category, pos, previous ->
             binding.tietSearch.isCursorVisible = false
@@ -341,6 +361,14 @@ class StickerFragment : Fragment(), GPHGridCallback, GPHSearchGridCallback,
             categories.filter { it.isHighlighted }.first().name,
             mediaType = MediaType.gif
         )
+    }
+
+    private fun clearStaticPagesBorder() {
+        binding.apply {
+            cvFavSticker.removeBorder()
+            cvRecentSticker.removeBorder()
+            cvDownloadedSticker.removeBorder()
+        }
     }
 
     override fun onResume() {

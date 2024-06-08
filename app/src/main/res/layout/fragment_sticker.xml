@@ -170,7 +170,7 @@
         android:layout_marginTop="@dimen/dimen_12dp"
         app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
         android:orientation="vertical"
-        app:spanCount="4"
+        app:spanCount="3"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

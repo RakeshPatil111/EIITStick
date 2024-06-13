@@ -4,10 +4,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.android.stickerpocket.R
 import com.android.stickerpocket.StickerApplication
-import com.android.stickerpocket.domain.dao.CategoryDAO
 import com.android.stickerpocket.domain.model.Emoji
 import com.android.stickerpocket.domain.usecase.AddEmojiIfNotExistUseCase
-import com.android.stickerpocket.domain.usecase.FetchCategoriesUseCase
 import com.android.stickerpocket.domain.usecase.InsertCategoriesUseCase
 import com.android.stickerpocket.dtos.getCategories
 import com.android.stickerpocket.network.response.Emojis
@@ -40,13 +38,20 @@ class StickerActivityViewModel: ViewModel() {
         // Check emojis exist in DB
         // If not exist, add them from JSON
         // Also create default categories
+        // Create/Add stickers iff no stickers in Db
         insertCategories()
         loadAndSaveEmoji(R.raw.emojis)
     }
 
+    private fun mapStickersToCategory() {
+        // Add stickers to db
+
+    }
+
     private fun insertCategories() {
-        CoroutineScope(Dispatchers.Default).launch {
+        CoroutineScope(Dispatchers.IO).launch {
             insertCategoriesUseCase.execute(getCategories())
+            mapStickersToCategory()
         }
     }
 

@@ -49,5 +49,3 @@ val sleepy = Sticker(
     "https://i.ibb.co/KmyDKsc/sleepy.png",
     "Sleepy"
 )
-
-val emoji = arrayListOf( clap, laugh, love, unwell, sleepy, clap, laugh, love, unwell, sleepy)

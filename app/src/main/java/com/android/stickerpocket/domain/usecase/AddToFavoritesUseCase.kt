@@ -1,11 +1,11 @@
 package com.android.stickerpocket.domain.usecase
 
 import com.android.stickerpocket.domain.model.Favourites
-import com.android.stickerpocket.domain.repository.StickerRepository
+import com.android.stickerpocket.domain.repository.FavouritesRepository
 
-class AddToFavoritesUseCase(private val stickerRepository: StickerRepository) {
+class AddToFavoritesUseCase(private val favouritesRepository: FavouritesRepository) {
 
     suspend fun execute(favourites: Favourites){
-        stickerRepository.addStickerToFavorites(favourites)
+        favouritesRepository.addStickerToFavorites(favourites)
     }
 }

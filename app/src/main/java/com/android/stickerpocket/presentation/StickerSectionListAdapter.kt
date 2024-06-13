@@ -38,7 +38,7 @@ class StickerSectionListAdapter :
         fun bind(stickerSection: StickerSection) {
             binding.apply {
                 tvTitle.text = stickerSection.title
-                val gifListAdapter = GifListAdapter()
+                val gifListAdapter = CommonStickerAdapter()
                 rvGifs.adapter = gifListAdapter
                 //gifListAdapter.updateList(gifs, context, "HORIZONTAL")
             }

@@ -13,6 +13,8 @@ import com.android.stickerpocket.R
 import com.android.stickerpocket.databinding.CvGifStickerBinding
 import com.android.stickerpocket.utils.StickerExt.toFile
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import com.android.stickerpocket.domain.model.Sticker
+import com.android.stickerpocket.utils.StickerExt.toLoadableImage
 
 class StickerDialog : BottomSheetDialogFragment() {
 
@@ -51,16 +53,16 @@ class StickerDialog : BottomSheetDialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding?.apply {
-            val file = sticker.toFile()
-            val url = if (file.length() > 0) file else sticker.thumbnail
-            sivGifImage.load(url, imageLoader) {
+            //val file = sticker.toFile()
+            //val url = if (file.length() > 0) file else sticker.thumbnail
+            sivGifImage.load(sticker.toLoadableImage(), imageLoader) {
                 target(
                     onStart = {
                         binding!!.loading.visibility = View.VISIBLE
                     },
                     onSuccess = {
                         binding!!.loading.visibility = View.GONE
-                        sivGifImage.load(url, imageLoader)
+                        sivGifImage.load(sticker.toLoadableImage(), imageLoader)
                     },
                     onError = {
                         // Show error image

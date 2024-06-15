@@ -15,4 +15,6 @@ class StickerRepository(private val dao: StickerDAO) {
     suspend fun fetchAll() = dao.fetchAll()
 
     suspend fun fetchStickersForCategory(id: Int) = dao.fetchForCategory(id)
+
+    suspend fun fetchStickerForQuery(query: String) = dao.fetchStickersForQuery(query)
 }

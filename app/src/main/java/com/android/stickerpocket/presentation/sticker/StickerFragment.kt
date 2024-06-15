@@ -23,6 +23,7 @@ import com.android.stickerpocket.databinding.FragmentStickerBinding
 import com.android.stickerpocket.presentation.CommonStickerAdapter
 import com.android.stickerpocket.domain.model.Category
 import com.android.stickerpocket.domain.model.Sticker
+import com.android.stickerpocket.presentation.FavouritesAdapter
 import com.android.stickerpocket.presentation.StickerCategoryDialog
 import com.android.stickerpocket.presentation.StickerDetailsNavDirections
 import com.android.stickerpocket.presentation.StickerDialog
@@ -49,7 +50,8 @@ class StickerFragment : Fragment(), GPHGridCallback, GPHSearchGridCallback,
     private lateinit var itemTouchHelper: ItemTouchHelper
     private lateinit var callback: ItemTouchHelperCallback
     private lateinit var recentSearchAdapter: RecentSearchAdapter
-    private lateinit var gifAdapter: CommonStickerAdapter
+    private lateinit var commonStickerAdapter: CommonStickerAdapter
+    private lateinit var favouritesAdapter: FavouritesAdapter
     var searchJob: Job? = null
 
     private val interactor by lazy {
@@ -63,7 +65,7 @@ class StickerFragment : Fragment(), GPHGridCallback, GPHSearchGridCallback,
         binding = FragmentStickerBinding.inflate(inflater, container, false)
         observeInteractor()
         setClickListeners()
-        initGiphyView()
+        initAdapters()
         return binding.root
     }
 
@@ -78,12 +80,6 @@ class StickerFragment : Fragment(), GPHGridCallback, GPHSearchGridCallback,
             when (val action = it.getContentIfNotHandled()) {
                 is StickerFragmentInteractor.Actions.InitCategoryView -> {
                     setupEmojiRecyclerView(action.categories)
-                    setupRecentSearchRecyclerView()
-                    gifAdapter = CommonStickerAdapter()
-                    binding.rvStickers.adapter = gifAdapter
-                    gifAdapter.gifActionClick { gif, position ->
-                        interactor.onStickerClick(gif, position)
-                    }
                 }
 
                 is StickerFragmentInteractor.Actions.HideGiphyGridViewAndShowRecentSearches -> {
@@ -186,6 +182,7 @@ class StickerFragment : Fragment(), GPHGridCallback, GPHSearchGridCallback,
                 is StickerFragmentInteractor.Actions.ShowStickerDialog -> {
                     val stickerDialog = StickerDialog()
                     stickerDialog.setSticker(action.sticker)
+                    stickerDialog.isOpenedForFav(action.isFavourite)
                     stickerDialog.setListener(object : StickerDialog.StickerDialogListener {
                         override fun onStickerInfoClick(sticker: Sticker) {
                             interactor.onStickerInfoClick(sticker)
@@ -195,8 +192,8 @@ class StickerFragment : Fragment(), GPHGridCallback, GPHSearchGridCallback,
                             interactor.onStickerShare(sticker)
                         }
 
-                        override fun onAddStickerToFavoritesClick(sticker: Sticker) {
-                            interactor.onAddStickerToFavoritesClick(sticker)
+                        override fun onAddStickerToFavoritesClick(sticker: Sticker, didOpenForFav: Boolean) {
+                            interactor.onAddStickerToFavoritesClick(sticker, didOpenForFav)
                         }
 
                         override fun onCancelClick() {
@@ -225,12 +222,19 @@ class StickerFragment : Fragment(), GPHGridCallback, GPHSearchGridCallback,
                     findNavController().navigate(direction)
                 }
                 is StickerFragmentInteractor.Actions.ShowFavoritesSticker -> {
-                    binding.apply {
-                        setStaticPagesBorder(action)
-                        rvRecentSearch.visibility = View.GONE
-                        rvStickers.visibility = View.VISIBLE
-                        //rvFavourites.visibility = View.VISIBLE
-                        gifAdapter.updateList(action.favoriteStickers)
+                    if (!emojiCategoryListAdapter.isCategorySelected()) {
+                        binding.apply {
+                            setStaticPagesBorder(action)
+                            rvRecentSearch.visibility = View.GONE
+                            rvStickers.visibility = View.VISIBLE
+                            rvStickers.adapter = favouritesAdapter
+                            favouritesAdapter.updateList(action.favoriteStickers)
+                            binding.apply {
+                                cvFavSticker.setBorder()
+                                cvDownloadedSticker.removeBorder()
+                                cvRecentSticker.removeBorder()
+                            }
+                        }
                     }
                 }
 
@@ -253,8 +257,11 @@ class StickerFragment : Fragment(), GPHGridCallback, GPHSearchGridCallback,
                 }
 
                 is StickerFragmentInteractor.Actions.ShowStickers -> {
-                    gifAdapter.updateList(action.stickers)
-                    binding.rvStickers.visibility = View.VISIBLE
+                    commonStickerAdapter.updateList(action.stickers)
+                    if (emojiCategoryListAdapter.isCategorySelected()) {
+                        binding.rvStickers.visibility = View.VISIBLE
+                        binding.rvStickers.adapter = commonStickerAdapter
+                    }
                 }
                 else -> {}
             }
@@ -263,18 +270,6 @@ class StickerFragment : Fragment(), GPHGridCallback, GPHSearchGridCallback,
 
     private fun setStaticPagesBorder(action: StickerFragmentInteractor.Actions) {
         emojiCategoryListAdapter.clearSelection()
-        when(action){
-            is StickerFragmentInteractor.Actions.ShowFavoritesSticker ->{
-                binding.apply {
-                    cvFavSticker.setBorder()
-                    cvDownloadedSticker.removeBorder()
-                    cvRecentSticker.removeBorder()
-                }
-            }
-            else ->{
-                clearStaticPagesBorder()
-            }
-        }
     }
 
     private fun setupRecentSearchRecyclerView() {
@@ -296,31 +291,37 @@ class StickerFragment : Fragment(), GPHGridCallback, GPHSearchGridCallback,
         })
     }
 
-    private fun initGiphyView() {
-        binding.rvStickers.apply {
-            //GiphyConfigure.configGiphyGridView(this)
-            //callback = this@StickerFragment
-            //content = GPHContent.recents
+    private fun initAdapters() {
+        commonStickerAdapter = CommonStickerAdapter()
+        favouritesAdapter = FavouritesAdapter()
+        binding.rvStickers.adapter = commonStickerAdapter
+        binding.rvStickers.visibility = View.VISIBLE
+
+        commonStickerAdapter.onItemClick { sticker, position ->
+            interactor.onStickerClick(sticker, position)
+        }
+
+        favouritesAdapter.onItemClick { sticker, position ->
+            interactor.onFavStickerClick(sticker, position)
         }
     }
 
     private fun setClickListeners() {
         binding.apply {
             cvRecentSticker.setOnClickListener {
-                //binding.rvStickers.content = GPHContent.recents
                 binding.rvRecentSearch.visibility = View.GONE
                 binding.rvStickers.visibility = View.VISIBLE
-                //binding.rvFavourites.visibility = View.GONE
+                emojiCategoryListAdapter.clearSelection()
 
             }
             cvFavSticker.setOnClickListener {
                 interactor.onFavClick()
+                emojiCategoryListAdapter.clearSelection()
             }
             cvDownloadedSticker.setOnClickListener {
-                //binding.rvStickers.content = GPHContent.recents
                 binding.rvRecentSearch.visibility = View.GONE
                 binding.rvStickers.visibility = View.VISIBLE
-                //binding.rvFavourites.visibility = View.GONE
+                emojiCategoryListAdapter.clearSelection()
             }
             addChangeListeners(tietSearch)
         }

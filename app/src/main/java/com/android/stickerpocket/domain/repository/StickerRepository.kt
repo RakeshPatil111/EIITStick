@@ -6,7 +6,7 @@ import com.android.stickerpocket.domain.model.Sticker
 class StickerRepository(private val dao: StickerDAO) {
     suspend fun getDownloaded() = dao.getDownloadedStickers()
 
-    suspend fun fetchFavourites() = dao.getFavouriteStickers()
+    suspend fun fetchFavourites() = dao.fetchAllFavouritesSticker()
 
     suspend fun updateSticker(sticker: Sticker) = dao.update(sticker)
 

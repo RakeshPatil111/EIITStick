@@ -17,7 +17,7 @@ interface StickerDAO {
     suspend fun update(sticker: Sticker)
 
     @Query("SELECT * FROM sticker WHERE isFavourite = 1")
-    fun getFavouriteStickers(): Flow<List<Sticker>>
+    fun fetchAllFavouritesSticker(): Flow<List<Sticker>>
 
     @Query("SELECT * FROM sticker WHERE isDownloaded = 1")
     suspend fun getDownloadedStickers(): List<Sticker>

@@ -73,6 +73,13 @@ class CommonStickerAdapter : RecyclerView.Adapter<CommonStickerAdapter.GifListVi
                         }
                     )
                 }
+
+                if (sticker.isFavourite){
+                    favImg.visibility= VISIBLE
+                }else{
+                    favImg.visibility= GONE
+                }
+
                 gifClickAction?.let { gif ->
                     sivGifImage.setOnClickListener {
                         gif(sticker, adapterPosition)

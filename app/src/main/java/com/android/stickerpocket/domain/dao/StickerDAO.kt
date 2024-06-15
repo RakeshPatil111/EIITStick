@@ -4,15 +4,28 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.android.stickerpocket.domain.model.Favourites
+import androidx.room.Update
+import com.android.stickerpocket.domain.model.Sticker
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface StickerDAO {
-
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun addToFavorites(favourites: Favourites)
+    suspend fun insertAll(stickers: List<Sticker>)
 
-    @Query("SELECT * FROM Favourites ORDER BY date DESC")
-    fun fetchAllFavorites(): Flow<List<Favourites>>
+    @Update
+    suspend fun update(sticker: Sticker)
+
+    @Query("SELECT * FROM sticker WHERE isFavourite = 1")
+    fun getFavouriteStickers(): Flow<List<Sticker>>
+
+    @Query("SELECT * FROM sticker WHERE isDownloaded = 1")
+    suspend fun getDownloadedStickers(): List<Sticker>
+
+    @Query("SELECT * FROM sticker")
+    suspend fun fetchAll(): List<Sticker>
+
+    @Query("SELECT * FROM sticker WHERE categoryId = :id")
+    fun fetchForCategory(id: Int): Flow<List<Sticker>>
+
 }

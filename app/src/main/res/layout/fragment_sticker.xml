@@ -80,7 +80,7 @@
         android:id="@+id/cv_downloaded_sticker"
         android:layout_width="46dp"
         android:layout_height="52dp"
-        android:layout_marginVertical="@dimen/dimen_8dp"
+        android:layout_marginVertical="@dimen/dimen_10dp"
         app:cardBackgroundColor="@color/sticker_bg"
         app:cardCornerRadius="10dp"
         app:cardElevation="0dp"
@@ -103,7 +103,7 @@
         android:id="@+id/cv_fav_sticker"
         android:layout_width="46dp"
         android:layout_height="52dp"
-        android:layout_marginVertical="@dimen/dimen_8dp"
+        android:layout_marginVertical="@dimen/dimen_10dp"
         app:cardBackgroundColor="@color/sticker_bg"
         app:cardCornerRadius="10dp"
         app:cardElevation="0dp"
@@ -126,7 +126,7 @@
         android:id="@+id/rv_category"
         android:layout_width="48dp"
         android:layout_height="0dp"
-        android:layout_marginTop="@dimen/dimen_6dp"
+        android:layout_marginTop="@dimen/dimen_10dp"
         android:clipToPadding="false"
         android:paddingBottom="@dimen/dimen_32dp"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
@@ -137,11 +137,13 @@
         tools:itemCount="4"
         tools:listitem="@layout/cv_sticker_item" />
 
-    <com.giphy.sdk.ui.views.GiphyGridView
+    <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_stickers"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginTop="@dimen/dimen_12dp"
+        app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+        app:spanCount="3"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/rv_category"
@@ -162,18 +164,4 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/img_screen_bg"/>
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rv_favourites"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginTop="@dimen/dimen_12dp"
-        app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
-        android:orientation="vertical"
-        app:spanCount="3"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/rv_category"
-        app:layout_constraintTop_toTopOf="@+id/img_screen_bg" />
 </androidx.constraintlayout.widget.ConstraintLayout>

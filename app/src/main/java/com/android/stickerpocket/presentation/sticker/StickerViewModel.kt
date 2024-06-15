@@ -7,6 +7,7 @@ import com.android.stickerpocket.StickerApplication
 import com.android.stickerpocket.domain.model.Category
 import com.android.stickerpocket.domain.model.Favourites
 import com.android.stickerpocket.domain.model.RecentSearch
+import com.android.stickerpocket.domain.model.Sticker
 import com.android.stickerpocket.domain.usecase.AddToFavoritesUseCase
 import com.android.stickerpocket.domain.usecase.ClearAllRecentSearchUseCase
 import com.android.stickerpocket.domain.usecase.CreateOrUpdatedRecentSearchUseCase
@@ -14,13 +15,16 @@ import com.android.stickerpocket.domain.usecase.DeleteRecentSearchUseCase
 import com.android.stickerpocket.domain.usecase.FetchAllFavoritesUseCase
 import com.android.stickerpocket.domain.usecase.FetchCategoriesUseCase
 import com.android.stickerpocket.domain.usecase.FetchEmojiByEmojiIcon
+import com.android.stickerpocket.domain.usecase.FetchStickersForCategoryUseCase
 import com.android.stickerpocket.domain.usecase.GetRecentSearchUseCase
 import com.android.stickerpocket.domain.usecase.InsertOrReplaceCategoriesUseCase
+import com.android.stickerpocket.domain.usecase.UpdateStickerUseCase
 import com.android.stickerpocket.dtos.getCategories
-import com.android.stickerpocket.presentation.Sticker
+import com.android.stickerpocket.utils.StickerExt.toFavorite
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import java.io.File
 import java.io.FileOutputStream
@@ -33,6 +37,7 @@ class StickerViewModel : ViewModel() {
         data class RecentSearches(val recentSearches: List<RecentSearch>) : Result()
         object CategoryCreated : Result()
         object CreateCatFailure : Result()
+        data class StickersReceivedForCategory(val stickers: List<Sticker>) : Result()
     }
 
     private val _liveData = MutableLiveData<Result>()
@@ -48,11 +53,14 @@ class StickerViewModel : ViewModel() {
     private var clearAllRecentSearchUseCase: ClearAllRecentSearchUseCase
     private var fetchEMojiByIcon: FetchEmojiByEmojiIcon
     private var recentSearches: MutableList<RecentSearch> = mutableListOf()
-    private var favourites: MutableList<Favourites> = mutableListOf()
+    private var favourites: MutableList<Sticker> = mutableListOf()
     private var recentSearchs: MutableList<RecentSearch> = mutableListOf()
     private var categories = mutableListOf<Category>()
+    private var stickers = mutableListOf<com.android.stickerpocket.domain.model.Sticker>()
     private var fromPosition: Int? = null
     private var toPosition = 0
+    private val fetchStickersForCategoryUseCase: FetchStickersForCategoryUseCase
+    private val updateStickerUseCase: UpdateStickerUseCase
 
     init {
         deleteRecentSearchUseCase =
@@ -68,11 +76,14 @@ class StickerViewModel : ViewModel() {
             ClearAllRecentSearchUseCase(StickerApplication.instance.recentSearchRepository)
         fetchEMojiByIcon = FetchEmojiByEmojiIcon(StickerApplication.instance.emojisRepository)
         addToFavoritesUseCase =
-            AddToFavoritesUseCase(StickerApplication.instance.stickerRepository)
+            AddToFavoritesUseCase(StickerApplication.instance.favouritesRepository)
         fetchAllFavoritesUseCase =
             FetchAllFavoritesUseCase(StickerApplication.instance.stickerRepository)
+        fetchStickersForCategoryUseCase = FetchStickersForCategoryUseCase(StickerApplication.instance.stickerRepository)
+        updateStickerUseCase = UpdateStickerUseCase(StickerApplication.instance.stickerRepository)
         fetchRecentSearches()
         fetchCategories()
+        fetchAllFavorites()
     }
 
     private fun fetchCategories() {
@@ -84,6 +95,8 @@ class StickerViewModel : ViewModel() {
                             categories = it.categories.toMutableList()
                                 .ifEmpty { getCategories().toMutableList() }
                             _liveData.postValue(Result.CategoryCreated)
+                            val selectedCategory = categories.filter { it.isHighlighted == true }.first().id
+                            fetchStickersForCategory(selectedCategory)
                         }
 
                         is FetchCategoriesUseCase.Result.Failure -> {
@@ -92,6 +105,18 @@ class StickerViewModel : ViewModel() {
                     }
                 }
 
+        }
+    }
+
+    private fun fetchStickersForCategory(selectedCategory: Int?) {
+        selectedCategory?.let {
+            CoroutineScope(Dispatchers.IO).launch {
+                fetchStickersForCategoryUseCase.execute(it)
+                    .collectLatest {
+                        stickers = it.toMutableList()
+                        _liveData.postValue(Result.StickersReceivedForCategory(stickers.toList()))
+                    }
+            }
         }
     }
 
@@ -143,7 +168,7 @@ class StickerViewModel : ViewModel() {
         }
     }
 
-    fun downloadSticker(sticker: Sticker) {
+    fun downloadSticker(sticker: com.android.stickerpocket.presentation.Sticker) {
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 val url = URL(sticker.thumbnail)
@@ -172,9 +197,11 @@ class StickerViewModel : ViewModel() {
         }
     }
 
-    fun addToFavorites(favourites: Favourites) {
+    fun addToFavorites(sticker: Sticker) {
         CoroutineScope(Dispatchers.IO).launch {
-            addToFavoritesUseCase.execute(favourites)
+            addToFavoritesUseCase.execute(sticker.toFavorite())
+            sticker.isFavourite = true
+            updateStickerUseCase.execute(sticker)
         }
     }
 
@@ -247,6 +274,7 @@ class StickerViewModel : ViewModel() {
     }
 
     fun categorySelected(c: Category, previous: Int) {
+        fetchStickersForCategory(c.id)
         categories.forEachIndexed { index, category ->
             if (c.unicode == category.unicode) {
                 category.isHighlighted = true

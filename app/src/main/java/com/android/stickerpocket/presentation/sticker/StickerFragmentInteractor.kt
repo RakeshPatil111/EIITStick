@@ -28,12 +28,13 @@ class StickerFragmentInteractor {
         data class ShowGiphyViewForRecentSearch(val query: String) : Actions()
         data class LoadEmojisForCategory(val query: String) : Actions()
         data class ShowCategoryOptionDialog(val category: Category, val pos: Int, val previous: Int) : Actions()
-        data class ShowStickerDialog(val sticker: Sticker) : Actions()
+        data class ShowStickerDialog(val sticker: com.android.stickerpocket.domain.model.Sticker) : Actions()
         data class ShareSticker(val gifFile: File) : Actions()
         data class NavigateToStickerInfo(val sticker: Sticker) : Actions()
-        data class ShowFavoritesSticker(val favoriteStickers: List<Favourites>): Actions()
+        data class ShowFavoritesSticker(val favoriteStickers: List<com.android.stickerpocket.domain.model.Sticker>): Actions()
         data class ReloadCategories(val categories: List<Category>) : Actions()
         data class ShowMessage(val message: String): Actions()
+        data class ShowStickers(val stickers: List<com.android.stickerpocket.domain.model.Sticker>) : Actions()
     }
     private val _liveData = MutableLiveData<Event<Actions>>()
     val liveData = _liveData
@@ -47,6 +48,9 @@ class StickerFragmentInteractor {
                 }
                 is StickerViewModel.Result.CreateCatFailure -> {
                     _liveData.value = Event(Actions.ShowMessage("Emoji not found, Can not create category"))
+                }
+                is StickerViewModel.Result.StickersReceivedForCategory -> {
+                    _liveData.postValue(Event(Actions.ShowStickers(it.stickers)))
                 }
                 else -> {}
             }
@@ -88,7 +92,7 @@ class StickerFragmentInteractor {
 
     fun onCategoryItemClick(category: Category, previous: Int) {
         viewModel.categorySelected(category, previous)
-        _liveData.value = Event(Actions.LoadEmojisForCategory(category.name))
+        //_liveData.value = Event(Actions.LoadEmojisForCategory(category.name))
     }
 
     fun onCategoryItemLongClick(category: Category, pos: Int, previous: Int) {
@@ -97,21 +101,21 @@ class StickerFragmentInteractor {
 
     fun onMediaClick(media: Media) {
         val sticker = media.toSticker()
-        _liveData.value = Event(Actions.ShowStickerDialog(sticker))
+        //_liveData.value = Event(Actions.ShowStickerDialog(sticker))
         viewModel.downloadSticker(sticker)
     }
 
-    fun onStickerInfoClick(sticker: Sticker) {
-        _liveData.value = Event(Actions.NavigateToStickerInfo(sticker))
+    fun onStickerInfoClick(sticker: com.android.stickerpocket.domain.model.Sticker) {
+        //_liveData.value = Event(Actions.NavigateToStickerInfo(sticker))
     }
 
-    fun onStickerShare(sticker: Sticker) {
-        _liveData.value = Event(Actions.ShareSticker(sticker.toFile()))
+    fun onStickerShare(sticker: com.android.stickerpocket.domain.model.Sticker) {
+       // _liveData.value = Event(Actions.ShareSticker(sticker.toFile()))
     }
 
-    fun onAddStickerToFavoritesClick(sticker: Sticker) {
-        viewModel.downloadSticker(sticker)
-        viewModel.addToFavorites(sticker.toFavorite())
+    fun onAddStickerToFavoritesClick(sticker: com.android.stickerpocket.domain.model.Sticker) {
+        //viewModel.downloadSticker(sticker)
+        viewModel.addToFavorites(sticker)
     }
     fun onFavClick() {
         _liveData.value = Event(Actions.ShowFavoritesSticker(viewModel.getFavourites()))
@@ -131,5 +135,9 @@ class StickerFragmentInteractor {
 
     fun onDeleteCategory(category: Category, pos: Int) {
         viewModel.deleteCategory(category, pos)
+    }
+
+    fun onStickerClick(sticker: com.android.stickerpocket.domain.model.Sticker, position: Int) {
+        _liveData.value = Event(Actions.ShowStickerDialog(sticker))
     }
 }

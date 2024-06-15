@@ -1,5 +1,8 @@
 package com.android.stickerpocket.presentation
 
+import com.android.stickerpocket.dtos.Gifs
+import com.android.stickerpocket.dtos.gifs
+
 data class StickerSection(
     val title: String,
     val gifs: ArrayList<Gifs> = arrayListOf()

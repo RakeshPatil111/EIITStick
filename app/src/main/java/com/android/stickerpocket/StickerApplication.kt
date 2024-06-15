@@ -5,9 +5,16 @@ import com.android.stickerpocket.domain.db.StickerDB
 import com.android.stickerpocket.domain.repository.CategoryRepository
 import com.android.stickerpocket.domain.repository.EmojiRepository
 import com.android.stickerpocket.domain.repository.RecentSearchRepository
+import com.android.stickerpocket.domain.repository.FavouritesRepository
 import com.android.stickerpocket.domain.repository.StickerRepository
+import com.android.stickerpocket.domain.usecase.InsertCategoriesUseCase
+import com.android.stickerpocket.domain.usecase.InsertStickersUseCase
+import com.android.stickerpocket.dtos.getCategories
+import com.android.stickerpocket.dtos.getMappedStickersToCategory
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
 
 class StickerApplication: Application() {
     companion object {
@@ -17,11 +24,25 @@ class StickerApplication: Application() {
     override fun onCreate() {
         super.onCreate()
         instance = this
+        // load data, this will be done only once
+        loadDataIntoDB()
     }
+
+    private fun loadDataIntoDB() {
+        // Create Categories
+        CoroutineScope(Dispatchers.IO).launch {
+            InsertCategoriesUseCase(categoryRepository).execute(getCategories())
+        }
+        CoroutineScope(Dispatchers.IO).launch {
+            InsertStickersUseCase(stickerRepository).execute(getMappedStickersToCategory())
+        }
+    }
+
     val applicationScope = CoroutineScope(SupervisorJob())
     val database by lazy { StickerDB.getDatabase(this, applicationScope) }
     val recentSearchRepository by lazy { RecentSearchRepository(database.recentSearchDAO()) }
     val emojisRepository by lazy { EmojiRepository(database.emojiDAO()) }
-    val stickerRepository by lazy { StickerRepository(database.stickerDAO()) }
+    val favouritesRepository by lazy { FavouritesRepository(database.favouritesDAO()) }
     val categoryRepository by lazy { CategoryRepository(database.categoryDAO()) }
+    val stickerRepository by lazy { StickerRepository(database.stickerDAO()) }
 }

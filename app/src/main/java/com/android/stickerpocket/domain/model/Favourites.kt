@@ -12,5 +12,6 @@ class Favourites(
     val url: String?,
     val position: Int = 0,
     val name: String,
-    val date: Long = Date().time
+    val date: Long = Date().time,
+    val stickerId: String
 )

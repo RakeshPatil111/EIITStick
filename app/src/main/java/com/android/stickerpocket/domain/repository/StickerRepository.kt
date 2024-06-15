@@ -1,12 +1,18 @@
 package com.android.stickerpocket.domain.repository
 
 import com.android.stickerpocket.domain.dao.StickerDAO
-import com.android.stickerpocket.domain.model.Favourites
-import kotlinx.coroutines.flow.Flow
+import com.android.stickerpocket.domain.model.Sticker
 
-class StickerRepository(private val stickerDAO: StickerDAO) {
+class StickerRepository(private val dao: StickerDAO) {
+    suspend fun getDownloaded() = dao.getDownloadedStickers()
 
-    suspend fun addStickerToFavorites(favourites: Favourites) = stickerDAO.addToFavorites(favourites)
+    suspend fun fetchFavourites() = dao.getFavouriteStickers()
 
-    suspend fun fetchAllFavorites(): Flow<List<Favourites>> = stickerDAO.fetchAllFavorites()
+    suspend fun updateSticker(sticker: Sticker) = dao.update(sticker)
+
+    suspend fun insertAll(stickers: List<Sticker>) = dao.insertAll(stickers)
+
+    suspend fun fetchAll() = dao.fetchAll()
+
+    suspend fun fetchStickersForCategory(id: Int) = dao.fetchForCategory(id)
 }

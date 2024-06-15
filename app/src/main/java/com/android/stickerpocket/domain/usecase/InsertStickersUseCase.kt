@@ -9,4 +9,7 @@ class InsertStickersUseCase (private val stickerRepository: StickerRepository) {
             stickerRepository.insertAll(stickers)
         }
     }
+    suspend fun forceInsertAll(stickers: List<Sticker>) {
+        stickerRepository.insertAll(stickers)
+    }
 }

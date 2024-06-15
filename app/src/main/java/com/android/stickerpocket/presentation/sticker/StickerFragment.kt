@@ -48,7 +48,9 @@ class StickerFragment : Fragment(), GPHGridCallback, GPHSearchGridCallback,
     private lateinit var binding: FragmentStickerBinding
     private lateinit var emojiCategoryListAdapter: EmojiCategoryListAdapter
     private lateinit var itemTouchHelper: ItemTouchHelper
+    private lateinit var stickerItemTouchHelper: ItemTouchHelper
     private lateinit var callback: ItemTouchHelperCallback
+    private lateinit var stickerCallback: ItemTouchHelperCallback
     private lateinit var recentSearchAdapter: RecentSearchAdapter
     private lateinit var commonStickerAdapter: CommonStickerAdapter
     private lateinit var favouritesAdapter: FavouritesAdapter
@@ -335,10 +337,39 @@ class StickerFragment : Fragment(), GPHGridCallback, GPHSearchGridCallback,
     private fun setupEmojiRecyclerView(categories: List<Category>) {
         emojiCategoryListAdapter = EmojiCategoryListAdapter()
         binding.rvCategory.adapter = emojiCategoryListAdapter
-
         callback = ItemTouchHelperCallback(this)
         itemTouchHelper = ItemTouchHelper(callback)
         itemTouchHelper.attachToRecyclerView(binding.rvCategory)
+        stickerItemTouchHelper = ItemTouchHelper(object :ItemTouchHelper.Callback() {
+            override fun getMovementFlags(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder
+            ): Int {
+                val dragFlags = ItemTouchHelper.UP or ItemTouchHelper.DOWN or ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT
+                val swipeFlags = 0
+                return makeMovementFlags(dragFlags, swipeFlags)
+            }
+
+            override fun onMove(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                target: RecyclerView.ViewHolder
+            ): Boolean {
+                interactor.onStickerMoved(viewHolder.absoluteAdapterPosition, target.absoluteAdapterPosition)
+                return true
+            }
+
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                // No action required as swipe is disabled
+            }
+
+            override fun clearView(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder) {
+                super.clearView(recyclerView, viewHolder)
+                interactor.onStickerDragComplete()
+            }
+
+        })
+        stickerItemTouchHelper.attachToRecyclerView(binding.rvStickers)
 
         emojiCategoryListAdapter.stickerActionClick { sticker, _, previous ->
             interactor.onCategoryItemClick(sticker, previous)

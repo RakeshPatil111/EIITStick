@@ -19,6 +19,7 @@ import com.android.stickerpocket.domain.usecase.FetchStickersForCategoryUseCase
 import com.android.stickerpocket.domain.usecase.FetchStickersForQueryUseCase
 import com.android.stickerpocket.domain.usecase.GetRecentSearchUseCase
 import com.android.stickerpocket.domain.usecase.InsertOrReplaceCategoriesUseCase
+import com.android.stickerpocket.domain.usecase.InsertStickersUseCase
 import com.android.stickerpocket.domain.usecase.UpdateStickerUseCase
 import com.android.stickerpocket.dtos.getCategories
 import com.android.stickerpocket.utils.StickerExt.toFavorite
@@ -65,6 +66,7 @@ class StickerViewModel : ViewModel() {
     private val fetchStickersForCategoryUseCase: FetchStickersForCategoryUseCase
     private val updateStickerUseCase: UpdateStickerUseCase
     private val fetchStickersForQueryUseCase: FetchStickersForQueryUseCase
+    private val insertStickersUseCase: InsertStickersUseCase
 
     init {
         deleteRecentSearchUseCase =
@@ -88,6 +90,7 @@ class StickerViewModel : ViewModel() {
         updateStickerUseCase = UpdateStickerUseCase(StickerApplication.instance.stickerRepository)
         fetchStickersForQueryUseCase =
             FetchStickersForQueryUseCase(StickerApplication.instance.stickerRepository)
+        insertStickersUseCase = InsertStickersUseCase(StickerApplication.instance.stickerRepository)
         fetchRecentSearches()
         fetchCategories()
         fetchAllFavorites()
@@ -121,8 +124,13 @@ class StickerViewModel : ViewModel() {
             CoroutineScope(Dispatchers.IO).launch {
                 fetchStickersForCategoryUseCase.execute(it)
                     .collectLatest {
-                        stickers = it.toMutableList()
-                        _liveData.postValue(Result.StickersReceivedForCategory(stickers.toList()))
+                        when (it) {
+                            is FetchStickersForCategoryUseCase.Result.Success -> {
+                                stickers = it.stickers.toMutableList()
+                                _liveData.postValue(Result.StickersReceivedForCategory(stickers.toList()))
+                            }
+                            else -> {}
+                        }
                     }
             }
         }
@@ -262,15 +270,17 @@ class StickerViewModel : ViewModel() {
     }
 
     fun reArrangeCategory() {
-        if (fromPosition != toPosition) {
-            val category = categories[fromPosition!!]
-            categories.removeAt(fromPosition!!)
-            categories.add(toPosition, category)
-            categories.forEachIndexed { index, category ->
-                category.position = index
+        fromPosition?.let {
+            if (fromPosition != toPosition) {
+                val category = categories[fromPosition!!]
+                categories.removeAt(fromPosition!!)
+                categories.add(toPosition, category)
+                categories.forEachIndexed { index, category ->
+                    category.position = index
+                }
+                updateCategories()
+                fromPosition = null
             }
-            updateCategories()
-            fromPosition = null
         }
     }
 
@@ -285,7 +295,7 @@ class StickerViewModel : ViewModel() {
     fun categorySelected(c: Category, previous: Int) {
         fetchStickersForCategory(c.id)
         categories.forEachIndexed { index, category ->
-            if (c.unicode == category.unicode) {
+            if (c.id == category.id) {
                 category.isHighlighted = true
             } else {
                 category.isHighlighted = false
@@ -312,6 +322,19 @@ class StickerViewModel : ViewModel() {
         CoroutineScope(Dispatchers.IO).launch {
             val list = fetchStickersForQueryUseCase.execute(query)
             _liveData.postValue(Result.StickersWithQuery(query, list))
+        }
+    }
+
+    fun reArrangeStickers() {
+        if (fromPosition != toPosition && fromPosition != null) {
+            val sticker = stickers[fromPosition!!]
+            stickers.removeAt(fromPosition!!)
+            stickers.add(toPosition, sticker)
+            stickers.forEachIndexed { index, sticker ->
+                sticker.position = index
+            }
+            fromPosition = null
+            CoroutineScope(Dispatchers.Default).launch { insertStickersUseCase.forceInsertAll(stickers) }
         }
     }
 }

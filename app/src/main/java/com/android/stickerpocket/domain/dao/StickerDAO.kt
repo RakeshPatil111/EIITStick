@@ -19,16 +19,16 @@ interface StickerDAO {
     @Update
     suspend fun update(sticker: Sticker)
 
-    @Query("SELECT * FROM sticker WHERE isFavourite = 1")
+    @Query("SELECT * FROM sticker WHERE isFavourite = 1 ORDER BY position ASC")
     fun fetchAllFavouritesSticker(): Flow<List<Sticker>>
 
     @Query("SELECT * FROM sticker WHERE isDownloaded = 1")
     suspend fun getDownloadedStickers(): List<Sticker>
 
-    @Query("SELECT * FROM sticker")
+    @Query("SELECT * FROM sticker ORDER BY position ASC")
     suspend fun fetchAll(): List<Sticker>
 
-    @Query("SELECT * FROM sticker WHERE categoryId = :id")
+    @Query("SELECT * FROM sticker WHERE categoryId = :id ORDER BY position ASC")
     fun fetchForCategory(id: Int): Flow<List<Sticker>>
 
     @Query("SELECT * FROM sticker WHERE name LIKE '%' || :query || '%'")

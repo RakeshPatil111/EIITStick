@@ -102,7 +102,6 @@ class StickerFragmentInteractor {
 
     fun onCategoryItemClick(category: Category, previous: Int) {
         viewModel.categorySelected(category, previous)
-        //_liveData.value = Event(Actions.LoadEmojisForCategory(category.name))
     }
 
     fun onCategoryItemLongClick(category: Category, pos: Int, previous: Int) {
@@ -150,11 +149,19 @@ class StickerFragmentInteractor {
     }
 
     fun onStickerClick(sticker: com.android.stickerpocket.domain.model.Sticker, position: Int) {
-        _liveData.value = Event(Actions.ShowStickerDialog(sticker, position, false))
+        _liveData.value = Event(Actions.ShowStickerDialog(sticker, position, sticker.isFavourite))
     }
 
     fun onFavStickerClick(sticker: com.android.stickerpocket.domain.model.Sticker, position: Int) {
         _liveData.value = Event(Actions.ShowStickerDialog(sticker, position, isFavourite = true))
+    }
+
+    fun onStickerMoved(from: Int, to: Int) {
+        viewModel.itemMoved(from, to)
+    }
+
+    fun onStickerDragComplete() {
+        viewModel.reArrangeStickers()
     }
 
     fun onDownloadClick() {

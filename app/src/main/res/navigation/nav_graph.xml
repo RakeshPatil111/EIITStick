@@ -15,7 +15,7 @@
             app:destination="@id/stickerDetailsFragment">
             <argument
                 android:name="sticker"
-                app:argType="com.android.stickerpocket.presentation.Sticker"/>
+                app:argType="com.android.stickerpocket.presentation.StickerDTO"/>
         </action>
     </fragment>
     <fragment

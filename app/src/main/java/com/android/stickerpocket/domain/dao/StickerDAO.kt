@@ -13,6 +13,9 @@ interface StickerDAO {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(stickers: List<Sticker>)
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertSticker(sticker: Sticker)
+
     @Update
     suspend fun update(sticker: Sticker)
 
@@ -30,4 +33,7 @@ interface StickerDAO {
 
     @Query("SELECT * FROM sticker WHERE name LIKE '%' || :query || '%'")
     fun fetchStickersForQuery(query: String): List<Sticker>
+
+    @Query("SELECT * FROM sticker WHERE mediaId= :mediaId")
+    fun checkDuplicate(mediaId: String): List<Sticker>
 }

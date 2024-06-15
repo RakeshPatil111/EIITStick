@@ -1,18 +1,20 @@
 package com.android.stickerpocket.utils
 
 import android.net.Uri
+import androidx.room.PrimaryKey
 import com.android.stickerpocket.StickerApplication
 import com.android.stickerpocket.domain.model.Favourites
-import com.android.stickerpocket.presentation.Sticker
+import com.android.stickerpocket.domain.model.Sticker
+import com.android.stickerpocket.presentation.StickerDTO
 import com.giphy.sdk.core.models.Media
 import java.io.File
 import kotlin.random.Random
 
 object StickerExt {
-    fun Sticker.toFile() = File(StickerApplication.instance.cacheDir, this.title!! + ".gif")
+    fun StickerDTO.toFile() = File(StickerApplication.instance.cacheDir, this.title!! + ".gif")
 
-    fun Media.toSticker(): Sticker {
-        return Sticker(
+    fun Media.stickerDTO(): StickerDTO {
+        return StickerDTO(
             id = Random.nextInt(),
             title = this.title,
             thumbnail = this.images.original?.gifUrl,
@@ -21,6 +23,20 @@ object StickerExt {
             mediaId = this.id
         )
     }
+
+    fun StickerDTO.sticker(): Sticker {
+        return Sticker(
+            mediaId = this.mediaId ?: "",
+            name = this.title!!,
+            isDownloaded = true,
+            url= this.thumbnail ?: "",
+            tags = this.tags?.joinToString { "," },
+            creator= this.creator,
+            source = this.source,
+            position = 0
+        )
+    }
+
 
     fun com.android.stickerpocket.domain.model.Sticker.toFavorite(): Favourites {
         return Favourites(

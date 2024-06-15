@@ -17,7 +17,7 @@ class StickerDetailsFragment : Fragment() {
 
     private lateinit var binding: FragmentStickerDetailsBinding
     private lateinit var imageLoader: ImageLoader
-    private var sticker: Sticker? = null
+    private var stickerDTO: StickerDTO? = null
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -34,7 +34,7 @@ class StickerDetailsFragment : Fragment() {
                 }
             }
             .build()
-        sticker = arguments?.getParcelable("sticker")
+        stickerDTO = arguments?.getParcelable("sticker")
         return binding.root
     }
 
@@ -42,7 +42,7 @@ class StickerDetailsFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.apply {
-            sticker?.let {
+            stickerDTO?.let {
                 val file = it.toFile()
                 val url = if (file.length() > 0) file else it.thumbnail
                 sivGifImage.load(url, imageLoader) {

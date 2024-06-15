@@ -1,7 +1,6 @@
 package com.android.stickerpocket.utils
 
 import android.net.Uri
-import androidx.room.PrimaryKey
 import com.android.stickerpocket.StickerApplication
 import com.android.stickerpocket.domain.model.Favourites
 import com.android.stickerpocket.domain.model.Sticker
@@ -59,6 +58,38 @@ object StickerExt {
                 StickerApplication.instance.packageName
             ) != 0 -> {
                 Uri.parse("android.resource://${StickerApplication.instance.packageName}/raw/${this.name}")
+            }
+
+            url != null -> {
+                return url
+            }
+
+            else -> {
+                return null
+            }
+        }
+    }
+
+    fun com.android.stickerpocket.domain.model.Sticker.toStickerDTO() = StickerDTO(
+        id = Random.nextInt(),
+        mediaId = this.mediaId,
+        thumbnail = this.url,
+        title = this.name,
+        source = this.source,
+        creator = this.creator,
+        tags = this.tags?.let { listOf(it) }
+    )
+
+    fun StickerDTO.toLoadableImage() : Comparable<*>? {
+        val cachedFile = File(StickerApplication.instance.cacheDir, this.title + ".gif")
+        val url = if (cachedFile.length() > 0) cachedFile.path else this.thumbnail
+        return when {
+            StickerApplication.instance.resources.getIdentifier(
+                this.title,
+                "raw",
+                StickerApplication.instance.packageName
+            ) != 0 -> {
+                Uri.parse("android.resource://${StickerApplication.instance.packageName}/raw/${this.title   }")
             }
 
             url != null -> {

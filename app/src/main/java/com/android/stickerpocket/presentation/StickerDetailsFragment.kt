@@ -12,6 +12,7 @@ import coil.decode.ImageDecoderDecoder
 import coil.load
 import com.android.stickerpocket.databinding.FragmentStickerDetailsBinding
 import com.android.stickerpocket.utils.StickerExt.toFile
+import com.android.stickerpocket.utils.StickerExt.toLoadableImage
 
 class StickerDetailsFragment : Fragment() {
 
@@ -43,12 +44,10 @@ class StickerDetailsFragment : Fragment() {
 
         binding.apply {
             stickerDTO?.let {
-                val file = it.toFile()
-                val url = if (file.length() > 0) file else it.thumbnail
-                sivGifImage.load(url, imageLoader) {
+                sivGifImage.load(it.toLoadableImage(), imageLoader) {
                     target(
                         onSuccess = {
-                            sivGifImage.load(url, imageLoader)
+                            sivGifImage.load(stickerDTO!!.toLoadableImage(), imageLoader)
                         }
                     )
                 }

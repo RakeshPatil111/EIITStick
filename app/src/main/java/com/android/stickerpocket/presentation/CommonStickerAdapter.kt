@@ -57,30 +57,6 @@ class CommonStickerAdapter : RecyclerView.Adapter<StickerViewHolder>() {
         differ.submitList(list)
         notifyDataSetChanged()
     }
-    inner class GifListViewHolder(private val binding: CvGifItemBinding) :
-        RecyclerView.ViewHolder(binding.root) {
-        fun bind(sticker: Sticker) {
-            val res = StickerApplication.instance.resources.getResourceName(R.raw.mad1)
-            binding.apply {
-                sivGifImage.load(sticker.toLoadableImage(), imageLoader){
-                    target(
-                        onStart = {
-                            loader.visibility = VISIBLE
-                        },
-                        onSuccess = {
-                            loader.visibility = GONE
-                            sivGifImage.load(sticker.toLoadableImage(), imageLoader)
-                        }
-                    )
-                }
-                actionItemClick?.let { s ->
-                    sivGifImage.setOnClickListener {
-                        s(sticker, adapterPosition)
-                    }
-                }
-            }
-        }
-    }
 
     fun onItemClick(action: (sticker: Sticker, position: Int) -> Unit){
         this.actionItemClick = action

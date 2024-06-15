@@ -33,6 +33,11 @@ class StickerViewHolder(
                     gif(sticker, adapterPosition)
                 }
             }
+            if (sticker.isFavourite){
+                favImg.visibility= View.VISIBLE
+            }else{
+                favImg.visibility= View.GONE
+            }
         }
     }
 }

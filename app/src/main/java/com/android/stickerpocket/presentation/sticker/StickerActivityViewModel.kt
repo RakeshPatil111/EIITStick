@@ -9,7 +9,7 @@ import com.android.stickerpocket.domain.usecase.AddEmojiIfNotExistUseCase
 import com.android.stickerpocket.domain.usecase.InsertCategoriesUseCase
 import com.android.stickerpocket.dtos.getCategories
 import com.android.stickerpocket.network.response.Emojis
-import com.android.stickerpocket.presentation.Sticker
+import com.android.stickerpocket.presentation.StickerDTO
 import com.android.stickerpocket.utils.toEmoji
 import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineScope
@@ -55,10 +55,10 @@ class StickerActivityViewModel: ViewModel() {
         }
     }
 
-    fun downloadSticker(sticker: Sticker) {
+    fun downloadSticker(stickerDTO: StickerDTO) {
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                val url = URL(sticker.thumbnail)
+                val url = URL(stickerDTO.thumbnail)
                 val connection = url.openConnection()
                 connection.connect()
 

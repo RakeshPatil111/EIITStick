@@ -10,6 +10,7 @@
     <string name="search">Search my stickers</string>
     <string name="filter_image_button">filter image button</string>
     <string name="trending">Trending :</string>
+    <string name="download_msg">Please wait.. Downloading sticker</string>
     <string name="contact_us">Contact Us</string>
     <string name="tell_a_friend">Tell a Friend</string>
     <string name="backup_restore">Backup/Restore</string>

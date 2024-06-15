@@ -2,7 +2,7 @@ package com.android.stickerpocket.presentation.sticker
 
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.MutableLiveData
-import com.android.stickerpocket.presentation.Sticker
+import com.android.stickerpocket.presentation.StickerDTO
 import java.io.File
 
 class StickerActivityInteractor {
@@ -26,8 +26,8 @@ class StickerActivityInteractor {
         }
     }
 
-    fun onShareSticker(sticker: Sticker) {
+    fun onShareSticker(stickerDTO: StickerDTO) {
         _liveData.value = Actions.ShowLoading
-        viewModel.downloadSticker(sticker)
+        viewModel.downloadSticker(stickerDTO)
     }
 }

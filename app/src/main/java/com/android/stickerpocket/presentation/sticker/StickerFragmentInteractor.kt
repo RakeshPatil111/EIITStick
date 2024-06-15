@@ -7,9 +7,9 @@ import androidx.lifecycle.Observer
 import com.android.stickerpocket.domain.model.Category
 import com.android.stickerpocket.domain.model.RecentSearch
 import com.android.stickerpocket.dtos.getCategories
-import com.android.stickerpocket.presentation.Sticker
+import com.android.stickerpocket.presentation.StickerDTO
 import com.android.stickerpocket.utils.Event
-import com.android.stickerpocket.utils.StickerExt.toSticker
+import com.android.stickerpocket.utils.StickerExt.stickerDTO
 import com.giphy.sdk.core.models.Media
 import java.io.File
 
@@ -31,7 +31,7 @@ class StickerFragmentInteractor {
             val isFavourite: Boolean
         ) : Actions()
         data class ShareSticker(val gifFile: File) : Actions()
-        data class NavigateToStickerInfo(val sticker: Sticker) : Actions()
+        data class NavigateToStickerInfo(val stickerDTO: StickerDTO) : Actions()
         data class ShowFavoritesSticker(val favoriteStickers: List<com.android.stickerpocket.domain.model.Sticker>): Actions()
         data class ReloadCategories(val categories: List<Category>) : Actions()
         data class ShowMessage(val message: String): Actions()
@@ -109,7 +109,7 @@ class StickerFragmentInteractor {
     }
 
     fun onMediaClick(media: Media) {
-        val sticker = media.toSticker()
+        val sticker = media.stickerDTO()
         //_liveData.value = Event(Actions.ShowStickerDialog(sticker))
         viewModel.downloadSticker(sticker)
     }
@@ -162,5 +162,9 @@ class StickerFragmentInteractor {
 
     fun onStickerDragComplete() {
         viewModel.reArrangeStickers()
+    }
+
+    fun onDownloadClick() {
+        viewModel.fetchAllDownloaded()
     }
 }

@@ -213,7 +213,7 @@ class StickerFragment : Fragment(), GPHGridCallback, GPHSearchGridCallback,
                 }
 
                 is StickerFragmentInteractor.Actions.NavigateToStickerInfo -> {
-                    val direction = StickerDetailsNavDirections(action.sticker)
+                    val direction = StickerDetailsNavDirections(action.stickerDTO)
                     findNavController().navigate(direction)
                 }
                 is StickerFragmentInteractor.Actions.ShowFavoritesSticker -> {
@@ -299,8 +299,8 @@ class StickerFragment : Fragment(), GPHGridCallback, GPHSearchGridCallback,
     private fun setClickListeners() {
         binding.apply {
             cvRecentSticker.setOnClickListener {
-                binding.rvRecentSearch.visibility = View.GONE
-                binding.rvStickers.visibility = View.VISIBLE
+                rvRecentSearch.visibility = View.GONE
+                rvStickers.visibility = View.VISIBLE
                 emojiCategoryListAdapter.clearSelection()
 
             }
@@ -309,9 +309,13 @@ class StickerFragment : Fragment(), GPHGridCallback, GPHSearchGridCallback,
                 emojiCategoryListAdapter.clearSelection()
             }
             cvDownloadedSticker.setOnClickListener {
-                binding.rvRecentSearch.visibility = View.GONE
-                binding.rvStickers.visibility = View.VISIBLE
+                rvRecentSearch.visibility = View.GONE
+                rvStickers.visibility = View.VISIBLE
                 emojiCategoryListAdapter.clearSelection()
+                interactor.onDownloadClick()
+                cvFavSticker.removeBorder()
+                cvDownloadedSticker.setBorder()
+                cvRecentSticker.removeBorder()
             }
             addChangeListeners(tietSearch)
         }

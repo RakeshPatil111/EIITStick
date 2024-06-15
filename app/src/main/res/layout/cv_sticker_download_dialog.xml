@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:background="@android:color/white"
+    android:paddingVertical="@dimen/dimen_24dp"
+    android:gravity="center_horizontal">
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/tv_download_sticker"
+        style="@style/Widget.AppCompat.TextView.Options"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/text_dimen_12"
+        android:text="@string/download_sticker"
+        android:drawablePadding="@dimen/dimen_24dp"
+        app:drawableStartCompat="@drawable/ic_download"
+        android:textColor="@android:color/black" />
+</LinearLayout>

@@ -83,10 +83,45 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:clipToPadding="false"
-        app:gphSpanCount="6"
+        android:padding="@dimen/dimen_4dp"
+        app:gphCellPadding="@dimen/dimen_10dp"
+        app:gphSpanCount="3"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tv_trending_title"
+        app:layout_constraintVertical_bias="0.0"
         tools:listitem="@layout/cv_sticker_section_item" />
+
+    <LinearLayout
+        android:id="@+id/ll_progress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@android:color/white"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:elevation="@dimen/dimen_4dp"
+        android:visibility="gone"
+        android:padding="@dimen/dimen_12dp"
+        app:layout_constraintBottom_toBottomOf="@+id/img_screen_bg"
+        app:layout_constraintEnd_toEndOf="@+id/img_screen_bg"
+        app:layout_constraintStart_toStartOf="@+id/img_screen_bg"
+        app:layout_constraintTop_toTopOf="@+id/img_screen_bg">
+
+        <ProgressBar
+            android:layout_width="@dimen/dimen_24dp"
+            android:layout_height="@dimen/dimen_24dp"
+            android:layout_marginEnd="@dimen/dimen_12dp"
+            android:backgroundTint="@color/color_primary" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/tv_download_msg"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/download_msg"
+            android:textAppearance="?attr/textAppearanceCaption"
+            android:textColor="@color/color_primary_variant"
+            android:textStyle="italic" />
+    </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

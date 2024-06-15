@@ -38,6 +38,7 @@ class StickerViewModel : ViewModel() {
         object CategoryCreated : Result()
         object CreateCatFailure : Result()
         data class StickersReceivedForCategory(val stickers: List<Sticker>) : Result()
+        object FavouritesStickerUpdated : Result()
     }
 
     private val _liveData = MutableLiveData<Result>()
@@ -199,7 +200,7 @@ class StickerViewModel : ViewModel() {
 
     fun addToFavorites(sticker: Sticker) {
         CoroutineScope(Dispatchers.IO).launch {
-            addToFavoritesUseCase.execute(sticker.toFavorite())
+            //addToFavoritesUseCase.execute(sticker.toFavorite())
             sticker.isFavourite = true
             updateStickerUseCase.execute(sticker)
         }
@@ -288,6 +289,14 @@ class StickerViewModel : ViewModel() {
     private fun updateCategories() {
         CoroutineScope(Dispatchers.Default).launch {
             insertCategoriesUseCase.execute(categories)
+        }
+    }
+
+    fun removeStickerFromFav(sticker: Sticker) {
+        CoroutineScope(Dispatchers.IO).launch {
+            sticker.isFavourite = false
+            updateStickerUseCase.execute(sticker)
+            _liveData.postValue(Result.FavouritesStickerUpdated)
         }
     }
 }

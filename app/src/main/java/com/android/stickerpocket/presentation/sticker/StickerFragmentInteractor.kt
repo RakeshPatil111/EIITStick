@@ -4,14 +4,11 @@ import androidx.emoji2.emojipicker.EmojiViewItem
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
-import com.android.stickerpocket.domain.model.Favourites
 import com.android.stickerpocket.domain.model.Category
 import com.android.stickerpocket.domain.model.RecentSearch
 import com.android.stickerpocket.dtos.getCategories
 import com.android.stickerpocket.presentation.Sticker
 import com.android.stickerpocket.utils.Event
-import com.android.stickerpocket.utils.StickerExt.toFavorite
-import com.android.stickerpocket.utils.StickerExt.toFile
 import com.android.stickerpocket.utils.StickerExt.toSticker
 import com.giphy.sdk.core.models.Media
 import java.io.File
@@ -28,7 +25,11 @@ class StickerFragmentInteractor {
         data class ShowGiphyViewForRecentSearch(val query: String) : Actions()
         data class LoadEmojisForCategory(val query: String) : Actions()
         data class ShowCategoryOptionDialog(val category: Category, val pos: Int, val previous: Int) : Actions()
-        data class ShowStickerDialog(val sticker: com.android.stickerpocket.domain.model.Sticker) : Actions()
+        data class ShowStickerDialog(
+            val sticker: com.android.stickerpocket.domain.model.Sticker,
+            val position: Int,
+            val isFavourite: Boolean
+        ) : Actions()
         data class ShareSticker(val gifFile: File) : Actions()
         data class NavigateToStickerInfo(val sticker: Sticker) : Actions()
         data class ShowFavoritesSticker(val favoriteStickers: List<com.android.stickerpocket.domain.model.Sticker>): Actions()
@@ -51,6 +52,9 @@ class StickerFragmentInteractor {
                 }
                 is StickerViewModel.Result.StickersReceivedForCategory -> {
                     _liveData.postValue(Event(Actions.ShowStickers(it.stickers)))
+                }
+                is StickerViewModel.Result.FavouritesStickerUpdated -> {
+                    _liveData.value = Event(Actions.ShowFavoritesSticker(viewModel.getFavourites()))
                 }
                 else -> {}
             }
@@ -113,9 +117,11 @@ class StickerFragmentInteractor {
        // _liveData.value = Event(Actions.ShareSticker(sticker.toFile()))
     }
 
-    fun onAddStickerToFavoritesClick(sticker: com.android.stickerpocket.domain.model.Sticker) {
-        //viewModel.downloadSticker(sticker)
-        viewModel.addToFavorites(sticker)
+    fun onAddStickerToFavoritesClick(
+        sticker: com.android.stickerpocket.domain.model.Sticker,
+        didOpenForFav: Boolean
+    ) {
+        if (didOpenForFav) viewModel.removeStickerFromFav(sticker) else viewModel.addToFavorites(sticker)
     }
     fun onFavClick() {
         _liveData.value = Event(Actions.ShowFavoritesSticker(viewModel.getFavourites()))
@@ -138,6 +144,10 @@ class StickerFragmentInteractor {
     }
 
     fun onStickerClick(sticker: com.android.stickerpocket.domain.model.Sticker, position: Int) {
-        _liveData.value = Event(Actions.ShowStickerDialog(sticker))
+        _liveData.value = Event(Actions.ShowStickerDialog(sticker, position, false))
+    }
+
+    fun onFavStickerClick(sticker: com.android.stickerpocket.domain.model.Sticker, position: Int) {
+        _liveData.value = Event(Actions.ShowStickerDialog(sticker, position, isFavourite = true))
     }
 }

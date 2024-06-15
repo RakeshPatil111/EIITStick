@@ -86,13 +86,14 @@ class EmojiCategoryListAdapter :
     }
 
     fun clearSelection() {
-        if (selected != RecyclerView.NO_POSITION) {
-            val previousSelectedPosition = selected
-            selected = RecyclerView.NO_POSITION
-            notifyItemChanged(previousSelectedPosition)
+        differ.currentList.forEach {
+            it.isHighlighted = false
         }
+        selected = -1
+        notifyDataSetChanged()
     }
 
+    fun isCategorySelected() = selected != -1
     companion object {
         val diffUtilEmoji = object : DiffUtil.ItemCallback<Category>() {
             override fun areItemsTheSame(oldItem: Category, newItem: Category): Boolean {

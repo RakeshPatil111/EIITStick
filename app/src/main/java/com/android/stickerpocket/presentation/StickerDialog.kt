@@ -23,6 +23,7 @@ class StickerDialog : BottomSheetDialogFragment() {
    private lateinit var sticker: Sticker
     private lateinit var imageLoader: ImageLoader
     private var listener: StickerDialogListener? = null
+    private var didOpenForFavourite: Boolean = false
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -47,6 +48,9 @@ class StickerDialog : BottomSheetDialogFragment() {
             }
             .build()
 
+        if (didOpenForFavourite) {
+            binding?.tvAddToFav?.text = resources.getString(R.string.remove_from_favourites)
+        }
         return binding?.root
     }
 
@@ -84,7 +88,7 @@ class StickerDialog : BottomSheetDialogFragment() {
 
             tvAddToFav.setOnClickListener {
                 this@StickerDialog.dismiss()
-                listener?.onAddStickerToFavoritesClick(sticker)
+                listener?.onAddStickerToFavoritesClick(sticker, didOpenForFavourite)
             }
         }
     }
@@ -97,7 +101,7 @@ class StickerDialog : BottomSheetDialogFragment() {
     interface StickerDialogListener {
         fun onStickerInfoClick(sticker: Sticker)
         fun onShareSticker(sticker: Sticker)
-        fun onAddStickerToFavoritesClick(sticker: Sticker)
+        fun onAddStickerToFavoritesClick(sticker: Sticker, didOpenForFav: Boolean = false)
         fun onCancelClick()
     }
 
@@ -107,6 +111,10 @@ class StickerDialog : BottomSheetDialogFragment() {
 
     fun setListener(listener: StickerDialogListener) {
         this.listener = listener
+    }
+
+    fun isOpenedForFav(isFav: Boolean) {
+        didOpenForFavourite = isFav
     }
     override fun onDestroy() {
         super.onDestroy()

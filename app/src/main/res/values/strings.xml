@@ -53,4 +53,5 @@
     <string name="ok">ok</string>
     <string name="clear_all">Clear All</string>
     <string name="recent_searches">Recent Searches</string>
+    <string name="remove_from_favourites">Remove from favourites</string>
 </resources>

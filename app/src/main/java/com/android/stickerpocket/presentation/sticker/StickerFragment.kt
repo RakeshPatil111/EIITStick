@@ -29,6 +29,7 @@ import com.android.stickerpocket.presentation.StickerDetailsNavDirections
 import com.android.stickerpocket.presentation.StickerDialog
 import com.android.stickerpocket.utils.ItemTouchHelperAdapter
 import com.android.stickerpocket.utils.ItemTouchHelperCallback
+import com.android.stickerpocket.utils.StickerExt.toStickerDTO
 import com.android.stickerpocket.utils.ViewExt.removeBorder
 import com.android.stickerpocket.utils.ViewExt.setBorder
 import com.android.stickerpocket.utils.ViewExt.shakeMe
@@ -216,6 +217,7 @@ class StickerFragment : Fragment(), GPHGridCallback, GPHSearchGridCallback,
                     val direction = StickerDetailsNavDirections(action.stickerDTO)
                     findNavController().navigate(direction)
                 }
+
                 is StickerFragmentInteractor.Actions.ShowFavoritesSticker -> {
                     if (!emojiCategoryListAdapter.isCategorySelected()) {
                         binding.apply {

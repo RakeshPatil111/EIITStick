@@ -10,6 +10,7 @@ import com.android.stickerpocket.dtos.getCategories
 import com.android.stickerpocket.presentation.StickerDTO
 import com.android.stickerpocket.utils.Event
 import com.android.stickerpocket.utils.StickerExt.stickerDTO
+import com.android.stickerpocket.utils.StickerExt.toStickerDTO
 import com.giphy.sdk.core.models.Media
 import java.io.File
 
@@ -115,7 +116,7 @@ class StickerFragmentInteractor {
     }
 
     fun onStickerInfoClick(sticker: com.android.stickerpocket.domain.model.Sticker) {
-        //_liveData.value = Event(Actions.NavigateToStickerInfo(sticker))
+        _liveData.value = Event(Actions.NavigateToStickerInfo(sticker.toStickerDTO()))
     }
 
     fun onStickerShare(sticker: com.android.stickerpocket.domain.model.Sticker) {

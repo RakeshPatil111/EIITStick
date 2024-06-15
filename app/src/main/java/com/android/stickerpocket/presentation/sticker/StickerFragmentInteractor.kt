@@ -36,6 +36,7 @@ class StickerFragmentInteractor {
         data class ReloadCategories(val categories: List<Category>) : Actions()
         data class ShowMessage(val message: String): Actions()
         data class ShowStickers(val stickers: List<com.android.stickerpocket.domain.model.Sticker>) : Actions()
+        data class ShowStickerForRecentSearch(val query: String, val stickers: List<com.android.stickerpocket.domain.model.Sticker>) : Actions()
     }
     private val _liveData = MutableLiveData<Event<Actions>>()
     val liveData = _liveData
@@ -56,6 +57,9 @@ class StickerFragmentInteractor {
                 is StickerViewModel.Result.FavouritesStickerUpdated -> {
                     _liveData.value = Event(Actions.ShowFavoritesSticker(viewModel.getFavourites()))
                 }
+                is StickerViewModel.Result.StickersWithQuery -> {
+                    _liveData.postValue(Event(Actions.ShowStickerForRecentSearch(it.query, it.stickers)))
+                }
                 else -> {}
             }
         })
@@ -71,13 +75,15 @@ class StickerFragmentInteractor {
     }
 
     fun onRecentSearchItemClick(position: Int) {
-        _liveData.value = Event(Actions.ShowGiphyViewForRecentSearch(viewModel.getRecentSearches()[position].query))
+        viewModel.getStickersForQuery(
+            viewModel.getRecentSearches()[position].query
+        )
         viewModel.updateRecentSearch(position)
     }
 
     fun onQuerySearch(query: String) {
         viewModel.saveRecentSearch(query)
-        _liveData.value = Event(Actions.ShowGiphyViewForRecentSearch(query))
+        viewModel.getStickersForQuery(query)
     }
 
     fun onRecentSearchRemove(position: Int) {

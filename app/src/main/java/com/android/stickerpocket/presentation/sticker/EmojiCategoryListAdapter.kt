@@ -46,6 +46,7 @@ class EmojiCategoryListAdapter :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(category: Category, position: Int) {
             binding.apply {
+                binding.cvSticker.tag = position
                 ivStickerThumbnail.text = Html.fromHtml(category.html)
                 if (category.isHighlighted) {
                     cvSticker.setBorder()
@@ -105,4 +106,6 @@ class EmojiCategoryListAdapter :
             }
         }
     }
+
+    fun getList() = differ.currentList
 }

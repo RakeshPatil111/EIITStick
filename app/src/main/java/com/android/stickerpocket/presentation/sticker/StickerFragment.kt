@@ -86,22 +86,18 @@ class StickerFragment : Fragment(), GPHGridCallback, GPHSearchGridCallback,
                     binding.apply {
                         rvRecentSearch.visibility = View.VISIBLE
                         rvStickers.visibility = View.GONE
-                        //rvFavourites.visibility = View.GONE
                     }
                 }
 
-                is StickerFragmentInteractor.Actions.ShowGiphyViewForRecentSearch -> {
+                is StickerFragmentInteractor.Actions.ShowStickerForRecentSearch -> {
                     binding.apply {
                         rvRecentSearch.visibility = View.GONE
                         rvStickers.visibility = View.VISIBLE
-                        //binding.rvFavourites.visibility = View.GONE
+                        rvStickers.adapter = commonStickerAdapter
+                        commonStickerAdapter.updateList(action.stickers)
                         removeChangeListeners(tietSearch)
                         tietSearch.setText(action.query)
                         tietSearch.setSelection(tietSearch.length())
-//                        if (rvStickers.content?.searchQuery != action.query) {
-//                            rvStickers.content =
-//                                GPHContent.searchQuery(action.query, mediaType = MediaType.gif)
-//                        }
                         addChangeListeners(tietSearch)
                     }
                 }
@@ -110,15 +106,12 @@ class StickerFragment : Fragment(), GPHGridCallback, GPHSearchGridCallback,
                     recentSearchAdapter.updateList(action.recentSearches)
                     binding.rvRecentSearch.visibility = View.VISIBLE
                     binding.rvStickers.visibility = View.GONE
-                    //binding.rvFavourites.visibility = View.GONE
                 }
 
                 is StickerFragmentInteractor.Actions.LoadEmojisForCategory -> {
                     removeChangeListeners(binding.tietSearch)
                     binding.rvRecentSearch.visibility = View.GONE
                     binding.rvStickers.visibility = View.VISIBLE
-                    //binding.rvFavourites.visibility = View.GONE
-                    //binding.rvStickers.content = GPHContent.searchQuery(action.query)
                     binding.tietSearch.clearFocus()
                     binding.tietSearch.text?.clear()
                     addChangeListeners(binding.tietSearch)
@@ -239,11 +232,6 @@ class StickerFragment : Fragment(), GPHGridCallback, GPHSearchGridCallback,
                 }
 
                 is StickerFragmentInteractor.Actions.ReloadCategories -> {
-                    // Also load highlighted emojis by default
-                    val category = action.categories.filter { it.isHighlighted }.firstOrNull()
-                        ?: action.categories[0]
-//                    binding.rvStickers.content =
-//                        GPHContent.searchQuery(category.name, mediaType = MediaType.gif)
                     emojiCategoryListAdapter.updateList(action.categories)
                 }
                 is StickerFragmentInteractor.Actions.ShowMessage -> {
@@ -296,7 +284,7 @@ class StickerFragment : Fragment(), GPHGridCallback, GPHSearchGridCallback,
         favouritesAdapter = FavouritesAdapter()
         binding.rvStickers.adapter = commonStickerAdapter
         binding.rvStickers.visibility = View.VISIBLE
-
+        setupRecentSearchRecyclerView()
         commonStickerAdapter.onItemClick { sticker, position ->
             interactor.onStickerClick(sticker, position)
         }
@@ -362,11 +350,6 @@ class StickerFragment : Fragment(), GPHGridCallback, GPHSearchGridCallback,
             interactor.onCategoryItemLongClick(category, pos, previous)
         }
         emojiCategoryListAdapter.updateList(categories)
-        // Also load highlighted emojis by default
-//        binding.rvStickers.content = GPHContent.searchQuery(
-//            categories.filter { it.isHighlighted }.first().name,
-//            mediaType = MediaType.gif
-//        )
     }
 
     private fun clearStaticPagesBorder() {
@@ -439,18 +422,16 @@ class StickerFragment : Fragment(), GPHGridCallback, GPHSearchGridCallback,
         if (s.toString().isEmpty() && binding.tietSearch.hasFocus()) {
             binding.rvRecentSearch.visibility = View.VISIBLE
             binding.rvStickers.visibility = View.GONE
-            //binding.rvFavourites.visibility = View.GONE
             interactor.onQueryBlank()
         } else {
             searchJob?.cancel()
             searchJob = MainScope().launch {
                 delay(2500)
                 s?.let {
-//                    if (it.toString().trim()
-//                            .isNotEmpty() && binding.rvStickers.content?.searchQuery != it.toString()
-//                    ) {
-//                        interactor.onQuerySearch(it.toString())
-//                    }
+                    if (it.toString().trim()
+                            .isNotEmpty()) {
+                        interactor.onQuerySearch(it.toString())
+                    }
                 }
             }
         }

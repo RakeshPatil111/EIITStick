@@ -16,6 +16,7 @@ import com.android.stickerpocket.domain.usecase.FetchAllFavoritesUseCase
 import com.android.stickerpocket.domain.usecase.FetchCategoriesUseCase
 import com.android.stickerpocket.domain.usecase.FetchEmojiByEmojiIcon
 import com.android.stickerpocket.domain.usecase.FetchStickersForCategoryUseCase
+import com.android.stickerpocket.domain.usecase.FetchStickersForQueryUseCase
 import com.android.stickerpocket.domain.usecase.GetRecentSearchUseCase
 import com.android.stickerpocket.domain.usecase.InsertOrReplaceCategoriesUseCase
 import com.android.stickerpocket.domain.usecase.UpdateStickerUseCase
@@ -39,6 +40,7 @@ class StickerViewModel : ViewModel() {
         object CreateCatFailure : Result()
         data class StickersReceivedForCategory(val stickers: List<Sticker>) : Result()
         object FavouritesStickerUpdated : Result()
+        data class StickersWithQuery(val query: String, val stickers: List<Sticker>) : Result()
     }
 
     private val _liveData = MutableLiveData<Result>()
@@ -62,6 +64,7 @@ class StickerViewModel : ViewModel() {
     private var toPosition = 0
     private val fetchStickersForCategoryUseCase: FetchStickersForCategoryUseCase
     private val updateStickerUseCase: UpdateStickerUseCase
+    private val fetchStickersForQueryUseCase: FetchStickersForQueryUseCase
 
     init {
         deleteRecentSearchUseCase =
@@ -80,8 +83,11 @@ class StickerViewModel : ViewModel() {
             AddToFavoritesUseCase(StickerApplication.instance.favouritesRepository)
         fetchAllFavoritesUseCase =
             FetchAllFavoritesUseCase(StickerApplication.instance.stickerRepository)
-        fetchStickersForCategoryUseCase = FetchStickersForCategoryUseCase(StickerApplication.instance.stickerRepository)
+        fetchStickersForCategoryUseCase =
+            FetchStickersForCategoryUseCase(StickerApplication.instance.stickerRepository)
         updateStickerUseCase = UpdateStickerUseCase(StickerApplication.instance.stickerRepository)
+        fetchStickersForQueryUseCase =
+            FetchStickersForQueryUseCase(StickerApplication.instance.stickerRepository)
         fetchRecentSearches()
         fetchCategories()
         fetchAllFavorites()
@@ -96,7 +102,8 @@ class StickerViewModel : ViewModel() {
                             categories = it.categories.toMutableList()
                                 .ifEmpty { getCategories().toMutableList() }
                             _liveData.postValue(Result.CategoryCreated)
-                            val selectedCategory = categories.filter { it.isHighlighted == true }.first().id
+                            val selectedCategory =
+                                categories.filter { it.isHighlighted == true }.first().id
                             fetchStickersForCategory(selectedCategory)
                         }
 
@@ -136,6 +143,7 @@ class StickerViewModel : ViewModel() {
     }
 
     fun getRecentSearches() = recentSearches
+
     fun updateRecentSearch(position: Int) {
         CoroutineScope(Dispatchers.IO).launch {
             val recentSearch = recentSearches[position].apply {
@@ -297,6 +305,13 @@ class StickerViewModel : ViewModel() {
             sticker.isFavourite = false
             updateStickerUseCase.execute(sticker)
             _liveData.postValue(Result.FavouritesStickerUpdated)
+        }
+    }
+
+    fun getStickersForQuery(query: String) {
+        CoroutineScope(Dispatchers.IO).launch {
+            val list = fetchStickersForQueryUseCase.execute(query)
+            _liveData.postValue(Result.StickersWithQuery(query, list))
         }
     }
 }

@@ -28,4 +28,6 @@ interface StickerDAO {
     @Query("SELECT * FROM sticker WHERE categoryId = :id")
     fun fetchForCategory(id: Int): Flow<List<Sticker>>
 
+    @Query("SELECT * FROM sticker WHERE name LIKE '%' || :query || '%'")
+    fun fetchStickersForQuery(query: String): List<Sticker>
 }

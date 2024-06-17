@@ -34,7 +34,8 @@ class FavouritesAdapter: RecyclerView.Adapter<StickerViewHolder>() {
                 parent,
                 false
             ), imageLoader = imageLoader,
-            itemClickListener = actionItemClick
+            itemClickListener = actionItemClick,
+            didOpenForCategory = false
         )
     }
 

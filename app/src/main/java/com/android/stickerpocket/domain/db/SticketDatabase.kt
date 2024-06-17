@@ -10,16 +10,18 @@ import com.android.stickerpocket.domain.dao.CategoryDAO
 import com.android.stickerpocket.domain.dao.EmojiDAO
 import com.android.stickerpocket.domain.dao.RecentSearchDAO
 import com.android.stickerpocket.domain.dao.FavouritesDAO
+import com.android.stickerpocket.domain.dao.RecentStickerDAO
 import com.android.stickerpocket.domain.dao.StickerDAO
 import com.android.stickerpocket.domain.model.Category
 import com.android.stickerpocket.domain.model.Emoji
 import com.android.stickerpocket.domain.model.Favourites
 import com.android.stickerpocket.domain.model.RecentSearch
+import com.android.stickerpocket.domain.model.RecentStickers
 import com.android.stickerpocket.domain.model.Sticker
 import kotlinx.coroutines.CoroutineScope
 
 @Database(entities = [RecentSearch::class, Emoji::class, Category::class,
-    Favourites::class, Sticker::class],
+    Favourites::class, Sticker::class, RecentStickers::class],
     version = 1,
     exportSchema = false)
 abstract class StickerDB : RoomDatabase() {
@@ -29,6 +31,7 @@ abstract class StickerDB : RoomDatabase() {
     abstract fun favouritesDAO(): FavouritesDAO
     abstract fun categoryDAO(): CategoryDAO
     abstract fun stickerDAO(): StickerDAO
+    abstract fun recentStickerDAO(): RecentStickerDAO
 
     companion object {
         // Singleton prevents multiple instances of database opening at the

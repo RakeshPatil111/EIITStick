@@ -3,10 +3,15 @@ package com.android.stickerpocket.presentation.sticker
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.android.stickerpocket.R
 import com.android.stickerpocket.StickerApplication
 import com.android.stickerpocket.domain.model.Category
+import com.android.stickerpocket.domain.model.Emoji
 import com.android.stickerpocket.domain.model.RecentSearch
+import com.android.stickerpocket.domain.model.RecentStickerAndStickers
+import com.android.stickerpocket.domain.model.RecentStickers
 import com.android.stickerpocket.domain.model.Sticker
+import com.android.stickerpocket.domain.usecase.AddEmojiIfNotExistUseCase
 import com.android.stickerpocket.domain.usecase.AddToFavoritesUseCase
 import com.android.stickerpocket.domain.usecase.ClearAllRecentSearchUseCase
 import com.android.stickerpocket.domain.usecase.CreateOrUpdatedRecentSearchUseCase
@@ -15,23 +20,34 @@ import com.android.stickerpocket.domain.usecase.FetchAllDownloadedUseCase
 import com.android.stickerpocket.domain.usecase.FetchAllFavoritesUseCase
 import com.android.stickerpocket.domain.usecase.FetchCategoriesUseCase
 import com.android.stickerpocket.domain.usecase.FetchEmojiByEmojiIcon
+import com.android.stickerpocket.domain.usecase.FetchRecentStickersUseCase
+import com.android.stickerpocket.domain.usecase.FetchStickerUseCase
 import com.android.stickerpocket.domain.usecase.FetchStickersForCategoryUseCase
 import com.android.stickerpocket.domain.usecase.FetchStickersForQueryUseCase
 import com.android.stickerpocket.domain.usecase.GetRecentSearchUseCase
+import com.android.stickerpocket.domain.usecase.InsertCategoriesUseCase
 import com.android.stickerpocket.domain.usecase.InsertOrReplaceCategoriesUseCase
+import com.android.stickerpocket.domain.usecase.InsertRecentStickerUseCase
 import com.android.stickerpocket.domain.usecase.InsertSingleStickersUseCase
 import com.android.stickerpocket.domain.usecase.InsertStickersUseCase
 import com.android.stickerpocket.domain.usecase.UpdateStickerUseCase
 import com.android.stickerpocket.dtos.getCategories
+import com.android.stickerpocket.network.response.Emojis
 import com.android.stickerpocket.presentation.StickerDTO
 import com.android.stickerpocket.utils.StickerExt.sticker
+import com.android.stickerpocket.utils.StickerExt.toFile
 import com.android.stickerpocket.utils.StickerExt.toLoadableImage
+import com.android.stickerpocket.utils.StickerExt.toStickerDTO
+import com.android.stickerpocket.utils.toEmoji
+import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import java.io.BufferedReader
 import java.io.File
 import java.io.FileOutputStream
+import java.io.InputStreamReader
 import java.net.URL
 import java.util.Date
 
@@ -42,9 +58,15 @@ class StickerViewModel : ViewModel() {
         object CategoryCreated : Result()
         object CreateCatFailure : Result()
         data class StickersReceivedForCategory(val stickers: List<Sticker>) : Result()
+        data class FetchedDownloadedStickers(val stickers: List<Sticker>) : Result()
         object FavouritesStickerUpdated : Result()
         data class StickersWithQuery(val query: String, val stickers: List<Sticker>) : Result()
         data class ShowProgress(val showProgress: Boolean) : Result()
+        data class StickerDownloaded(val gifFile: File) : Result()
+        data class ShareSticker(val gifFile: File) : Result()
+        data class RecentSearchCleared(val searches: List<RecentSearch>) : Result()
+        class FetchedRecentStickers(val list: List<Sticker>) : Result()
+        object StickerDTOUpdated : Result()
     }
 
     private val _liveData = MutableLiveData<Result>()
@@ -63,7 +85,7 @@ class StickerViewModel : ViewModel() {
     private var favourites: MutableList<Sticker> = mutableListOf()
     private var recentSearchs: MutableList<RecentSearch> = mutableListOf()
     private var categories = mutableListOf<Category>()
-    private var stickers = mutableListOf<com.android.stickerpocket.domain.model.Sticker>()
+    private var stickers = mutableListOf<Sticker>()
     private var fromPosition: Int? = null
     private var toPosition = 0
     private val fetchStickersForCategoryUseCase: FetchStickersForCategoryUseCase
@@ -72,7 +94,13 @@ class StickerViewModel : ViewModel() {
     private val insertSingleStickersUseCase: InsertSingleStickersUseCase
     private val fetchAllDownloadedUseCase: FetchAllDownloadedUseCase
     private val insertStickersUseCase: InsertStickersUseCase
-
+    private var addEmojiIfNotExistUseCase =
+        AddEmojiIfNotExistUseCase(StickerApplication.instance.emojisRepository)
+    private var stickerDTO: StickerDTO? = null
+    private var fetchStickerUseCase: FetchStickerUseCase
+    private val fetchRecentStickersUseCase: FetchRecentStickersUseCase
+    private val insertRecentStickersUseCase: InsertRecentStickerUseCase
+    private var currentViewMode = ViewMode.Category
     init {
         deleteRecentSearchUseCase =
             DeleteRecentSearchUseCase(StickerApplication.instance.recentSearchRepository)
@@ -100,8 +128,12 @@ class StickerViewModel : ViewModel() {
         fetchAllDownloadedUseCase =
             FetchAllDownloadedUseCase(StickerApplication.instance.stickerRepository)
         insertStickersUseCase = InsertStickersUseCase(StickerApplication.instance.stickerRepository)
-        fetchRecentSearches()
+        fetchStickerUseCase = FetchStickerUseCase(StickerApplication.instance.stickerRepository)
+        insertRecentStickersUseCase = InsertRecentStickerUseCase(StickerApplication.instance.recentStickerRepository)
+        fetchRecentStickersUseCase = FetchRecentStickersUseCase(StickerApplication.instance.recentStickerRepository)
         fetchCategories()
+        loadAndSaveEmoji(R.raw.emojis)
+        fetchRecentSearches()
         fetchAllFavorites()
     }
 
@@ -138,6 +170,7 @@ class StickerViewModel : ViewModel() {
                                 stickers = it.stickers.toMutableList()
                                 _liveData.postValue(Result.StickersReceivedForCategory(stickers.toList()))
                             }
+
                             else -> {}
                         }
                     }
@@ -191,10 +224,12 @@ class StickerViewModel : ViewModel() {
         CoroutineScope(Dispatchers.IO).launch {
             recentSearchs.clear()
             clearAllRecentSearchUseCase.execute()
+            fetchRecentSearches()
+            _liveData.postValue(Result.RecentSearchCleared(recentSearches.toList()))
         }
     }
 
-    fun downloadSticker(stickerDTO: com.android.stickerpocket.presentation.StickerDTO) {
+    fun downloadSticker(stickerDTO: StickerDTO) {
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 val url = URL(stickerDTO.thumbnail)
@@ -224,8 +259,7 @@ class StickerViewModel : ViewModel() {
     }
 
     fun addToFavorites(sticker: Sticker) {
-        CoroutineScope(Dispatchers.IO).launch {
-            //addToFavoritesUseCase.execute(sticker.toFavorite())
+        CoroutineScope(Dispatchers.Default).launch {
             sticker.isFavourite = true
             updateStickerUseCase.execute(sticker)
         }
@@ -237,7 +271,9 @@ class StickerViewModel : ViewModel() {
                 .collectLatest {
                     when (it) {
                         is FetchAllFavoritesUseCase.Result.Success -> {
+                            favourites.clear()
                             favourites = it.data.toMutableList()
+                            _liveData.postValue(Result.FavouritesStickerUpdated)
                         }
 
                         else -> {}
@@ -256,7 +292,7 @@ class StickerViewModel : ViewModel() {
                 val newCategory = Category(
                     unicode = unicode,
                     position = pos,
-                    isHighlighted = true,
+                    isHighlighted = false,
                     isDeleted = false,
                     name = it.name,
                     html = it.html
@@ -323,7 +359,6 @@ class StickerViewModel : ViewModel() {
         CoroutineScope(Dispatchers.IO).launch {
             sticker.isFavourite = false
             updateStickerUseCase.execute(sticker)
-            _liveData.postValue(Result.FavouritesStickerUpdated)
         }
     }
 
@@ -336,7 +371,7 @@ class StickerViewModel : ViewModel() {
 
     fun saveSingleSticker(stickerDTO: StickerDTO) {
         val cachedFile = File(StickerApplication.instance.cacheDir, stickerDTO.title + ".gif")
-        if (cachedFile.exists()){
+        if (cachedFile.exists()) {
             return
         }
         downloadSticker(stickerDTO)
@@ -351,11 +386,10 @@ class StickerViewModel : ViewModel() {
             val list = fetchAllDownloadedUseCase.execute()
             list.let {
                 stickers = it.toMutableList()
-                _liveData.postValue(Result.StickersReceivedForCategory(stickers.toList()))
+                _liveData.postValue(Result.FetchedDownloadedStickers(stickers.toList()))
             }
         }
     }
-
 
     fun reArrangeStickers() {
         if (fromPosition != toPosition && fromPosition != null) {
@@ -366,7 +400,111 @@ class StickerViewModel : ViewModel() {
                 sticker.position = index
             }
             fromPosition = null
-            CoroutineScope(Dispatchers.Default).launch { insertStickersUseCase.forceInsertAll(stickers) }
+            CoroutineScope(Dispatchers.Default).launch {
+                insertStickersUseCase.forceInsertAll(
+                    stickers
+                )
+            }
         }
+    }
+
+    private fun insertCategories() {
+        CoroutineScope(Dispatchers.IO).launch {
+            insertCategoriesUseCase.execute(getCategories())
+        }
+    }
+
+    fun loadAndSaveEmoji(resourceId: Int) {
+        CoroutineScope(Dispatchers.IO).launch {
+            val jsonString = loadJSONFromResource(resourceId)
+            jsonString?.let {
+                try {
+                    val gson = Gson()
+                    val emojis = gson.fromJson(jsonString, Emojis::class.java)
+                    val emojiList = arrayListOf<Emoji>()
+                    for (emoji in emojis.emojis) {
+                        emojiList.add(emoji.toEmoji())
+                    }
+                    addEmojiIfNotExistUseCase.execute(emojiList)
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+        }
+    }
+
+    private fun loadJSONFromResource(resourceId: Int): String? {
+        return try {
+            val inputStream = StickerApplication.instance.resources.openRawResource(resourceId)
+            val bufferedReader = BufferedReader(InputStreamReader(inputStream))
+            val stringBuilder = StringBuilder()
+            var line: String?
+            while (bufferedReader.readLine().also { line = it } != null) {
+                stringBuilder.append(line)
+            }
+            bufferedReader.close()
+            stringBuilder.toString()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        }
+    }
+
+    fun setStickerDto(dto: StickerDTO?) {
+        dto?.let { stickerDTO = it }
+    }
+
+    fun getStickerDto() = stickerDTO
+    fun shareSticker(sticker: Sticker) {
+        _liveData.value = Result.ShareSticker(sticker.toFile()!!)
+    }
+
+    fun addToFavorites(id: Int?) {
+        CoroutineScope(Dispatchers.Default).launch {
+            var sticker = fetchStickerUseCase.execute(id!!)
+            sticker?.isFavourite = true
+            updateStickerUseCase.execute(sticker!!)
+            stickerDTO = sticker.toStickerDTO()
+            _liveData.postValue(Result.StickerDTOUpdated)
+        }
+    }
+
+    fun addRecentSticker(stickerId: Int) {
+        val recentSticker = RecentStickers(stickerId = stickerId)
+        CoroutineScope(Dispatchers.Default).launch {
+            insertRecentStickersUseCase.execute(recentSticker)
+        }
+    }
+
+    fun fetchRecentStickers() {
+        CoroutineScope(Dispatchers.IO).launch {
+            val list = fetchRecentStickersUseCase.execute()
+            list.let {
+                _liveData.postValue(Result.FetchedRecentStickers(it.map { it.sticker }))
+            }
+        }
+    }
+
+    fun removeStickerFromFav(id: Int) {
+        CoroutineScope(Dispatchers.IO).launch {
+            val sticker = fetchStickerUseCase.execute(id)
+            sticker?.isFavourite = false
+            updateStickerUseCase.execute(sticker!!)
+            stickerDTO = sticker.toStickerDTO()
+            _liveData.postValue(Result.StickerDTOUpdated)
+        }
+    }
+
+    fun updateViewMode(newViewMode: ViewMode) {
+        currentViewMode = newViewMode
+    }
+
+    fun getViewMode() = currentViewMode
+
+    enum class ViewMode {
+        Recent,
+        Downloaded,
+        Favourites,
+        Category
     }
 }

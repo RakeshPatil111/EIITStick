@@ -2,6 +2,7 @@ package com.android.stickerpocket
 
 import android.app.Application
 import com.android.stickerpocket.domain.db.StickerDB
+import com.android.stickerpocket.domain.model.RecentStickerRepository
 import com.android.stickerpocket.domain.repository.CategoryRepository
 import com.android.stickerpocket.domain.repository.EmojiRepository
 import com.android.stickerpocket.domain.repository.RecentSearchRepository
@@ -45,4 +46,5 @@ class StickerApplication: Application() {
     val favouritesRepository by lazy { FavouritesRepository(database.favouritesDAO()) }
     val categoryRepository by lazy { CategoryRepository(database.categoryDAO()) }
     val stickerRepository by lazy { StickerRepository(database.stickerDAO()) }
+    val recentStickerRepository by lazy { RecentStickerRepository(database.recentStickerDAO()) }
 }

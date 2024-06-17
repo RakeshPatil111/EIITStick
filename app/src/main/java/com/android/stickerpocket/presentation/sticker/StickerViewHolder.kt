@@ -12,10 +12,11 @@ import com.android.stickerpocket.utils.StickerExt.toLoadableImage
 class StickerViewHolder(
     private val binding: CvGifItemBinding,
     private val imageLoader: ImageLoader,
-    private val itemClickListener: ((fav: Sticker, position: Int) -> Unit)?
+    private val itemClickListener: ((fav: Sticker, position: Int) -> Unit)?,
+    val didOpenForCategory: Boolean
 ): RecyclerView.ViewHolder(binding.root) {
     fun bind(sticker: Sticker) {
-        binding.root.setOnDragListener(DragListener())
+        if (didOpenForCategory) binding.root.setOnDragListener(DragListener())
         binding.apply {
             sivGifImage.load(sticker.toLoadableImage(), imageLoader){
                 target(

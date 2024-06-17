@@ -21,4 +21,6 @@ class StickerRepository(private val dao: StickerDAO) {
     suspend fun insertSticker(sticker: Sticker) = dao.insertSticker(sticker)
 
     suspend fun checkDuplicate(mediaId: String) = dao.checkDuplicate(mediaId)
+
+    suspend fun fetch(id: Int) = dao.fetch(id)
 }

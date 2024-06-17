@@ -47,7 +47,7 @@
         tools:layout="@layout/fragment_contact_us" />
     <fragment
         android:id="@+id/stickerDetailsFragment"
-        android:name="com.android.stickerpocket.presentation.StickerDetailsFragment"
+        android:name="com.android.stickerpocket.presentation.stickerdetail.StickerDetailsFragment"
         android:label="fragment_sticker_details"
         tools:layout="@layout/fragment_sticker_details" >
         <action

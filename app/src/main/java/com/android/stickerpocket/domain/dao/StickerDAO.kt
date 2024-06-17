@@ -36,4 +36,6 @@ interface StickerDAO {
 
     @Query("SELECT * FROM sticker WHERE mediaId= :mediaId")
     fun checkDuplicate(mediaId: String): List<Sticker>
+    @Query("SELECT * FROM sticker WHERE id= :id")
+    fun fetch(id: Int): Sticker?
 }

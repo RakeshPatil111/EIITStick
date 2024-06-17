@@ -13,12 +13,12 @@ import com.android.stickerpocket.databinding.CvGifItemBinding
 import com.android.stickerpocket.domain.model.Sticker
 import com.android.stickerpocket.presentation.sticker.StickerViewHolder
 
-class CommonStickerAdapter : RecyclerView.Adapter<StickerViewHolder>() {
+class CommonStickerAdapter() : RecyclerView.Adapter<StickerViewHolder>() {
 
     private val differ = AsyncListDiffer(this, diffUtilGifs)
     private var actionItemClick: ((sticker: Sticker, position: Int) -> Unit)? = null
     private lateinit var imageLoader: ImageLoader
-
+    var didOpenForCategory: Boolean = true
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): StickerViewHolder {
         imageLoader = ImageLoader
             .Builder(parent.context)
@@ -36,7 +36,8 @@ class CommonStickerAdapter : RecyclerView.Adapter<StickerViewHolder>() {
                 parent,
                 false
             ), imageLoader = imageLoader,
-            itemClickListener = actionItemClick
+            itemClickListener = actionItemClick,
+            didOpenForCategory = didOpenForCategory
         )
     }
 
@@ -57,6 +58,9 @@ class CommonStickerAdapter : RecyclerView.Adapter<StickerViewHolder>() {
 
     fun getList() = differ.currentList
 
+    fun isOpenedForCategory(value: Boolean) {
+        didOpenForCategory = value
+    }
     companion object{
         val diffUtilGifs = object: DiffUtil.ItemCallback<Sticker>(){
             override fun areItemsTheSame(oldItem: Sticker, newItem: Sticker): Boolean {

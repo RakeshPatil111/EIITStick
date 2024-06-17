@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/color_primary"
-    tools:context=".presentation.StickerDetailsFragment">
+    tools:context=".presentation.stickerdetail.StickerDetailsFragment">
 
     <ImageView
         android:id="@+id/img_app_icon"
@@ -83,7 +83,7 @@
                     android:backgroundTint="@android:color/transparent"/>
 
                 <ImageButton
-                    android:id="@+id/ibtn_save"
+                    android:id="@+id/ib_fav"
                     android:layout_width="48dp"
                     android:layout_height="48dp"
                     app:tint="@color/color_primary"
@@ -207,8 +207,7 @@
                 style="@style/Widget.AppCompat.TextView.Options"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="26dp"
-                android:text="Baby, Annoyed" />
+                android:layout_marginHorizontal="26dp" />
         </LinearLayout>
     </ScrollView>
 

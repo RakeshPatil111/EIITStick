@@ -8,9 +8,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.core.content.FileProvider
 import androidx.emoji2.emojipicker.EmojiViewItem
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
@@ -19,6 +21,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.android.stickerpocket.BuildConfig
 import com.android.stickerpocket.EmojiPickerDialog
+import com.android.stickerpocket.R
 import com.android.stickerpocket.databinding.FragmentStickerBinding
 import com.android.stickerpocket.presentation.CommonStickerAdapter
 import com.android.stickerpocket.domain.model.Category
@@ -44,37 +47,61 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
-class StickerFragment : Fragment(), GPHGridCallback, GPHSearchGridCallback,
+class StickerFragment : Fragment(), GPHGridCallback,
         ItemTouchHelperAdapter, TextWatcher {
     private lateinit var binding: FragmentStickerBinding
     private lateinit var emojiCategoryListAdapter: EmojiCategoryListAdapter
     private lateinit var itemTouchHelper: ItemTouchHelper
     private lateinit var stickerItemTouchHelper: ItemTouchHelper
     private lateinit var callback: ItemTouchHelperCallback
-    private lateinit var stickerCallback: ItemTouchHelperCallback
     private lateinit var recentSearchAdapter: RecentSearchAdapter
     private lateinit var commonStickerAdapter: CommonStickerAdapter
     private lateinit var favouritesAdapter: FavouritesAdapter
     var searchJob: Job? = null
+    private lateinit var currentRecyclerView: RecyclerView
 
     private val interactor by lazy {
         StickerFragmentInteractor()
     }
-    private val viewModel by viewModels<StickerViewModel>()
+    private val viewModel by activityViewModels<StickerViewModel>()
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentStickerBinding.inflate(inflater, container, false)
+        interactor.initObserver(viewLifecycleOwner, viewModel)
         observeInteractor()
         setClickListeners()
         initAdapters()
+        handleBackPress()
         return binding.root
+    }
+
+    private fun handleBackPress() {
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object :
+            OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                if ( requireActivity().currentFocus != null) {
+                    requireActivity().currentFocus?.let {
+                        if (it.id == R.id.tiet_search) {
+                            removeChangeListeners(binding.tietSearch)
+                            binding.tietSearch.clearFocus()
+                            binding.tietSearch.text?.clear()
+                            binding.rvRecentSearch.visibility = View.GONE
+                            currentRecyclerView.visibility = View.VISIBLE
+                        } else {
+                            requireActivity().onBackPressedDispatcher.onBackPressed()
+                        }
+                    }
+                } else {
+                    requireActivity().finish()
+                }
+            }
+        })
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        interactor.initObserver(viewLifecycleOwner, viewModel)
         interactor.onViewCreated()
     }
 
@@ -102,6 +129,8 @@ class StickerFragment : Fragment(), GPHGridCallback, GPHSearchGridCallback,
                         tietSearch.setText(action.query)
                         tietSearch.setSelection(tietSearch.length())
                         addChangeListeners(tietSearch)
+                        currentRecyclerView = rvStickers
+                        commonStickerAdapter.isOpenedForCategory(false)
                     }
                 }
 
@@ -118,6 +147,7 @@ class StickerFragment : Fragment(), GPHGridCallback, GPHSearchGridCallback,
                     binding.tietSearch.clearFocus()
                     binding.tietSearch.text?.clear()
                     addChangeListeners(binding.tietSearch)
+                    currentRecyclerView = binding.rvStickers
                 }
 
                 is StickerFragmentInteractor.Actions.ShowCategoryOptionDialog -> {
@@ -200,19 +230,6 @@ class StickerFragment : Fragment(), GPHGridCallback, GPHSearchGridCallback,
                     stickerDialog.show(childFragmentManager, "StickerDialog")
                 }
 
-                is StickerFragmentInteractor.Actions.ShareSticker -> {
-                    val gifUri = FileProvider.getUriForFile(
-                        requireContext(),
-                        BuildConfig.APPLICATION_ID + ".provider",
-                        action.gifFile
-                    );
-                    val shareIntent = Intent(Intent.ACTION_SEND)
-                    shareIntent.setType("image/gif")
-                    shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                    shareIntent.putExtra(Intent.EXTRA_STREAM, gifUri)
-                    startActivity(Intent.createChooser(shareIntent, "Share GIF using"))
-                }
-
                 is StickerFragmentInteractor.Actions.NavigateToStickerInfo -> {
                     val direction = StickerDetailsNavDirections(action.stickerDTO)
                     findNavController().navigate(direction)
@@ -253,7 +270,24 @@ class StickerFragment : Fragment(), GPHGridCallback, GPHSearchGridCallback,
                     if (emojiCategoryListAdapter.isCategorySelected()) {
                         binding.rvStickers.visibility = View.VISIBLE
                         binding.rvStickers.adapter = commonStickerAdapter
+                        currentRecyclerView = binding.rvStickers
+                        commonStickerAdapter.isOpenedForCategory(true)
                     }
+                }
+
+                is StickerFragmentInteractor.Actions.ShowDownloadedStickers -> {
+                    commonStickerAdapter.updateList(action.stickers)
+                    commonStickerAdapter.isOpenedForCategory(false)
+                    binding.rvStickers.visibility = View.VISIBLE
+                    binding.rvStickers.adapter = commonStickerAdapter
+                    currentRecyclerView = binding.rvStickers
+                }
+
+                is StickerFragmentInteractor.Actions.ShowRecentStickers -> {
+                    commonStickerAdapter.updateList(action.stickers)
+                    commonStickerAdapter.isOpenedForCategory(false)
+                    binding.rvStickers.adapter = commonStickerAdapter
+                    currentRecyclerView = binding.rvStickers
                 }
                 else -> {}
             }
@@ -288,6 +322,7 @@ class StickerFragment : Fragment(), GPHGridCallback, GPHSearchGridCallback,
         favouritesAdapter = FavouritesAdapter()
         binding.rvStickers.adapter = commonStickerAdapter
         binding.rvStickers.visibility = View.VISIBLE
+        currentRecyclerView = binding.rvStickers
         setupRecentSearchRecyclerView()
         commonStickerAdapter.onItemClick { sticker, position ->
             interactor.onStickerClick(sticker, position)
@@ -304,11 +339,18 @@ class StickerFragment : Fragment(), GPHGridCallback, GPHSearchGridCallback,
                 rvRecentSearch.visibility = View.GONE
                 rvStickers.visibility = View.VISIBLE
                 emojiCategoryListAdapter.clearSelection()
+                cvFavSticker.removeBorder()
+                cvDownloadedSticker.removeBorder()
+                cvRecentSticker.setBorder()
+                interactor.onRecentStickerClick()
 
             }
             cvFavSticker.setOnClickListener {
                 interactor.onFavClick()
                 emojiCategoryListAdapter.clearSelection()
+                cvFavSticker.setBorder()
+                cvDownloadedSticker.removeBorder()
+                cvRecentSticker.removeBorder()
             }
             cvDownloadedSticker.setOnClickListener {
                 rvRecentSearch.visibility = View.GONE
@@ -351,7 +393,9 @@ class StickerFragment : Fragment(), GPHGridCallback, GPHSearchGridCallback,
                 recyclerView: RecyclerView,
                 viewHolder: RecyclerView.ViewHolder
             ): Int {
-                val dragFlags = ItemTouchHelper.UP or ItemTouchHelper.DOWN or ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT
+                val dragFlags = if ((recyclerView.adapter as CommonStickerAdapter).didOpenForCategory) {
+                    ItemTouchHelper.UP or ItemTouchHelper.DOWN or ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT
+                } else 0
                 val swipeFlags = 0
                 return makeMovementFlags(dragFlags, swipeFlags)
             }
@@ -421,18 +465,6 @@ class StickerFragment : Fragment(), GPHGridCallback, GPHSearchGridCallback,
         media.images.original?.gifUrl?.let {
             interactor.onMediaClick(media)
         }
-    }
-
-    override fun didLongPressCell(cell: GifView) {
-        TODO("Not yet implemented")
-    }
-
-    override fun didScroll(dx: Int, dy: Int) {
-        TODO("Not yet implemented")
-    }
-
-    override fun didTapUsername(username: String) {
-        TODO("Not yet implemented")
     }
 
     override fun onItemMove(fromPosition: Int, toPosition: Int) {

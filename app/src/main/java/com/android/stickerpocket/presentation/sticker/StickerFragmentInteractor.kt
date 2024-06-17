@@ -10,6 +10,7 @@ import com.android.stickerpocket.dtos.getCategories
 import com.android.stickerpocket.presentation.StickerDTO
 import com.android.stickerpocket.utils.Event
 import com.android.stickerpocket.utils.StickerExt.stickerDTO
+import com.android.stickerpocket.utils.StickerExt.toFile
 import com.android.stickerpocket.utils.StickerExt.toStickerDTO
 import com.giphy.sdk.core.models.Media
 import java.io.File
@@ -17,28 +18,47 @@ import java.io.File
 class StickerFragmentInteractor {
 
     sealed class Actions {
-        object InitGiphyView: Actions()
-        data class InitCategoryView(val categories: List<Category>): Actions()
-        object HideGiphyGridViewAndShowRecentSearches: Actions()
-        object ShowGiphyGridView: Actions()
-        object clearAllRecentSearchAndHideView : Actions()
-        data class ShowRecentSearches(val recentSearches: List<RecentSearch>): Actions()
+        object InitGiphyView : Actions()
+        data class InitCategoryView(val categories: List<Category>) : Actions()
+        object HideGiphyGridViewAndShowRecentSearches : Actions()
+        object ShowGiphyGridView : Actions()
+        data class clearAllRecentSearchAndHideView(val list: List<RecentSearch>) : Actions()
+        data class ShowRecentSearches(val recentSearches: List<RecentSearch>) : Actions()
         data class ShowGiphyViewForRecentSearch(val query: String) : Actions()
         data class LoadEmojisForCategory(val query: String) : Actions()
-        data class ShowCategoryOptionDialog(val category: Category, val pos: Int, val previous: Int) : Actions()
+        data class ShowCategoryOptionDialog(
+            val category: Category,
+            val pos: Int,
+            val previous: Int
+        ) : Actions()
+
         data class ShowStickerDialog(
             val sticker: com.android.stickerpocket.domain.model.Sticker,
             val position: Int,
             val isFavourite: Boolean
         ) : Actions()
-        data class ShareSticker(val gifFile: File) : Actions()
+
         data class NavigateToStickerInfo(val stickerDTO: StickerDTO) : Actions()
-        data class ShowFavoritesSticker(val favoriteStickers: List<com.android.stickerpocket.domain.model.Sticker>): Actions()
+        data class ShowFavoritesSticker(val favoriteStickers: List<com.android.stickerpocket.domain.model.Sticker>) :
+            Actions()
+
         data class ReloadCategories(val categories: List<Category>) : Actions()
-        data class ShowMessage(val message: String): Actions()
-        data class ShowStickers(val stickers: List<com.android.stickerpocket.domain.model.Sticker>) : Actions()
-        data class ShowStickerForRecentSearch(val query: String, val stickers: List<com.android.stickerpocket.domain.model.Sticker>) : Actions()
+        data class ShowMessage(val message: String) : Actions()
+        data class ShowStickers(val stickers: List<com.android.stickerpocket.domain.model.Sticker>) :
+            Actions()
+
+        data class ShowDownloadedStickers(val stickers: List<com.android.stickerpocket.domain.model.Sticker>) :
+            Actions()
+
+        data class ShowStickerForRecentSearch(
+            val query: String,
+            val stickers: List<com.android.stickerpocket.domain.model.Sticker>
+        ) : Actions()
+
+        data class ShowRecentStickers(val stickers: List<com.android.stickerpocket.domain.model.Sticker>) :
+            Actions()
     }
+
     private val _liveData = MutableLiveData<Event<Actions>>()
     val liveData = _liveData
     private lateinit var viewModel: StickerViewModel
@@ -47,27 +67,84 @@ class StickerFragmentInteractor {
         viewModel.liveData.observe(viewLifecycleOwner, Observer {
             when (it) {
                 is StickerViewModel.Result.CategoryCreated -> {
-                    _liveData.value = Event(Actions.ReloadCategories(viewModel.getEmojiCategories()))
+                    _liveData.value =
+                        Event(Actions.ReloadCategories(viewModel.getEmojiCategories()))
                 }
+
                 is StickerViewModel.Result.CreateCatFailure -> {
-                    _liveData.value = Event(Actions.ShowMessage("Emoji not found, Can not create category"))
+                    _liveData.value =
+                        Event(Actions.ShowMessage("Emoji not found, Can not create category"))
                 }
+
                 is StickerViewModel.Result.StickersReceivedForCategory -> {
-                    _liveData.postValue(Event(Actions.ShowStickers(it.stickers)))
+                    if (viewModel.getViewMode() == StickerViewModel.ViewMode.Category) {
+                        _liveData.postValue(Event(Actions.ShowStickers(it.stickers)))
+                    }
                 }
+
                 is StickerViewModel.Result.FavouritesStickerUpdated -> {
-                    _liveData.value = Event(Actions.ShowFavoritesSticker(viewModel.getFavourites()))
+                    if (viewModel.getViewMode() == StickerViewModel.ViewMode.Favourites) {
+                        _liveData.value =
+                            Event(Actions.ShowFavoritesSticker(viewModel.getFavourites()))
+                    }
                 }
+
                 is StickerViewModel.Result.StickersWithQuery -> {
-                    _liveData.postValue(Event(Actions.ShowStickerForRecentSearch(it.query, it.stickers)))
+                    _liveData.postValue(
+                        Event(
+                            Actions.ShowStickerForRecentSearch(
+                                it.query,
+                                it.stickers
+                            )
+                        )
+                    )
                 }
+
+                is StickerViewModel.Result.FetchedDownloadedStickers -> {
+                    if (viewModel.getViewMode() == StickerViewModel.ViewMode.Downloaded) {
+                        _liveData.postValue(Event(Actions.ShowDownloadedStickers(it.stickers)))
+                    }
+                }
+
+                is StickerViewModel.Result.RecentSearchCleared -> {
+                    _liveData.value = Event(Actions.clearAllRecentSearchAndHideView(it.searches))
+                }
+
+                is StickerViewModel.Result.FetchedRecentStickers -> {
+                    if (viewModel.getViewMode() == StickerViewModel.ViewMode.Recent) {
+                        _liveData.value = Event(Actions.ShowRecentStickers(it.list))
+                    }
+                }
+
                 else -> {}
             }
         })
     }
 
     fun onViewCreated() {
-        _liveData.value = (Event(Actions.InitCategoryView(viewModel.getEmojiCategories().ifEmpty { getCategories() })))
+        _liveData.value = (Event(
+            Actions.InitCategoryView(
+                viewModel.getEmojiCategories().ifEmpty { getCategories() })
+        ))
+        loadStickers()
+    }
+
+    private fun loadStickers() {
+        when (viewModel.getViewMode()) {
+            StickerViewModel.ViewMode.Recent -> {
+                viewModel.fetchRecentStickers()
+            }
+            StickerViewModel.ViewMode.Downloaded -> {
+                viewModel.fetchAllDownloaded()
+            }
+            StickerViewModel.ViewMode.Favourites -> {
+                _liveData.postValue( Event(Actions.ShowFavoritesSticker(viewModel.getFavourites())))
+            }
+            StickerViewModel.ViewMode.Category -> {
+                if (viewModel.getEmojiCategories().isNotEmpty())
+                    viewModel.categorySelected(viewModel.getEmojiCategories()[0], 0)
+            }
+        }
     }
 
     fun onSearchClick() {
@@ -94,7 +171,6 @@ class StickerFragmentInteractor {
 
     fun onClearAllRecentSearch() {
         viewModel.clearAllRecentSearch()
-        _liveData.value = Event(Actions.clearAllRecentSearchAndHideView)
     }
 
     fun onQueryBlank() {
@@ -103,6 +179,7 @@ class StickerFragmentInteractor {
 
     fun onCategoryItemClick(category: Category, previous: Int) {
         viewModel.categorySelected(category, previous)
+        viewModel.updateViewMode(StickerViewModel.ViewMode.Category)
     }
 
     fun onCategoryItemLongClick(category: Category, pos: Int, previous: Int) {
@@ -111,7 +188,6 @@ class StickerFragmentInteractor {
 
     fun onMediaClick(media: Media) {
         val sticker = media.stickerDTO()
-        //_liveData.value = Event(Actions.ShowStickerDialog(sticker))
         viewModel.downloadSticker(sticker)
     }
 
@@ -120,20 +196,24 @@ class StickerFragmentInteractor {
     }
 
     fun onStickerShare(sticker: com.android.stickerpocket.domain.model.Sticker) {
-       // _liveData.value = Event(Actions.ShareSticker(sticker.toFile()))
+        viewModel.shareSticker(sticker)
     }
 
     fun onAddStickerToFavoritesClick(
         sticker: com.android.stickerpocket.domain.model.Sticker,
         didOpenForFav: Boolean
     ) {
-        if (didOpenForFav) viewModel.removeStickerFromFav(sticker) else viewModel.addToFavorites(sticker)
+        if (didOpenForFav) viewModel.removeStickerFromFav(sticker) else viewModel.addToFavorites(
+            sticker
+        )
     }
+
     fun onFavClick() {
+        viewModel.updateViewMode(StickerViewModel.ViewMode.Favourites)
         _liveData.value = Event(Actions.ShowFavoritesSticker(viewModel.getFavourites()))
     }
+
     fun onAddNewCategory(emojiItem: EmojiViewItem, category: Category, pos: Int, previous: Int) {
-        viewModel.getEmojiCategories().get(previous).isHighlighted = false
         viewModel.createCategory(emojiItem.emoji, pos)
     }
 
@@ -166,6 +246,12 @@ class StickerFragmentInteractor {
     }
 
     fun onDownloadClick() {
+        viewModel.updateViewMode(StickerViewModel.ViewMode.Downloaded)
         viewModel.fetchAllDownloaded()
+    }
+
+    fun onRecentStickerClick() {
+        viewModel.updateViewMode(StickerViewModel.ViewMode.Recent)
+        viewModel.fetchRecentStickers()
     }
 }

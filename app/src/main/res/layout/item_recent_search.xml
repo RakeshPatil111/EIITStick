@@ -41,11 +41,11 @@
         android:textAllCaps="false"
         android:visibility="gone"
         android:layout_marginEnd="@dimen/dimen_12dp"
-        android:backgroundTint="@color/item_color_inactive"
+        android:backgroundTint="@color/white"
         android:textColor="@color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:strokeColor="@color/color_border"
+        app:strokeColor="@color/white"
         app:strokeWidth="2dp" />
 </androidx.constraintlayout.widget.ConstraintLayout>

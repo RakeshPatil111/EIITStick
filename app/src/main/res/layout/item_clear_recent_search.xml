@@ -34,6 +34,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:strokeColor="@color/color_border"
+        app:strokeColor="@color/white"
         app:strokeWidth="2dp" />
 </androidx.constraintlayout.widget.ConstraintLayout>

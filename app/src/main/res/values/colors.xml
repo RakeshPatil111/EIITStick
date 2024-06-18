@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="color_primary_bg">#B4DEFC</color>
-    <color name="color_primary">#2D6594</color>
+    <color name="color_primary">#FF539DD7</color>
     <color name="color_primary_variant">#295175</color>
     <color name="sticker_bg">#034998</color>
     <color name="color_secondary">#2C5982</color>

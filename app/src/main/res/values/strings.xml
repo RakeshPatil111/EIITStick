@@ -33,6 +33,7 @@
     <string name="add_tags_to_sticker">Add Tags to Sticker</string>
     <string name="manage_sticker">Manage Sticker</string>
     <string name="download_sticker">Download Sticker</string>
+    <string name="no_stickers_found">No Sticker was found for this tag</string>
     <string name="choose_a_topic">Choose a Topic</string>
     <string name="enter_subject">Enter Subject</string>
     <string name="enter_description">Enter Description</string>

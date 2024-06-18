@@ -5,7 +5,8 @@
         android:radius="@dimen/dimen_10dp"/>
     <solid
         android:color="@android:color/white"/>
+    <padding android:left="10dp" android:right="10dp"/>
     <stroke
         android:color="@color/color_primary"
-        android:width="@dimen/dimen_1dp"/>
+        android:width="@dimen/dimen_5dp"/>
 </shape>

@@ -30,6 +30,7 @@ import com.android.stickerpocket.presentation.FavouritesAdapter
 import com.android.stickerpocket.presentation.StickerCategoryDialog
 import com.android.stickerpocket.presentation.StickerDetailsNavDirections
 import com.android.stickerpocket.presentation.StickerDialog
+import com.android.stickerpocket.utils.CustomDialog
 import com.android.stickerpocket.utils.ItemTouchHelperAdapter
 import com.android.stickerpocket.utils.ItemTouchHelperCallback
 import com.android.stickerpocket.utils.StickerExt.toStickerDTO
@@ -124,6 +125,9 @@ class StickerFragment : Fragment(), GPHGridCallback,
                         rvRecentSearch.visibility = View.GONE
                         rvStickers.visibility = View.VISIBLE
                         rvStickers.adapter = commonStickerAdapter
+                        if (action.stickers.isEmpty()){
+                            CustomDialog.showCustomDialog(requireContext(),resources.getString(R.string.no_stickers_found),resources.getString(R.string.ok))
+                        }
                         commonStickerAdapter.updateList(action.stickers)
                         removeChangeListeners(tietSearch)
                         tietSearch.setText(action.query)

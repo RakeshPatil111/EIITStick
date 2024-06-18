@@ -39,6 +39,7 @@
         app:endIconMode="clear_text"
         app:hintEnabled="false"
         app:endIconDrawable="@drawable/ic_outline_cancel"
+        app:endIconTint="@color/white"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/img_app_icon"
@@ -50,6 +51,9 @@
             android:layout_height="wrap_content"
             android:digits="abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ 0123456789"
             android:hint="@string/search"
+            android:textColor="@color/white"
+            android:textColorHint="@color/white"
+            android:drawableTint="@color/white"
             android:imeOptions="actionSearch"
             android:inputType="textCapWords"
             android:singleLine="true"/>

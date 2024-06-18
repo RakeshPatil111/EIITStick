@@ -7,15 +7,15 @@
     android:layout_height="wrap_content"
     android:background="@color/color_primary">
 
-    <androidx.appcompat.widget.AppCompatTextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/tv_clear_title"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:padding="@dimen/dimen_10dp"
         android:text="@string/recent_searches"
         android:textColor="@color/white"
-        android:textSize="16sp"
         android:gravity="start"
+        android:textAppearance="?attr/textAppearanceBody1"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/btn_clear_all"
         app:layout_constraintStart_toStartOf="parent"
@@ -29,7 +29,7 @@
         android:text="@string/clear_all"
         android:textAllCaps="false"
         android:layout_marginEnd="@dimen/dimen_12dp"
-        android:backgroundTint="@color/item_color_inactive"
+        android:backgroundTint="@color/color_primary_variant"
         android:textColor="@color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

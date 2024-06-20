@@ -1,12 +1,16 @@
 package com.android.stickerpocket.presentation.sticker
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.core.content.FileProvider
@@ -30,6 +34,7 @@ import com.android.stickerpocket.presentation.FavouritesAdapter
 import com.android.stickerpocket.presentation.StickerCategoryDialog
 import com.android.stickerpocket.presentation.StickerDetailsNavDirections
 import com.android.stickerpocket.presentation.StickerDialog
+import com.android.stickerpocket.utils.CustomDialog
 import com.android.stickerpocket.utils.ItemTouchHelperAdapter
 import com.android.stickerpocket.utils.ItemTouchHelperCallback
 import com.android.stickerpocket.utils.StickerExt.toStickerDTO
@@ -74,6 +79,32 @@ class StickerFragment : Fragment(), GPHGridCallback,
         setClickListeners()
         initAdapters()
         handleBackPress()
+
+        binding.tietSearch.setOnEditorActionListener { view, actionId, event ->
+            if (actionId == EditorInfo.IME_ACTION_SEARCH ||
+                (event != null && event.keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_DOWN)) {
+                val query = view.text.toString()
+                hideKeyboard()
+                if (query.isEmpty() && binding.tietSearch.hasFocus()) {
+                    binding.rvRecentSearch.visibility = View.VISIBLE
+                    binding.rvStickers.visibility = View.GONE
+                    interactor.onQueryBlank()
+                } else {
+                    searchJob?.cancel()
+                    searchJob = MainScope().launch {
+                        query.let {
+                            if (it.trim()
+                                    .isNotEmpty()) {
+                                interactor.onQuerySearch(it)
+                            }
+                        }
+                    }
+                }
+                true
+            } else {
+                false
+            }
+        }
         return binding.root
     }
 
@@ -124,6 +155,9 @@ class StickerFragment : Fragment(), GPHGridCallback,
                         rvRecentSearch.visibility = View.GONE
                         rvStickers.visibility = View.VISIBLE
                         rvStickers.adapter = commonStickerAdapter
+                        if (action.stickers.isEmpty()){
+                            CustomDialog.showCustomDialog(requireContext(),resources.getString(R.string.no_stickers_found),resources.getString(R.string.ok))
+                        }
                         commonStickerAdapter.updateList(action.stickers)
                         removeChangeListeners(tietSearch)
                         tietSearch.setText(action.query)
@@ -259,6 +293,7 @@ class StickerFragment : Fragment(), GPHGridCallback,
                     Toast.makeText(requireContext(), action.message, Toast.LENGTH_SHORT).show()
                 }
                 is StickerFragmentInteractor.Actions.clearAllRecentSearchAndHideView ->{
+                    hideKeyboard()
                     binding.apply {
                         rvRecentSearch.visibility = View.GONE
                         rvStickers.visibility = View.VISIBLE
@@ -483,26 +518,15 @@ class StickerFragment : Fragment(), GPHGridCallback,
         }
     }
 
-    override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+    override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
 
-    }
+    override fun afterTextChanged(s: Editable?) { }
 
-    override fun afterTextChanged(s: Editable?) {
-        if (s.toString().isEmpty() && binding.tietSearch.hasFocus()) {
-            binding.rvRecentSearch.visibility = View.VISIBLE
-            binding.rvStickers.visibility = View.GONE
-            interactor.onQueryBlank()
-        } else {
-            searchJob?.cancel()
-            searchJob = MainScope().launch {
-                delay(2500)
-                s?.let {
-                    if (it.toString().trim()
-                            .isNotEmpty()) {
-                        interactor.onQuerySearch(it.toString())
-                    }
-                }
-            }
+    private fun hideKeyboard() {
+        val inputMethodManager = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        val currentFocusedView = requireActivity().currentFocus
+        if (currentFocusedView != null) {
+            inputMethodManager.hideSoftInputFromWindow(currentFocusedView.windowToken, 0)
         }
     }
 }

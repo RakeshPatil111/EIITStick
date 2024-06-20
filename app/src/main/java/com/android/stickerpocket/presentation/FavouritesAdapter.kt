@@ -16,6 +16,7 @@ import com.android.stickerpocket.presentation.sticker.StickerViewHolder
 class FavouritesAdapter: RecyclerView.Adapter<StickerViewHolder>() {
     private val differ = AsyncListDiffer(this, stickerDiffUtil)
     private var actionItemClick: ((sticker: Sticker, position: Int) -> Unit)? = null
+    private var actionItemLongClick: ((sticker: Sticker, position: Int) -> Unit)? = null
     private lateinit var imageLoader: ImageLoader
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): StickerViewHolder {
         imageLoader = ImageLoader
@@ -35,6 +36,7 @@ class FavouritesAdapter: RecyclerView.Adapter<StickerViewHolder>() {
                 false
             ), imageLoader = imageLoader,
             itemClickListener = actionItemClick,
+            itemLongClickListener=actionItemLongClick,
             didOpenForCategory = false
         )
     }
@@ -46,7 +48,9 @@ class FavouritesAdapter: RecyclerView.Adapter<StickerViewHolder>() {
     fun onItemClick(action: (sticker: Sticker, position: Int) -> Unit){
         this.actionItemClick = action
     }
-
+    fun onItemLongClick(action: (sticker: Sticker, position: Int) -> Unit){
+        this.actionItemLongClick = action
+    }
     fun updateList(favoriteStickers: List<Sticker>) {
         differ.submitList(favoriteStickers)
     }

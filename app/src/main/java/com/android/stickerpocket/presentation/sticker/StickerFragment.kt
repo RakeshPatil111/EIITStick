@@ -256,12 +256,21 @@ class StickerFragment : Fragment(), GPHGridCallback,
                             interactor.onAddStickerToFavoritesClick(sticker, didOpenForFav)
                         }
 
+                        override fun onAddStickerToDeletedClick(sticker: Sticker, didOpenForFav: Boolean) {
+                            interactor.onAddStickerToDeletedClick(sticker, didOpenForFav)
+                        }
+
                         override fun onCancelClick() {
                             stickerDialog.dismiss()
                         }
 
                     })
                     stickerDialog.show(childFragmentManager, "StickerDialog")
+                }
+
+                is StickerFragmentInteractor.Actions.ShareSticker -> {
+
+                    interactor.onStickerShare(action.sticker)
                 }
 
                 is StickerFragmentInteractor.Actions.NavigateToStickerInfo -> {
@@ -362,9 +371,15 @@ class StickerFragment : Fragment(), GPHGridCallback,
         commonStickerAdapter.onItemClick { sticker, position ->
             interactor.onStickerClick(sticker, position)
         }
+        commonStickerAdapter.onItemLongClick { sticker, position ->
+            interactor.onStickerLongClick(sticker, position)
+        }
 
         favouritesAdapter.onItemClick { sticker, position ->
             interactor.onFavStickerClick(sticker, position)
+        }
+        favouritesAdapter.onItemLongClick { sticker, position ->
+            interactor.onFavStickerLongClick(sticker, position)
         }
     }
 

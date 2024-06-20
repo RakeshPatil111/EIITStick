@@ -264,6 +264,12 @@ class StickerViewModel : ViewModel() {
             updateStickerUseCase.execute(sticker)
         }
     }
+    fun addToDeletedStickers(sticker: Sticker) {
+        CoroutineScope(Dispatchers.Default).launch {
+            sticker.isDeleted = true
+            updateStickerUseCase.execute(sticker)
+        }
+    }
 
     fun fetchAllFavorites() {
         viewModelScope.launch {
@@ -358,6 +364,12 @@ class StickerViewModel : ViewModel() {
     fun removeStickerFromFav(sticker: Sticker) {
         CoroutineScope(Dispatchers.IO).launch {
             sticker.isFavourite = false
+            updateStickerUseCase.execute(sticker)
+        }
+    }
+    fun removeStickerFromDeleted(sticker: Sticker) {
+        CoroutineScope(Dispatchers.IO).launch {
+            sticker.isDeleted = false
             updateStickerUseCase.execute(sticker)
         }
     }

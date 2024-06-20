@@ -38,6 +38,12 @@ class StickerFragmentInteractor {
             val isFavourite: Boolean
         ) : Actions()
 
+        data class ShareSticker(
+            val sticker: com.android.stickerpocket.domain.model.Sticker,
+            val position: Int,
+            val isFavourite: Boolean
+        ) : Actions()
+
         data class NavigateToStickerInfo(val stickerDTO: StickerDTO) : Actions()
         data class ShowFavoritesSticker(val favoriteStickers: List<com.android.stickerpocket.domain.model.Sticker>) :
             Actions()
@@ -208,6 +214,15 @@ class StickerFragmentInteractor {
         )
     }
 
+    fun onAddStickerToDeletedClick(
+        sticker: com.android.stickerpocket.domain.model.Sticker,
+        didOpenForDelete: Boolean
+    ) {
+        if (didOpenForDelete) viewModel.removeStickerFromDeleted(sticker) else viewModel.addToDeletedStickers(
+            sticker
+        )
+    }
+
     fun onFavClick() {
         viewModel.updateViewMode(StickerViewModel.ViewMode.Favourites)
         _liveData.value = Event(Actions.ShowFavoritesSticker(viewModel.getFavourites()))
@@ -230,10 +245,16 @@ class StickerFragmentInteractor {
     }
 
     fun onStickerClick(sticker: com.android.stickerpocket.domain.model.Sticker, position: Int) {
+        _liveData.value = Event(Actions.ShareSticker(sticker, position, sticker.isFavourite))
+    }
+    fun onStickerLongClick(sticker: com.android.stickerpocket.domain.model.Sticker, position: Int) {
         _liveData.value = Event(Actions.ShowStickerDialog(sticker, position, sticker.isFavourite))
     }
 
     fun onFavStickerClick(sticker: com.android.stickerpocket.domain.model.Sticker, position: Int) {
+        _liveData.value = Event(Actions.ShareSticker(sticker, position, isFavourite = true))
+    }
+    fun onFavStickerLongClick(sticker: com.android.stickerpocket.domain.model.Sticker, position: Int) {
         _liveData.value = Event(Actions.ShowStickerDialog(sticker, position, isFavourite = true))
     }
 

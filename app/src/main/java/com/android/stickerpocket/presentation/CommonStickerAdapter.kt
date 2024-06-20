@@ -17,6 +17,7 @@ class CommonStickerAdapter() : RecyclerView.Adapter<StickerViewHolder>() {
 
     private val differ = AsyncListDiffer(this, diffUtilGifs)
     private var actionItemClick: ((sticker: Sticker, position: Int) -> Unit)? = null
+    private var actionItemLongClick: ((sticker: Sticker, position: Int) -> Unit)? = null
     private lateinit var imageLoader: ImageLoader
     var didOpenForCategory: Boolean = true
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): StickerViewHolder {
@@ -37,6 +38,7 @@ class CommonStickerAdapter() : RecyclerView.Adapter<StickerViewHolder>() {
                 false
             ), imageLoader = imageLoader,
             itemClickListener = actionItemClick,
+            itemLongClickListener = actionItemLongClick,
             didOpenForCategory = didOpenForCategory
         )
     }
@@ -55,6 +57,11 @@ class CommonStickerAdapter() : RecyclerView.Adapter<StickerViewHolder>() {
     fun onItemClick(action: (sticker: Sticker, position: Int) -> Unit){
         this.actionItemClick = action
     }
+
+    fun onItemLongClick(action: (sticker: Sticker, position: Int) -> Unit){
+        this.actionItemLongClick = action
+    }
+
 
     fun getList() = differ.currentList
 

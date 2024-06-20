@@ -75,4 +75,34 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tv_add_to_fav" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/tv_delete"
+        style="@style/Widget.AppCompat.TextView.Options"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:drawablePadding="@dimen/dimen_24dp"
+        android:paddingHorizontal="@dimen/dimen_24dp"
+        android:paddingVertical="@dimen/text_dimen_12"
+        android:text="@string/delete"
+        android:textColor="@android:color/holo_red_light"
+        app:drawableStartCompat="@drawable/ic_delete"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_share" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/tv_reorganize_st"
+        style="@style/Widget.AppCompat.TextView.Options"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:drawablePadding="@dimen/dimen_24dp"
+        android:paddingHorizontal="@dimen/dimen_24dp"
+        android:paddingVertical="@dimen/text_dimen_12"
+        android:text="@string/reorganize"
+        android:textColor="@android:color/black"
+        app:drawableStartCompat="@drawable/ic_organize"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_delete" />
 </androidx.constraintlayout.widget.ConstraintLayout>

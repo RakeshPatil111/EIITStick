@@ -12,10 +12,10 @@ import coil.decode.ImageDecoderDecoder
 import com.android.stickerpocket.databinding.CvGifItemBinding
 import com.android.stickerpocket.domain.model.Sticker
 import com.android.stickerpocket.presentation.sticker.StickerViewHolder
+import java.util.Collections
 
 class CommonStickerAdapter() : RecyclerView.Adapter<StickerViewHolder>() {
-
-    private val differ = AsyncListDiffer(this, diffUtilGifs)
+    var stickers = mutableListOf<Sticker>()
     private var actionItemClick: ((sticker: Sticker, position: Int) -> Unit)? = null
     private lateinit var imageLoader: ImageLoader
     var didOpenForCategory: Boolean = true
@@ -41,14 +41,14 @@ class CommonStickerAdapter() : RecyclerView.Adapter<StickerViewHolder>() {
         )
     }
 
-    override fun getItemCount() = differ.currentList.size
+    override fun getItemCount() = stickers.size
 
     override fun onBindViewHolder(holder: StickerViewHolder, position: Int) {
-        holder.bind(differ.currentList[position])
+        holder.bind(stickers[position])
     }
 
     fun updateList(list: List<Sticker>) {
-        differ.submitList(list)
+        stickers = list.toMutableList()
         notifyDataSetChanged()
     }
 
@@ -56,21 +56,23 @@ class CommonStickerAdapter() : RecyclerView.Adapter<StickerViewHolder>() {
         this.actionItemClick = action
     }
 
-    fun getList() = differ.currentList
+    fun getList() = stickers
 
     fun isOpenedForCategory(value: Boolean) {
         didOpenForCategory = value
     }
-    companion object{
-        val diffUtilGifs = object: DiffUtil.ItemCallback<Sticker>(){
-            override fun areItemsTheSame(oldItem: Sticker, newItem: Sticker): Boolean {
-                return oldItem == newItem
-            }
 
-            override fun areContentsTheSame(oldItem: Sticker, newItem: Sticker): Boolean {
-                return oldItem == newItem
+    fun onRowMoved(fromPosition: Int, toPosition: Int) {
+        if (fromPosition < toPosition) {
+            for (i in fromPosition until toPosition) {
+                Collections.swap(stickers, i, i + 1)
             }
-
+        } else {
+            for (i in fromPosition downTo toPosition + 1) {
+                Collections.swap(stickers, i, i - 1)
+            }
         }
+
+        notifyItemMoved(fromPosition, toPosition)
     }
 }

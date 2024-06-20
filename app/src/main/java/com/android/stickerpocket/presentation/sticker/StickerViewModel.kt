@@ -145,7 +145,7 @@ class StickerViewModel : ViewModel() {
                         is FetchCategoriesUseCase.Result.Success -> {
                             categories = it.categories.toMutableList()
                                 .ifEmpty { getCategories().toMutableList() }
-                            _liveData.postValue(Result.CategoryCreated)
+                            _liveData.value = (Result.CategoryCreated)
                             val selectedCategory =
                                 categories.filter { it.isHighlighted == true }.first().id
                             fetchStickersForCategory(selectedCategory)
@@ -505,6 +505,7 @@ class StickerViewModel : ViewModel() {
         Recent,
         Downloaded,
         Favourites,
-        Category
+        Category,
+        RecentSearch
     }
 }

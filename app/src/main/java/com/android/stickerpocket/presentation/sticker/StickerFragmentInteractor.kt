@@ -18,13 +18,10 @@ import java.io.File
 class StickerFragmentInteractor {
 
     sealed class Actions {
-        object InitGiphyView : Actions()
         data class InitCategoryView(val categories: List<Category>) : Actions()
         object HideGiphyGridViewAndShowRecentSearches : Actions()
-        object ShowGiphyGridView : Actions()
         data class clearAllRecentSearchAndHideView(val list: List<RecentSearch>) : Actions()
         data class ShowRecentSearches(val recentSearches: List<RecentSearch>) : Actions()
-        data class ShowGiphyViewForRecentSearch(val query: String) : Actions()
         data class LoadEmojisForCategory(val query: String) : Actions()
         data class ShowCategoryOptionDialog(
             val category: Category,
@@ -64,6 +61,7 @@ class StickerFragmentInteractor {
     private lateinit var viewModel: StickerViewModel
     fun initObserver(viewLifecycleOwner: LifecycleOwner, viewModel: StickerViewModel) {
         this.viewModel = viewModel
+        viewModel.updateViewMode(StickerViewModel.ViewMode.Category)
         viewModel.liveData.observe(viewLifecycleOwner, Observer {
             when (it) {
                 is StickerViewModel.Result.CategoryCreated -> {
@@ -90,14 +88,16 @@ class StickerFragmentInteractor {
                 }
 
                 is StickerViewModel.Result.StickersWithQuery -> {
-                    _liveData.postValue(
-                        Event(
-                            Actions.ShowStickerForRecentSearch(
-                                it.query,
-                                it.stickers
+                    if (viewModel.getViewMode() == StickerViewModel.ViewMode.RecentSearch) {
+                        _liveData.postValue(
+                            Event(
+                                Actions.ShowStickerForRecentSearch(
+                                    it.query,
+                                    it.stickers
+                                )
                             )
                         )
-                    )
+                    }
                 }
 
                 is StickerViewModel.Result.FetchedDownloadedStickers -> {
@@ -142,8 +142,9 @@ class StickerFragmentInteractor {
             }
             StickerViewModel.ViewMode.Category -> {
                 if (viewModel.getEmojiCategories().isNotEmpty())
-                    viewModel.categorySelected(viewModel.getEmojiCategories()[0], 0)
+                    viewModel.categorySelected(viewModel.getEmojiCategories().filter { it.isHighlighted }.first(), 0)
             }
+            else -> {}
         }
     }
 
@@ -160,6 +161,7 @@ class StickerFragmentInteractor {
     }
 
     fun onQuerySearch(query: String) {
+        viewModel.updateViewMode(StickerViewModel.ViewMode.RecentSearch)
         viewModel.saveRecentSearch(query)
         viewModel.getStickersForQuery(query)
     }

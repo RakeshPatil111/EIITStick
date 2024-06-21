@@ -17,7 +17,7 @@ class DragListener() : View.OnDragListener {
             // DragEvent.ACTION_DROP,
             // DragEvent.ACTION_DRAG_EXITED
             DragEvent.ACTION_DROP -> {
-                Log.d("MyLog", "ACTION_DROP")
+                Log.e("MyLog", "ACTION_DROP")
                 isDropped = true
                 var positionTarget: Int
 

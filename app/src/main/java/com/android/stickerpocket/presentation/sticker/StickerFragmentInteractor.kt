@@ -10,10 +10,8 @@ import com.android.stickerpocket.dtos.getCategories
 import com.android.stickerpocket.presentation.StickerDTO
 import com.android.stickerpocket.utils.Event
 import com.android.stickerpocket.utils.StickerExt.stickerDTO
-import com.android.stickerpocket.utils.StickerExt.toFile
 import com.android.stickerpocket.utils.StickerExt.toStickerDTO
 import com.giphy.sdk.core.models.Media
-import java.io.File
 
 class StickerFragmentInteractor {
 
@@ -30,6 +28,12 @@ class StickerFragmentInteractor {
         ) : Actions()
 
         data class ShowStickerDialog(
+            val sticker: com.android.stickerpocket.domain.model.Sticker,
+            val position: Int,
+            val isFavourite: Boolean
+        ) : Actions()
+
+        data class ShareSticker(
             val sticker: com.android.stickerpocket.domain.model.Sticker,
             val position: Int,
             val isFavourite: Boolean
@@ -78,6 +82,9 @@ class StickerFragmentInteractor {
                     if (viewModel.getViewMode() == StickerViewModel.ViewMode.Category) {
                         _liveData.postValue(Event(Actions.ShowStickers(it.stickers)))
                     }
+//                    if (viewModel.getViewMode() == StickerViewModel.ViewMode.Downloaded) {
+//                        _liveData.postValue(Event(Actions.ShowDownloadedStickers(it.stickers)))
+//                    }
                 }
 
                 is StickerViewModel.Result.FavouritesStickerUpdated -> {
@@ -210,6 +217,15 @@ class StickerFragmentInteractor {
         )
     }
 
+    fun onAddStickerToDeletedClick(
+        sticker: com.android.stickerpocket.domain.model.Sticker,
+        didOpenForDelete: Boolean
+    ) {
+        viewModel.deleteSticker(
+            sticker
+        )
+    }
+
     fun onFavClick() {
         viewModel.updateViewMode(StickerViewModel.ViewMode.Favourites)
         _liveData.value = Event(Actions.ShowFavoritesSticker(viewModel.getFavourites()))
@@ -232,10 +248,16 @@ class StickerFragmentInteractor {
     }
 
     fun onStickerClick(sticker: com.android.stickerpocket.domain.model.Sticker, position: Int) {
+        _liveData.value = Event(Actions.ShareSticker(sticker, position, sticker.isFavourite))
+    }
+    fun onStickerLongClick(sticker: com.android.stickerpocket.domain.model.Sticker, position: Int) {
         _liveData.value = Event(Actions.ShowStickerDialog(sticker, position, sticker.isFavourite))
     }
 
     fun onFavStickerClick(sticker: com.android.stickerpocket.domain.model.Sticker, position: Int) {
+        _liveData.value = Event(Actions.ShareSticker(sticker, position, isFavourite = true))
+    }
+    fun onFavStickerLongClick(sticker: com.android.stickerpocket.domain.model.Sticker, position: Int) {
         _liveData.value = Event(Actions.ShowStickerDialog(sticker, position, isFavourite = true))
     }
 

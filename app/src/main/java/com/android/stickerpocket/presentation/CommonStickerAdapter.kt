@@ -18,8 +18,10 @@ class CommonStickerAdapter() : RecyclerView.Adapter<StickerViewHolder>() {
     private val differ = AsyncListDiffer(this, diffUtilGifs)
     private var actionItemClick: ((sticker: Sticker, position: Int) -> Unit)? = null
     private var actionItemLongClick: ((sticker: Sticker, position: Int) -> Unit)? = null
+    private var actionItemDelete: ((sticker: Sticker, position: Int) -> Unit)? = null
     private lateinit var imageLoader: ImageLoader
     var didOpenForCategory: Boolean = true
+     var didOpenForReorganize: Boolean = false
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): StickerViewHolder {
         imageLoader = ImageLoader
             .Builder(parent.context)
@@ -39,7 +41,9 @@ class CommonStickerAdapter() : RecyclerView.Adapter<StickerViewHolder>() {
             ), imageLoader = imageLoader,
             itemClickListener = actionItemClick,
             itemLongClickListener = actionItemLongClick,
-            didOpenForCategory = didOpenForCategory
+            itemDeleteClickListener = actionItemDelete,
+            didOpenForCategory = didOpenForCategory,
+            didOpenForReorganize=didOpenForReorganize
         )
     }
 
@@ -62,11 +66,23 @@ class CommonStickerAdapter() : RecyclerView.Adapter<StickerViewHolder>() {
         this.actionItemLongClick = action
     }
 
+    fun onItemDelete(action: (sticker: Sticker, position: Int) -> Unit){
+        this.actionItemDelete = action
+    }
+
 
     fun getList() = differ.currentList
 
     fun isOpenedForCategory(value: Boolean) {
         didOpenForCategory = value
+    }
+    fun isOpenedForOrgnaizeStickers(value: Boolean,selectionOn :Boolean=false) {
+        differ.currentList.forEachIndexed { index, _ ->
+            differ.currentList[index].isOrganizeMode = value
+            differ.currentList[index].selectionon = selectionOn
+        }
+
+        notifyDataSetChanged()
     }
     companion object{
         val diffUtilGifs = object: DiffUtil.ItemCallback<Sticker>(){

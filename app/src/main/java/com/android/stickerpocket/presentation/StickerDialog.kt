@@ -93,7 +93,12 @@ class StickerDialog : BottomSheetDialogFragment() {
 
             tvDelete.setOnClickListener {
                 this@StickerDialog.dismiss()
-                listener?.onAddStickerToDeletedClick(sticker, didOpenForFavourite)
+                listener?.onAddStickerToDeletedClick(sticker, true)
+            }
+
+            tvReorganizeSt.setOnClickListener {
+                this@StickerDialog.dismiss()
+                listener?.onReOrganizeClick()
             }
         }
     }
@@ -108,6 +113,7 @@ class StickerDialog : BottomSheetDialogFragment() {
         fun onShareSticker(sticker: Sticker)
         fun onAddStickerToFavoritesClick(sticker: Sticker, didOpenForFav: Boolean = false)
         fun onAddStickerToDeletedClick(sticker: Sticker, didOpenForFav: Boolean = false)
+        fun onReOrganizeClick()
         fun onCancelClick()
     }
 

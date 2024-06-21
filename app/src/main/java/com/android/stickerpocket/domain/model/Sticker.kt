@@ -18,5 +18,7 @@ data class Sticker(
     var creator: String? = null,
     var source: String? = null,
     var position: Int = 0,
-    val mediaId: String = "" // GIPHY mediaId
+    val mediaId: String = "", // GIPHY mediaId
+    var isOrganizeMode: Boolean = false,
+    var selectionon: Boolean = false
 )

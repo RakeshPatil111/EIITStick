@@ -165,6 +165,7 @@ class StickerFragment : Fragment(), GPHGridCallback,
                         addChangeListeners(tietSearch)
                         currentRecyclerView = rvStickers
                         commonStickerAdapter.isOpenedForCategory(false)
+                        commonStickerAdapter.isOpenedForOrgnaizeStickers(false)
                     }
                 }
 
@@ -260,6 +261,14 @@ class StickerFragment : Fragment(), GPHGridCallback,
                             interactor.onAddStickerToDeletedClick(sticker, didOpenForFav)
                         }
 
+                        override fun onReOrganizeClick() {
+                            stickerDialog.dismiss()
+
+                            commonStickerAdapter.isOpenedForOrgnaizeStickers(true)
+                            binding.txtSelect.visibility=View.VISIBLE
+                            applyShakeAnimation(binding.rvStickers)
+                        }
+
                         override fun onCancelClick() {
                             stickerDialog.dismiss()
                         }
@@ -284,6 +293,7 @@ class StickerFragment : Fragment(), GPHGridCallback,
                             setStaticPagesBorder(action)
                             rvRecentSearch.visibility = View.GONE
                             rvStickers.visibility = View.VISIBLE
+                            txtSelect.visibility=View.GONE
                             rvStickers.adapter = favouritesAdapter
                             favouritesAdapter.updateList(action.favoriteStickers)
                             binding.apply {
@@ -313,15 +323,19 @@ class StickerFragment : Fragment(), GPHGridCallback,
                     commonStickerAdapter.updateList(action.stickers)
                     if (emojiCategoryListAdapter.isCategorySelected()) {
                         binding.rvStickers.visibility = View.VISIBLE
+                        binding.txtSelect.visibility=View.GONE
                         binding.rvStickers.adapter = commonStickerAdapter
                         currentRecyclerView = binding.rvStickers
                         commonStickerAdapter.isOpenedForCategory(true)
+                        commonStickerAdapter.isOpenedForOrgnaizeStickers(false)
                     }
                 }
 
                 is StickerFragmentInteractor.Actions.ShowDownloadedStickers -> {
                     commonStickerAdapter.updateList(action.stickers)
                     commonStickerAdapter.isOpenedForCategory(false)
+                    binding.txtSelect.visibility=View.GONE
+                    commonStickerAdapter.isOpenedForOrgnaizeStickers(false)
                     binding.rvStickers.visibility = View.VISIBLE
                     binding.rvStickers.adapter = commonStickerAdapter
                     currentRecyclerView = binding.rvStickers
@@ -330,10 +344,14 @@ class StickerFragment : Fragment(), GPHGridCallback,
                 is StickerFragmentInteractor.Actions.ShowRecentStickers -> {
                     commonStickerAdapter.updateList(action.stickers)
                     commonStickerAdapter.isOpenedForCategory(false)
+                    binding.txtSelect.visibility=View.GONE
+                    commonStickerAdapter.isOpenedForOrgnaizeStickers(false)
                     binding.rvStickers.adapter = commonStickerAdapter
                     currentRecyclerView = binding.rvStickers
                 }
-                else -> {}
+                else -> {
+                    binding.txtSelect.visibility=View.GONE
+                }
             }
         })
     }
@@ -372,14 +390,22 @@ class StickerFragment : Fragment(), GPHGridCallback,
             interactor.onStickerClick(sticker, position)
         }
         commonStickerAdapter.onItemLongClick { sticker, position ->
-            interactor.onStickerLongClick(sticker, position)
+            if (!sticker.isOrganizeMode) {
+                interactor.onStickerLongClick(sticker, position)
+            }
+        }
+
+        commonStickerAdapter.onItemDelete { sticker, position ->
+            interactor.onAddStickerToDeletedClick(sticker, true)
         }
 
         favouritesAdapter.onItemClick { sticker, position ->
             interactor.onFavStickerClick(sticker, position)
         }
         favouritesAdapter.onItemLongClick { sticker, position ->
-            interactor.onFavStickerLongClick(sticker, position)
+            if (!sticker.isOrganizeMode) {
+                interactor.onFavStickerLongClick(sticker, position)
+            }
         }
     }
 
@@ -412,6 +438,10 @@ class StickerFragment : Fragment(), GPHGridCallback,
                 cvRecentSticker.removeBorder()
             }
             addChangeListeners(tietSearch)
+
+            txtSelect.setOnClickListener {
+                commonStickerAdapter.isOpenedForOrgnaizeStickers(true,true)
+            }
         }
     }
 

@@ -93,7 +93,7 @@ class StickerDialog : BottomSheetDialogFragment() {
 
             tvDelete.setOnClickListener {
                 this@StickerDialog.dismiss()
-                listener?.onAddStickerToDeletedClick(sticker, didOpenForFavourite)
+                listener?.onAddStickerToDeletedClick(sticker, true)
             }
 
             tvReorganizeSt.setOnClickListener {

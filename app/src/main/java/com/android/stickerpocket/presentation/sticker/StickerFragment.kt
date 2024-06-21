@@ -383,7 +383,9 @@ class StickerFragment : Fragment(), GPHGridCallback,
             interactor.onStickerClick(sticker, position)
         }
         commonStickerAdapter.onItemLongClick { sticker, position ->
-            interactor.onStickerLongClick(sticker, position)
+            if (!sticker.isOrganizeMode) {
+                interactor.onStickerLongClick(sticker, position)
+            }
         }
 
         commonStickerAdapter.onItemDelete { sticker, position ->
@@ -394,7 +396,9 @@ class StickerFragment : Fragment(), GPHGridCallback,
             interactor.onFavStickerClick(sticker, position)
         }
         favouritesAdapter.onItemLongClick { sticker, position ->
-            interactor.onFavStickerLongClick(sticker, position)
+            if (!sticker.isOrganizeMode) {
+                interactor.onFavStickerLongClick(sticker, position)
+            }
         }
     }
 

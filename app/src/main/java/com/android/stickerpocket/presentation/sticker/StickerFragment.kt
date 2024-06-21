@@ -265,6 +265,7 @@ class StickerFragment : Fragment(), GPHGridCallback,
                             stickerDialog.dismiss()
 
                             commonStickerAdapter.isOpenedForOrgnaizeStickers(true)
+                            binding.txtSelect.visibility=View.VISIBLE
                             applyShakeAnimation(binding.rvStickers)
                         }
 
@@ -292,6 +293,7 @@ class StickerFragment : Fragment(), GPHGridCallback,
                             setStaticPagesBorder(action)
                             rvRecentSearch.visibility = View.GONE
                             rvStickers.visibility = View.VISIBLE
+                            txtSelect.visibility=View.GONE
                             rvStickers.adapter = favouritesAdapter
                             favouritesAdapter.updateList(action.favoriteStickers)
                             binding.apply {
@@ -321,6 +323,7 @@ class StickerFragment : Fragment(), GPHGridCallback,
                     commonStickerAdapter.updateList(action.stickers)
                     if (emojiCategoryListAdapter.isCategorySelected()) {
                         binding.rvStickers.visibility = View.VISIBLE
+                        binding.txtSelect.visibility=View.GONE
                         binding.rvStickers.adapter = commonStickerAdapter
                         currentRecyclerView = binding.rvStickers
                         commonStickerAdapter.isOpenedForCategory(true)
@@ -331,6 +334,7 @@ class StickerFragment : Fragment(), GPHGridCallback,
                 is StickerFragmentInteractor.Actions.ShowDownloadedStickers -> {
                     commonStickerAdapter.updateList(action.stickers)
                     commonStickerAdapter.isOpenedForCategory(false)
+                    binding.txtSelect.visibility=View.GONE
                     commonStickerAdapter.isOpenedForOrgnaizeStickers(false)
                     binding.rvStickers.visibility = View.VISIBLE
                     binding.rvStickers.adapter = commonStickerAdapter
@@ -340,11 +344,14 @@ class StickerFragment : Fragment(), GPHGridCallback,
                 is StickerFragmentInteractor.Actions.ShowRecentStickers -> {
                     commonStickerAdapter.updateList(action.stickers)
                     commonStickerAdapter.isOpenedForCategory(false)
+                    binding.txtSelect.visibility=View.GONE
                     commonStickerAdapter.isOpenedForOrgnaizeStickers(false)
                     binding.rvStickers.adapter = commonStickerAdapter
                     currentRecyclerView = binding.rvStickers
                 }
-                else -> {}
+                else -> {
+                    binding.txtSelect.visibility=View.GONE
+                }
             }
         })
     }
@@ -431,6 +438,10 @@ class StickerFragment : Fragment(), GPHGridCallback,
                 cvRecentSticker.removeBorder()
             }
             addChangeListeners(tietSearch)
+
+            txtSelect.setOnClickListener {
+                commonStickerAdapter.isOpenedForOrgnaizeStickers(true,true)
+            }
         }
     }
 

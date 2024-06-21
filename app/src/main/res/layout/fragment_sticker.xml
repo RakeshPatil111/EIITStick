@@ -32,6 +32,19 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/txtSelect"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        android:visibility="gone"
+        android:layout_marginEnd="@dimen/dimen_10dp"
+        app:layout_constraintEnd_toEndOf="@id/img_screen_bg"
+        android:text="@string/gph_select"
+        app:layout_constraintBottom_toBottomOf="@id/img_app_icon"
+        />
+
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/til_search"

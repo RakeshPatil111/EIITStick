@@ -55,4 +55,12 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginEnd="@dimen/dimen_5dp"
         android:background="@drawable/ic_minus_red"/>
+
+    <CheckBox
+        android:id="@+id/cb_select"
+        android:layout_width="@dimen/dimen_25dp"
+        android:layout_height="@dimen/dimen_25dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:layout_marginEnd="@dimen/dimen_5dp"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

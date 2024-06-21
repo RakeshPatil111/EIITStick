@@ -76,9 +76,10 @@ class CommonStickerAdapter() : RecyclerView.Adapter<StickerViewHolder>() {
     fun isOpenedForCategory(value: Boolean) {
         didOpenForCategory = value
     }
-    fun isOpenedForOrgnaizeStickers(value: Boolean) {
+    fun isOpenedForOrgnaizeStickers(value: Boolean,selectionOn :Boolean=false) {
         differ.currentList.forEachIndexed { index, _ ->
             differ.currentList[index].isOrganizeMode = value
+            differ.currentList[index].selectionon = selectionOn
         }
 
         notifyDataSetChanged()

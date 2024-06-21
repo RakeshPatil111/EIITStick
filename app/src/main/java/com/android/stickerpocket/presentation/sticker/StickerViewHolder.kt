@@ -22,11 +22,11 @@ class StickerViewHolder(
     private val itemDeleteClickListener: ((fav: Sticker, position: Int) -> Unit)?,
     val didOpenForCategory: Boolean,
     private val didOpenForReorganize: Boolean
-): RecyclerView.ViewHolder(binding.root) {
+) : RecyclerView.ViewHolder(binding.root) {
     fun bind(sticker: Sticker) {
         if (didOpenForCategory) binding.root.setOnDragListener(DragListener())
         binding.apply {
-            sivGifImage.load(sticker.toLoadableImage(), imageLoader){
+            sivGifImage.load(sticker.toLoadableImage(), imageLoader) {
                 target(
                     onStart = {
                         loader.visibility = View.VISIBLE
@@ -37,12 +37,15 @@ class StickerViewHolder(
                     }
                 )
             }
-            itemClickListener?.let { gif ->
-                if (!sticker.isOrganizeMode) {
+            if (!sticker.isOrganizeMode) {
+                itemClickListener?.let { gif ->
+
                     sivGifImage.setOnClickListener {
                         gif(sticker, adapterPosition)
                     }
                 }
+            } else {
+
             }
 
             itemLongClickListener?.let { gif ->
@@ -63,18 +66,24 @@ class StickerViewHolder(
                 }
             }
 
-            if (sticker.isFavourite){
-                favImg.visibility= View.VISIBLE
-            }else{
-                favImg.visibility= View.GONE
+            if (sticker.isFavourite) {
+                favImg.visibility = View.VISIBLE
+            } else {
+                favImg.visibility = View.GONE
             }
 
-            if (sticker.isOrganizeMode){
-
-                ivRemove.visibility=View.VISIBLE
+            if (sticker.isOrganizeMode) {
+                ivRemove.visibility = View.VISIBLE
                 sivGifImage.shakeMe()
-            }else{
-                ivRemove.visibility=View.GONE
+            } else {
+                ivRemove.visibility = View.GONE
+            }
+
+            if (sticker.selectionon) {
+                cbSelect.visibility = View.VISIBLE
+                sivGifImage.shakeMe()
+            } else {
+                cbSelect.visibility = View.GONE
             }
         }
     }

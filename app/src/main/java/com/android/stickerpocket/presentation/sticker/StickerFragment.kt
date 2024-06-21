@@ -165,6 +165,7 @@ class StickerFragment : Fragment(), GPHGridCallback,
                         addChangeListeners(tietSearch)
                         currentRecyclerView = rvStickers
                         commonStickerAdapter.isOpenedForCategory(false)
+                        commonStickerAdapter.isOpenedForOrgnaizeStickers(false)
                     }
                 }
 
@@ -260,6 +261,13 @@ class StickerFragment : Fragment(), GPHGridCallback,
                             interactor.onAddStickerToDeletedClick(sticker, didOpenForFav)
                         }
 
+                        override fun onReOrganizeClick() {
+                            stickerDialog.dismiss()
+
+                            commonStickerAdapter.isOpenedForOrgnaizeStickers(true)
+                            applyShakeAnimation(binding.rvStickers)
+                        }
+
                         override fun onCancelClick() {
                             stickerDialog.dismiss()
                         }
@@ -316,12 +324,14 @@ class StickerFragment : Fragment(), GPHGridCallback,
                         binding.rvStickers.adapter = commonStickerAdapter
                         currentRecyclerView = binding.rvStickers
                         commonStickerAdapter.isOpenedForCategory(true)
+                        commonStickerAdapter.isOpenedForOrgnaizeStickers(false)
                     }
                 }
 
                 is StickerFragmentInteractor.Actions.ShowDownloadedStickers -> {
                     commonStickerAdapter.updateList(action.stickers)
                     commonStickerAdapter.isOpenedForCategory(false)
+                    commonStickerAdapter.isOpenedForOrgnaizeStickers(false)
                     binding.rvStickers.visibility = View.VISIBLE
                     binding.rvStickers.adapter = commonStickerAdapter
                     currentRecyclerView = binding.rvStickers
@@ -330,6 +340,7 @@ class StickerFragment : Fragment(), GPHGridCallback,
                 is StickerFragmentInteractor.Actions.ShowRecentStickers -> {
                     commonStickerAdapter.updateList(action.stickers)
                     commonStickerAdapter.isOpenedForCategory(false)
+                    commonStickerAdapter.isOpenedForOrgnaizeStickers(false)
                     binding.rvStickers.adapter = commonStickerAdapter
                     currentRecyclerView = binding.rvStickers
                 }
@@ -373,6 +384,10 @@ class StickerFragment : Fragment(), GPHGridCallback,
         }
         commonStickerAdapter.onItemLongClick { sticker, position ->
             interactor.onStickerLongClick(sticker, position)
+        }
+
+        commonStickerAdapter.onItemDelete { sticker, position ->
+            interactor.onAddStickerToDeletedClick(sticker, true)
         }
 
         favouritesAdapter.onItemClick { sticker, position ->

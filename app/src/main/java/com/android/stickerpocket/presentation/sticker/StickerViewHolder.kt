@@ -1,9 +1,6 @@
 package com.android.stickerpocket.presentation.sticker
 
-import android.R
 import android.view.View
-import android.view.animation.Animation
-import android.view.animation.AnimationUtils
 import androidx.recyclerview.widget.RecyclerView
 import coil.ImageLoader
 import coil.load

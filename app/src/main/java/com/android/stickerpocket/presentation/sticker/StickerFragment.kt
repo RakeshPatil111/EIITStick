@@ -1,7 +1,6 @@
 package com.android.stickerpocket.presentation.sticker
 
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -13,23 +12,20 @@ import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
-import androidx.core.content.FileProvider
 import androidx.emoji2.emojipicker.EmojiViewItem
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.android.stickerpocket.BuildConfig
 import com.android.stickerpocket.EmojiPickerDialog
 import com.android.stickerpocket.R
 import com.android.stickerpocket.databinding.FragmentStickerBinding
-import com.android.stickerpocket.presentation.CommonStickerAdapter
 import com.android.stickerpocket.domain.model.Category
 import com.android.stickerpocket.domain.model.Sticker
+import com.android.stickerpocket.presentation.CommonStickerAdapter
 import com.android.stickerpocket.presentation.FavouritesAdapter
 import com.android.stickerpocket.presentation.StickerCategoryDialog
 import com.android.stickerpocket.presentation.StickerDetailsNavDirections
@@ -37,18 +33,14 @@ import com.android.stickerpocket.presentation.StickerDialog
 import com.android.stickerpocket.utils.CustomDialog
 import com.android.stickerpocket.utils.ItemTouchHelperAdapter
 import com.android.stickerpocket.utils.ItemTouchHelperCallback
-import com.android.stickerpocket.utils.StickerExt.toStickerDTO
 import com.android.stickerpocket.utils.ViewExt.removeBorder
 import com.android.stickerpocket.utils.ViewExt.setBorder
 import com.android.stickerpocket.utils.ViewExt.shakeMe
 import com.giphy.sdk.core.models.Media
 import com.giphy.sdk.ui.views.GPHGridCallback
-import com.giphy.sdk.ui.views.GPHSearchGridCallback
-import com.giphy.sdk.ui.views.GifView
 import com.google.android.material.textfield.TextInputEditText
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -140,7 +132,9 @@ class StickerFragment : Fragment(), GPHGridCallback,
         interactor.liveData.observe(viewLifecycleOwner, Observer {
             when (val action = it.getContentIfNotHandled()) {
                 is StickerFragmentInteractor.Actions.InitCategoryView -> {
-                    setupEmojiRecyclerView(action.categories)
+                    if (action.categories.isNotEmpty()) {
+                        emojiCategoryListAdapter.updateList(action.categories)
+                    }
                 }
 
                 is StickerFragmentInteractor.Actions.HideGiphyGridViewAndShowRecentSearches -> {
@@ -165,7 +159,7 @@ class StickerFragment : Fragment(), GPHGridCallback,
                         addChangeListeners(tietSearch)
                         currentRecyclerView = rvStickers
                         commonStickerAdapter.isOpenedForCategory(false)
-                        commonStickerAdapter.isOpenedForOrgnaizeStickers(false)
+                        commonStickerAdapter.isOpenedForOrganizeCategory(false)
                     }
                 }
 
@@ -264,7 +258,7 @@ class StickerFragment : Fragment(), GPHGridCallback,
                         override fun onReOrganizeClick() {
                             stickerDialog.dismiss()
 
-                            commonStickerAdapter.isOpenedForOrgnaizeStickers(true)
+                            commonStickerAdapter.isOpenedForOrganizeCategory(true)
                             binding.txtSelect.visibility=View.VISIBLE
                             applyShakeAnimation(binding.rvStickers)
                         }
@@ -327,7 +321,7 @@ class StickerFragment : Fragment(), GPHGridCallback,
                         binding.rvStickers.adapter = commonStickerAdapter
                         currentRecyclerView = binding.rvStickers
                         commonStickerAdapter.isOpenedForCategory(true)
-                        commonStickerAdapter.isOpenedForOrgnaizeStickers(false)
+                        commonStickerAdapter.isOpenedForOrganizeCategory(false)
                     }
                 }
 
@@ -335,7 +329,7 @@ class StickerFragment : Fragment(), GPHGridCallback,
                     commonStickerAdapter.updateList(action.stickers)
                     commonStickerAdapter.isOpenedForCategory(false)
                     binding.txtSelect.visibility=View.GONE
-                    commonStickerAdapter.isOpenedForOrgnaizeStickers(false)
+                    commonStickerAdapter.isOpenedForOrganizeCategory(false)
                     binding.rvStickers.visibility = View.VISIBLE
                     binding.rvStickers.adapter = commonStickerAdapter
                     currentRecyclerView = binding.rvStickers
@@ -345,7 +339,7 @@ class StickerFragment : Fragment(), GPHGridCallback,
                     commonStickerAdapter.updateList(action.stickers)
                     commonStickerAdapter.isOpenedForCategory(false)
                     binding.txtSelect.visibility=View.GONE
-                    commonStickerAdapter.isOpenedForOrgnaizeStickers(false)
+                    commonStickerAdapter.isOpenedForOrganizeCategory(false)
                     binding.rvStickers.adapter = commonStickerAdapter
                     currentRecyclerView = binding.rvStickers
                 }
@@ -380,6 +374,7 @@ class StickerFragment : Fragment(), GPHGridCallback,
     }
 
     private fun initAdapters() {
+        setupEmojiRecyclerView()
         commonStickerAdapter = CommonStickerAdapter()
         favouritesAdapter = FavouritesAdapter()
         binding.rvStickers.adapter = commonStickerAdapter
@@ -440,7 +435,7 @@ class StickerFragment : Fragment(), GPHGridCallback,
             addChangeListeners(tietSearch)
 
             txtSelect.setOnClickListener {
-                commonStickerAdapter.isOpenedForOrgnaizeStickers(true,true)
+                commonStickerAdapter.isOpenedForOrganizeCategory(true,true)
             }
         }
     }
@@ -462,7 +457,7 @@ class StickerFragment : Fragment(), GPHGridCallback,
         tietSearch.setOnClickListener(null)
     }
 
-    private fun setupEmojiRecyclerView(categories: List<Category>) {
+    private fun setupEmojiRecyclerView() {
         emojiCategoryListAdapter = EmojiCategoryListAdapter()
         binding.rvCategory.adapter = emojiCategoryListAdapter
         callback = ItemTouchHelperCallback(this)
@@ -473,8 +468,8 @@ class StickerFragment : Fragment(), GPHGridCallback,
                 recyclerView: RecyclerView,
                 viewHolder: RecyclerView.ViewHolder
             ): Int {
-                val dragFlags = if ((recyclerView.adapter as CommonStickerAdapter).didOpenForCategory) {
-                    ItemTouchHelper.UP or ItemTouchHelper.DOWN or ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT
+                val dragFlags =  if (recyclerView.adapter is CommonStickerAdapter && (recyclerView.adapter as CommonStickerAdapter).didOpenForCategory) {
+                        ItemTouchHelper.UP or ItemTouchHelper.DOWN or ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT
                 } else 0
                 val swipeFlags = 0
                 return makeMovementFlags(dragFlags, swipeFlags)
@@ -486,6 +481,7 @@ class StickerFragment : Fragment(), GPHGridCallback,
                 target: RecyclerView.ViewHolder
             ): Boolean {
                 interactor.onStickerMoved(viewHolder.absoluteAdapterPosition, target.absoluteAdapterPosition)
+                commonStickerAdapter.onRowMoved(viewHolder.adapterPosition, target.adapterPosition)
                 return true
             }
 
@@ -510,7 +506,6 @@ class StickerFragment : Fragment(), GPHGridCallback,
             binding.tietSearch.text?.clear()
             interactor.onCategoryItemLongClick(category, pos, previous)
         }
-        emojiCategoryListAdapter.updateList(categories)
     }
 
     private fun clearStaticPagesBorder() {

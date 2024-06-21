@@ -10,21 +10,16 @@ import com.android.stickerpocket.dtos.getCategories
 import com.android.stickerpocket.presentation.StickerDTO
 import com.android.stickerpocket.utils.Event
 import com.android.stickerpocket.utils.StickerExt.stickerDTO
-import com.android.stickerpocket.utils.StickerExt.toFile
 import com.android.stickerpocket.utils.StickerExt.toStickerDTO
 import com.giphy.sdk.core.models.Media
-import java.io.File
 
 class StickerFragmentInteractor {
 
     sealed class Actions {
-        object InitGiphyView : Actions()
         data class InitCategoryView(val categories: List<Category>) : Actions()
         object HideGiphyGridViewAndShowRecentSearches : Actions()
-        object ShowGiphyGridView : Actions()
         data class clearAllRecentSearchAndHideView(val list: List<RecentSearch>) : Actions()
         data class ShowRecentSearches(val recentSearches: List<RecentSearch>) : Actions()
-        data class ShowGiphyViewForRecentSearch(val query: String) : Actions()
         data class LoadEmojisForCategory(val query: String) : Actions()
         data class ShowCategoryOptionDialog(
             val category: Category,
@@ -70,6 +65,7 @@ class StickerFragmentInteractor {
     private lateinit var viewModel: StickerViewModel
     fun initObserver(viewLifecycleOwner: LifecycleOwner, viewModel: StickerViewModel) {
         this.viewModel = viewModel
+        viewModel.updateViewMode(StickerViewModel.ViewMode.Category)
         viewModel.liveData.observe(viewLifecycleOwner, Observer {
             when (it) {
                 is StickerViewModel.Result.CategoryCreated -> {
@@ -86,6 +82,9 @@ class StickerFragmentInteractor {
                     if (viewModel.getViewMode() == StickerViewModel.ViewMode.Category) {
                         _liveData.postValue(Event(Actions.ShowStickers(it.stickers)))
                     }
+//                    if (viewModel.getViewMode() == StickerViewModel.ViewMode.Downloaded) {
+//                        _liveData.postValue(Event(Actions.ShowDownloadedStickers(it.stickers)))
+//                    }
                 }
 
                 is StickerViewModel.Result.FavouritesStickerUpdated -> {
@@ -96,14 +95,16 @@ class StickerFragmentInteractor {
                 }
 
                 is StickerViewModel.Result.StickersWithQuery -> {
-                    _liveData.postValue(
-                        Event(
-                            Actions.ShowStickerForRecentSearch(
-                                it.query,
-                                it.stickers
+                    if (viewModel.getViewMode() == StickerViewModel.ViewMode.RecentSearch) {
+                        _liveData.postValue(
+                            Event(
+                                Actions.ShowStickerForRecentSearch(
+                                    it.query,
+                                    it.stickers
+                                )
                             )
                         )
-                    )
+                    }
                 }
 
                 is StickerViewModel.Result.FetchedDownloadedStickers -> {
@@ -148,8 +149,9 @@ class StickerFragmentInteractor {
             }
             StickerViewModel.ViewMode.Category -> {
                 if (viewModel.getEmojiCategories().isNotEmpty())
-                    viewModel.categorySelected(viewModel.getEmojiCategories()[0], 0)
+                    viewModel.categorySelected(viewModel.getEmojiCategories().filter { it.isHighlighted }.first(), 0)
             }
+            else -> {}
         }
     }
 
@@ -166,6 +168,7 @@ class StickerFragmentInteractor {
     }
 
     fun onQuerySearch(query: String) {
+        viewModel.updateViewMode(StickerViewModel.ViewMode.RecentSearch)
         viewModel.saveRecentSearch(query)
         viewModel.getStickersForQuery(query)
     }
@@ -218,7 +221,7 @@ class StickerFragmentInteractor {
         sticker: com.android.stickerpocket.domain.model.Sticker,
         didOpenForDelete: Boolean
     ) {
-        sticker.isOrganizeMode=false
+        sticker.isOrganizeMode = false
         if (!didOpenForDelete) viewModel.removeStickerFromDeleted(sticker) else viewModel.addToDeletedStickers(
             sticker
         )

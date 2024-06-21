@@ -23,7 +23,7 @@ interface StickerDAO {
     fun fetchAllFavouritesSticker(): Flow<List<Sticker>>
 
     @Query("SELECT * FROM sticker WHERE isDownloaded = 1 AND isDeleted = 0")
-    suspend fun getDownloadedStickers(): List<Sticker>
+    fun getDownloadedStickers(): Flow<List<Sticker>>
 
     @Query("SELECT * FROM sticker WHERE isDeleted = 0 ORDER BY position ASC")
     suspend fun fetchAll(): List<Sticker>

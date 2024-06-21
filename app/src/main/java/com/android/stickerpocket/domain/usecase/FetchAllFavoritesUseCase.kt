@@ -1,8 +1,6 @@
 package com.android.stickerpocket.domain.usecase
 
-import com.android.stickerpocket.domain.model.Favourites
 import com.android.stickerpocket.domain.model.Sticker
-import com.android.stickerpocket.domain.repository.FavouritesRepository
 import com.android.stickerpocket.domain.repository.StickerRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow

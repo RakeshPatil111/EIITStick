@@ -3,8 +3,6 @@ package com.android.stickerpocket.presentation
 import android.os.Build.VERSION.SDK_INT
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.recyclerview.widget.AsyncListDiffer
-import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import coil.ImageLoader
 import coil.decode.GifDecoder
@@ -12,10 +10,10 @@ import coil.decode.ImageDecoderDecoder
 import com.android.stickerpocket.databinding.CvGifItemBinding
 import com.android.stickerpocket.domain.model.Sticker
 import com.android.stickerpocket.presentation.sticker.StickerViewHolder
+import java.util.Collections
 
 class CommonStickerAdapter() : RecyclerView.Adapter<StickerViewHolder>() {
-
-    private val differ = AsyncListDiffer(this, diffUtilGifs)
+    var stickers = mutableListOf<Sticker>()
     private var actionItemClick: ((sticker: Sticker, position: Int) -> Unit)? = null
     private var actionItemLongClick: ((sticker: Sticker, position: Int) -> Unit)? = null
     private var actionItemDelete: ((sticker: Sticker, position: Int) -> Unit)? = null
@@ -47,14 +45,14 @@ class CommonStickerAdapter() : RecyclerView.Adapter<StickerViewHolder>() {
         )
     }
 
-    override fun getItemCount() = differ.currentList.size
+    override fun getItemCount() = stickers.size
 
     override fun onBindViewHolder(holder: StickerViewHolder, position: Int) {
-        holder.bind(differ.currentList[position])
+        holder.bind(stickers[position])
     }
 
     fun updateList(list: List<Sticker>) {
-        differ.submitList(list)
+        stickers = list.toMutableList()
         notifyDataSetChanged()
     }
 
@@ -62,38 +60,40 @@ class CommonStickerAdapter() : RecyclerView.Adapter<StickerViewHolder>() {
         this.actionItemClick = action
     }
 
+    fun getList() = stickers
+
     fun onItemLongClick(action: (sticker: Sticker, position: Int) -> Unit){
         this.actionItemLongClick = action
+    }
+
+    fun isOpenedForCategory(value: Boolean) {
+        didOpenForCategory = value
     }
 
     fun onItemDelete(action: (sticker: Sticker, position: Int) -> Unit){
         this.actionItemDelete = action
     }
 
-
-    fun getList() = differ.currentList
-
-    fun isOpenedForCategory(value: Boolean) {
-        didOpenForCategory = value
-    }
-    fun isOpenedForOrgnaizeStickers(value: Boolean,selectionOn :Boolean=false) {
-        differ.currentList.forEachIndexed { index, _ ->
-            differ.currentList[index].isOrganizeMode = value
-            differ.currentList[index].selectionon = selectionOn
+    fun isOpenedForOrganizeCategory(value: Boolean, selectionOn :Boolean=false) {
+        stickers.forEachIndexed { index, _ ->
+            stickers[index].isOrganizeMode = value
+            stickers[index].selectionon = selectionOn
         }
 
         notifyDataSetChanged()
     }
-    companion object{
-        val diffUtilGifs = object: DiffUtil.ItemCallback<Sticker>(){
-            override fun areItemsTheSame(oldItem: Sticker, newItem: Sticker): Boolean {
-                return oldItem == newItem
-            }
 
-            override fun areContentsTheSame(oldItem: Sticker, newItem: Sticker): Boolean {
-                return oldItem == newItem
+    fun onRowMoved(fromPosition: Int, toPosition: Int) {
+        if (fromPosition < toPosition) {
+            for (i in fromPosition until toPosition) {
+                Collections.swap(stickers, i, i + 1)
             }
-
+        } else {
+            for (i in fromPosition downTo toPosition + 1) {
+                Collections.swap(stickers, i, i - 1)
+            }
         }
+
+        notifyItemMoved(fromPosition, toPosition)
     }
 }

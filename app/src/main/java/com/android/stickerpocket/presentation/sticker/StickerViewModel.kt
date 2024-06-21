@@ -8,7 +8,6 @@ import com.android.stickerpocket.StickerApplication
 import com.android.stickerpocket.domain.model.Category
 import com.android.stickerpocket.domain.model.Emoji
 import com.android.stickerpocket.domain.model.RecentSearch
-import com.android.stickerpocket.domain.model.RecentStickerAndStickers
 import com.android.stickerpocket.domain.model.RecentStickers
 import com.android.stickerpocket.domain.model.Sticker
 import com.android.stickerpocket.domain.usecase.AddEmojiIfNotExistUseCase
@@ -25,7 +24,6 @@ import com.android.stickerpocket.domain.usecase.FetchStickerUseCase
 import com.android.stickerpocket.domain.usecase.FetchStickersForCategoryUseCase
 import com.android.stickerpocket.domain.usecase.FetchStickersForQueryUseCase
 import com.android.stickerpocket.domain.usecase.GetRecentSearchUseCase
-import com.android.stickerpocket.domain.usecase.InsertCategoriesUseCase
 import com.android.stickerpocket.domain.usecase.InsertOrReplaceCategoriesUseCase
 import com.android.stickerpocket.domain.usecase.InsertRecentStickerUseCase
 import com.android.stickerpocket.domain.usecase.InsertSingleStickersUseCase
@@ -36,14 +34,15 @@ import com.android.stickerpocket.network.response.Emojis
 import com.android.stickerpocket.presentation.StickerDTO
 import com.android.stickerpocket.utils.StickerExt.sticker
 import com.android.stickerpocket.utils.StickerExt.toFile
-import com.android.stickerpocket.utils.StickerExt.toLoadableImage
 import com.android.stickerpocket.utils.StickerExt.toStickerDTO
 import com.android.stickerpocket.utils.toEmoji
 import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.BufferedReader
 import java.io.File
 import java.io.FileOutputStream
@@ -145,7 +144,7 @@ class StickerViewModel : ViewModel() {
                         is FetchCategoriesUseCase.Result.Success -> {
                             categories = it.categories.toMutableList()
                                 .ifEmpty { getCategories().toMutableList() }
-                            _liveData.postValue(Result.CategoryCreated)
+                            _liveData.value = (Result.CategoryCreated)
                             val selectedCategory =
                                 categories.filter { it.isHighlighted == true }.first().id
                             fetchStickersForCategory(selectedCategory)
@@ -264,6 +263,7 @@ class StickerViewModel : ViewModel() {
             updateStickerUseCase.execute(sticker)
         }
     }
+
     fun addToDeletedStickers(sticker: Sticker) {
         CoroutineScope(Dispatchers.Default).launch {
             sticker.isDeleted = true
@@ -271,7 +271,7 @@ class StickerViewModel : ViewModel() {
         }
     }
 
-    fun fetchAllFavorites() {
+    private fun fetchAllFavorites() {
         viewModelScope.launch {
             fetchAllFavoritesUseCase.execute()
                 .collectLatest {
@@ -369,8 +369,11 @@ class StickerViewModel : ViewModel() {
     }
     fun removeStickerFromDeleted(sticker: Sticker) {
         CoroutineScope(Dispatchers.IO).launch {
-            sticker.isDeleted = false
-            updateStickerUseCase.execute(sticker)
+            fetchStickerUseCase.execute(sticker.id!!)?.let {
+                it.isDeleted = false
+                updateStickerUseCase.execute(it)
+            }
+
         }
     }
 
@@ -395,10 +398,15 @@ class StickerViewModel : ViewModel() {
 
     fun fetchAllDownloaded() {
         viewModelScope.launch {
-            val list = fetchAllDownloadedUseCase.execute()
-            list.let {
-                stickers = it.toMutableList()
-                _liveData.postValue(Result.FetchedDownloadedStickers(stickers.toList()))
+          fetchAllDownloadedUseCase.execute().collect {
+              withContext(Dispatchers.Main) {
+                  when (it) {
+                      is FetchAllDownloadedUseCase.Result.Success -> {
+                          stickers = it.list.toMutableList()
+                          _liveData.postValue(Result.FetchedDownloadedStickers(stickers.toList()))
+                      }
+                  }
+              }
             }
         }
     }
@@ -511,12 +519,23 @@ class StickerViewModel : ViewModel() {
         currentViewMode = newViewMode
     }
 
+
+    fun deleteSticker(sticker: Sticker) {
+        CoroutineScope(Dispatchers.Default).launch {
+            fetchStickerUseCase.execute(sticker.id!!)?.let {
+                it.isDeleted = true
+                updateStickerUseCase.execute(it)
+            }
+        }
+    }
+
     fun getViewMode() = currentViewMode
 
     enum class ViewMode {
         Recent,
         Downloaded,
         Favourites,
-        Category
+        Category,
+        RecentSearch
     }
 }

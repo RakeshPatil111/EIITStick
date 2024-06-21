@@ -15,10 +15,10 @@ class FetchAllDownloadedUseCase(private val repository: StickerRepository) {
     private var list: List<Sticker> = listOf()
 
     suspend fun execute(): Flow<Result> =
-        repository.getDownloaded()
+        repository.fetchFavourites()
             .map {
                 list = it
-                Result.Success(list)
+                Result.Success(list!!)
             }
             .flowOn(Dispatchers.IO)
 }

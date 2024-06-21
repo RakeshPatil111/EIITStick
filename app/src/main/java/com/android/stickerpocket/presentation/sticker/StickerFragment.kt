@@ -97,7 +97,6 @@ class StickerFragment : Fragment(), GPHGridCallback,
                 false
             }
         }
-
         return binding.root
     }
 
@@ -134,7 +133,7 @@ class StickerFragment : Fragment(), GPHGridCallback,
             when (val action = it.getContentIfNotHandled()) {
                 is StickerFragmentInteractor.Actions.InitCategoryView -> {
                     if (action.categories.isNotEmpty()) {
-                        setupEmojiRecyclerView(action.categories)
+                        emojiCategoryListAdapter.updateList(action.categories)
                     }
                 }
 
@@ -160,6 +159,7 @@ class StickerFragment : Fragment(), GPHGridCallback,
                         addChangeListeners(tietSearch)
                         currentRecyclerView = rvStickers
                         commonStickerAdapter.isOpenedForCategory(false)
+                        commonStickerAdapter.isOpenedForOrganizeCategory(false)
                     }
                 }
 
@@ -255,6 +255,14 @@ class StickerFragment : Fragment(), GPHGridCallback,
                             interactor.onAddStickerToDeletedClick(sticker, didOpenForFav)
                         }
 
+                        override fun onReOrganizeClick() {
+                            stickerDialog.dismiss()
+
+                            commonStickerAdapter.isOpenedForOrganizeCategory(true)
+                            binding.txtSelect.visibility=View.VISIBLE
+                            applyShakeAnimation(binding.rvStickers)
+                        }
+
                         override fun onCancelClick() {
                             stickerDialog.dismiss()
                         }
@@ -279,6 +287,7 @@ class StickerFragment : Fragment(), GPHGridCallback,
                             setStaticPagesBorder(action)
                             rvRecentSearch.visibility = View.GONE
                             rvStickers.visibility = View.VISIBLE
+                            txtSelect.visibility=View.GONE
                             rvStickers.adapter = favouritesAdapter
                             favouritesAdapter.updateList(action.favoriteStickers)
                             binding.apply {
@@ -308,15 +317,19 @@ class StickerFragment : Fragment(), GPHGridCallback,
                     commonStickerAdapter.updateList(action.stickers)
                     if (emojiCategoryListAdapter.isCategorySelected()) {
                         binding.rvStickers.visibility = View.VISIBLE
+                        binding.txtSelect.visibility=View.GONE
                         binding.rvStickers.adapter = commonStickerAdapter
                         currentRecyclerView = binding.rvStickers
                         commonStickerAdapter.isOpenedForCategory(true)
+                        commonStickerAdapter.isOpenedForOrganizeCategory(false)
                     }
                 }
 
                 is StickerFragmentInteractor.Actions.ShowDownloadedStickers -> {
                     commonStickerAdapter.updateList(action.stickers)
                     commonStickerAdapter.isOpenedForCategory(false)
+                    binding.txtSelect.visibility=View.GONE
+                    commonStickerAdapter.isOpenedForOrganizeCategory(false)
                     binding.rvStickers.visibility = View.VISIBLE
                     binding.rvStickers.adapter = commonStickerAdapter
                     currentRecyclerView = binding.rvStickers
@@ -325,10 +338,14 @@ class StickerFragment : Fragment(), GPHGridCallback,
                 is StickerFragmentInteractor.Actions.ShowRecentStickers -> {
                     commonStickerAdapter.updateList(action.stickers)
                     commonStickerAdapter.isOpenedForCategory(false)
+                    binding.txtSelect.visibility=View.GONE
+                    commonStickerAdapter.isOpenedForOrganizeCategory(false)
                     binding.rvStickers.adapter = commonStickerAdapter
                     currentRecyclerView = binding.rvStickers
                 }
-                else -> {}
+                else -> {
+                    binding.txtSelect.visibility=View.GONE
+                }
             }
         })
     }
@@ -357,6 +374,7 @@ class StickerFragment : Fragment(), GPHGridCallback,
     }
 
     private fun initAdapters() {
+        setupEmojiRecyclerView()
         commonStickerAdapter = CommonStickerAdapter()
         favouritesAdapter = FavouritesAdapter()
         binding.rvStickers.adapter = commonStickerAdapter
@@ -367,14 +385,22 @@ class StickerFragment : Fragment(), GPHGridCallback,
             interactor.onStickerClick(sticker, position)
         }
         commonStickerAdapter.onItemLongClick { sticker, position ->
-            interactor.onStickerLongClick(sticker, position)
+            if (!sticker.isOrganizeMode) {
+                interactor.onStickerLongClick(sticker, position)
+            }
+        }
+
+        commonStickerAdapter.onItemDelete { sticker, position ->
+            interactor.onAddStickerToDeletedClick(sticker, true)
         }
 
         favouritesAdapter.onItemClick { sticker, position ->
             interactor.onFavStickerClick(sticker, position)
         }
         favouritesAdapter.onItemLongClick { sticker, position ->
-            interactor.onFavStickerLongClick(sticker, position)
+            if (!sticker.isOrganizeMode) {
+                interactor.onFavStickerLongClick(sticker, position)
+            }
         }
     }
 
@@ -407,6 +433,10 @@ class StickerFragment : Fragment(), GPHGridCallback,
                 cvRecentSticker.removeBorder()
             }
             addChangeListeners(tietSearch)
+
+            txtSelect.setOnClickListener {
+                commonStickerAdapter.isOpenedForOrganizeCategory(true,true)
+            }
         }
     }
 
@@ -427,7 +457,7 @@ class StickerFragment : Fragment(), GPHGridCallback,
         tietSearch.setOnClickListener(null)
     }
 
-    private fun setupEmojiRecyclerView(categories: List<Category>) {
+    private fun setupEmojiRecyclerView() {
         emojiCategoryListAdapter = EmojiCategoryListAdapter()
         binding.rvCategory.adapter = emojiCategoryListAdapter
         callback = ItemTouchHelperCallback(this)
@@ -438,8 +468,8 @@ class StickerFragment : Fragment(), GPHGridCallback,
                 recyclerView: RecyclerView,
                 viewHolder: RecyclerView.ViewHolder
             ): Int {
-                val dragFlags = if ((recyclerView.adapter as CommonStickerAdapter).didOpenForCategory) {
-                    ItemTouchHelper.UP or ItemTouchHelper.DOWN or ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT
+                val dragFlags =  if (recyclerView.adapter is CommonStickerAdapter && (recyclerView.adapter as CommonStickerAdapter).didOpenForCategory) {
+                        ItemTouchHelper.UP or ItemTouchHelper.DOWN or ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT
                 } else 0
                 val swipeFlags = 0
                 return makeMovementFlags(dragFlags, swipeFlags)
@@ -450,8 +480,8 @@ class StickerFragment : Fragment(), GPHGridCallback,
                 viewHolder: RecyclerView.ViewHolder,
                 target: RecyclerView.ViewHolder
             ): Boolean {
-                commonStickerAdapter.onRowMoved(viewHolder.adapterPosition, target.adapterPosition)
                 interactor.onStickerMoved(viewHolder.absoluteAdapterPosition, target.absoluteAdapterPosition)
+                commonStickerAdapter.onRowMoved(viewHolder.adapterPosition, target.adapterPosition)
                 return true
             }
 
@@ -476,7 +506,6 @@ class StickerFragment : Fragment(), GPHGridCallback,
             binding.tietSearch.text?.clear()
             interactor.onCategoryItemLongClick(category, pos, previous)
         }
-        emojiCategoryListAdapter.updateList(categories)
     }
 
     private fun clearStaticPagesBorder() {

@@ -17,6 +17,7 @@ class FavouritesAdapter: RecyclerView.Adapter<StickerViewHolder>() {
     private val differ = AsyncListDiffer(this, stickerDiffUtil)
     private var actionItemClick: ((sticker: Sticker, position: Int) -> Unit)? = null
     private var actionItemLongClick: ((sticker: Sticker, position: Int) -> Unit)? = null
+    private var actionItemDelete: ((sticker: Sticker, position: Int) -> Unit)? = null
     private lateinit var imageLoader: ImageLoader
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): StickerViewHolder {
         imageLoader = ImageLoader
@@ -37,7 +38,9 @@ class FavouritesAdapter: RecyclerView.Adapter<StickerViewHolder>() {
             ), imageLoader = imageLoader,
             itemClickListener = actionItemClick,
             itemLongClickListener=actionItemLongClick,
-            didOpenForCategory = false
+            itemDeleteClickListener = actionItemDelete,
+            didOpenForCategory = false,
+            didOpenForReorganize = false
         )
     }
 

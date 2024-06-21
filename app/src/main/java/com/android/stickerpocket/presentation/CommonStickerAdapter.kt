@@ -3,8 +3,6 @@ package com.android.stickerpocket.presentation
 import android.os.Build.VERSION.SDK_INT
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.recyclerview.widget.AsyncListDiffer
-import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import coil.ImageLoader
 import coil.decode.GifDecoder
@@ -18,8 +16,10 @@ class CommonStickerAdapter() : RecyclerView.Adapter<StickerViewHolder>() {
     var stickers = mutableListOf<Sticker>()
     private var actionItemClick: ((sticker: Sticker, position: Int) -> Unit)? = null
     private var actionItemLongClick: ((sticker: Sticker, position: Int) -> Unit)? = null
+    private var actionItemDelete: ((sticker: Sticker, position: Int) -> Unit)? = null
     private lateinit var imageLoader: ImageLoader
     var didOpenForCategory: Boolean = true
+     var didOpenForReorganize: Boolean = false
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): StickerViewHolder {
         imageLoader = ImageLoader
             .Builder(parent.context)
@@ -39,7 +39,9 @@ class CommonStickerAdapter() : RecyclerView.Adapter<StickerViewHolder>() {
             ), imageLoader = imageLoader,
             itemClickListener = actionItemClick,
             itemLongClickListener = actionItemLongClick,
-            didOpenForCategory = didOpenForCategory
+            itemDeleteClickListener = actionItemDelete,
+            didOpenForCategory = didOpenForCategory,
+            didOpenForReorganize=didOpenForReorganize
         )
     }
 
@@ -66,6 +68,19 @@ class CommonStickerAdapter() : RecyclerView.Adapter<StickerViewHolder>() {
 
     fun isOpenedForCategory(value: Boolean) {
         didOpenForCategory = value
+    }
+
+    fun onItemDelete(action: (sticker: Sticker, position: Int) -> Unit){
+        this.actionItemDelete = action
+    }
+
+    fun isOpenedForOrganizeCategory(value: Boolean, selectionOn :Boolean=false) {
+        stickers.forEachIndexed { index, _ ->
+            stickers[index].isOrganizeMode = value
+            stickers[index].selectionon = selectionOn
+        }
+
+        notifyDataSetChanged()
     }
 
     fun onRowMoved(fromPosition: Int, toPosition: Int) {

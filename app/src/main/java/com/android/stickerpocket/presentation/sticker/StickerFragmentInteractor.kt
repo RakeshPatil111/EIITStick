@@ -221,7 +221,8 @@ class StickerFragmentInteractor {
         sticker: com.android.stickerpocket.domain.model.Sticker,
         didOpenForDelete: Boolean
     ) {
-        viewModel.deleteSticker(
+        sticker.isOrganizeMode = false
+        if (!didOpenForDelete) viewModel.removeStickerFromDeleted(sticker) else viewModel.addToDeletedStickers(
             sticker
         )
     }

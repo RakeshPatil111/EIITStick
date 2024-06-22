@@ -4,18 +4,25 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/color_primary"
     tools:context=".presentation.SettingsFragment">
+
+    <View
+        android:id="@+id/view_top_bg"
+        android:layout_width="@dimen/dimen_0dp"
+        android:layout_height="@dimen/dimen_150dp"
+        android:background="@color/color_secondary"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
 
     <ImageView
         android:id="@+id/img_app_icon"
         android:layout_width="72dp"
         android:layout_height="68dp"
-        android:layout_margin="@dimen/dimen_32dp"
         android:contentDescription="@string/app_name"
         android:scaleType="centerCrop"
-        android:src="@drawable/app_icon"
-        app:layout_constraintBottom_toTopOf="@+id/img_screen_bg"
+        android:src="@drawable/app_icon_new"
+        android:layout_margin="@dimen/dimen_8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
@@ -33,7 +40,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/img_app_icon"
+        app:layout_constraintTop_toBottomOf="@+id/view_top_bg"
         app:layout_constraintVertical_chainStyle="spread" />
 
     <LinearLayout

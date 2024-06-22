@@ -4,7 +4,7 @@
     <color name="color_primary">#FF539DD7</color>
     <color name="color_primary_variant">#295175</color>
     <color name="sticker_bg">#034998</color>
-    <color name="color_secondary">#2C5982</color>
+    <color name="color_secondary">#2C6597</color>
     <color name="color_secondary_variant">#70A0C9</color>
     <color name="color_border">#77A8D3</color>
     <color name="sticker_border_bg">#FBC930</color>
@@ -15,4 +15,5 @@
     <color name="item_color_active">#F4C405</color>
     <color name="item_color_inactive">#595959</color>
     <color name="color_text_hint">#FF018786</color>
+    <color name="color_red">#F40303</color>
 </resources>

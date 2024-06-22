@@ -4,8 +4,16 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/color_primary"
     tools:context=".presentation.MoreStickersFragment">
+
+    <View
+        android:id="@+id/view_top_bg"
+        android:layout_width="@dimen/dimen_0dp"
+        android:layout_height="@dimen/dimen_150dp"
+        android:background="@color/color_secondary"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
 
     <ImageView
         android:id="@+id/img_app_icon"
@@ -13,7 +21,8 @@
         android:layout_height="68dp"
         android:contentDescription="@string/app_name"
         android:scaleType="centerCrop"
-        android:src="@drawable/app_icon"
+        android:layout_margin="@dimen/dimen_8dp"
+        android:src="@drawable/app_icon_new"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -45,14 +54,13 @@
         android:id="@+id/img_screen_bg"
         android:layout_width="match_parent"
         android:layout_height="@dimen/dimen_0dp"
-        android:layout_marginTop="@dimen/dimen_12dp"
         android:contentDescription="@string/background_image"
         android:scaleType="centerCrop"
         android:src="@drawable/background"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/til_search" />
+        app:layout_constraintTop_toBottomOf="@+id/view_top_bg" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/tv_trending_title"
@@ -65,7 +73,7 @@
         android:textAppearance="?attr/textAppearanceCaption"
         android:textColor="@color/color_primary_variant"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/til_search"/>
+        app:layout_constraintTop_toBottomOf="@id/view_top_bg"/>
 
     <TextView
         android:id="@+id/tv_title"
@@ -88,7 +96,7 @@
         app:gphSpanCount="3"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tv_trending_title"
         app:layout_constraintVertical_bias="0.0"

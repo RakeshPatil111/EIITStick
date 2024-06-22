@@ -108,8 +108,7 @@ class StickerFragment : Fragment(), GPHGridCallback,
                     rvRecentSearch.visibility = View.GONE
                     currentRecyclerView = rvStickers
                     currentRecyclerView.visibility = View.VISIBLE
-                } else{
-                    tietSearch.clearFocus()
+                } else {
                     tietSearch.text?.clear()
                 }
             }

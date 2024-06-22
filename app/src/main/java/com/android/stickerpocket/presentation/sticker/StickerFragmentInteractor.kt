@@ -161,6 +161,7 @@ class StickerFragmentInteractor {
     }
 
     fun onRecentSearchItemClick(position: Int) {
+        viewModel.updateViewMode(StickerViewModel.ViewMode.RecentSearch)
         viewModel.getStickersForQuery(
             viewModel.getRecentSearches()[position].query
         )
@@ -278,5 +279,10 @@ class StickerFragmentInteractor {
     fun onRecentStickerClick() {
         viewModel.updateViewMode(StickerViewModel.ViewMode.Recent)
         viewModel.fetchRecentStickers()
+    }
+
+    fun onEditTextClear() {
+        viewModel.updateViewMode(StickerViewModel.ViewMode.Category)
+        loadStickers()
     }
 }

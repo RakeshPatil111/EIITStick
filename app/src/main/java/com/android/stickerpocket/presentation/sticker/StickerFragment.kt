@@ -105,8 +105,10 @@ class StickerFragment : Fragment(), GPHGridCallback,
                     removeChangeListeners(tietSearch)
                     tietSearch.clearFocus()
                     tietSearch.text?.clear()
+                    addChangeListeners(tietSearch)
                     rvRecentSearch.visibility = View.GONE
                     currentRecyclerView = rvStickers
+                    interactor.onEditTextClear()
                     currentRecyclerView.visibility = View.VISIBLE
                 } else {
                     tietSearch.text?.clear()
@@ -164,6 +166,7 @@ class StickerFragment : Fragment(), GPHGridCallback,
                     binding.apply {
                         rvRecentSearch.visibility = View.GONE
                         rvStickers.visibility = View.VISIBLE
+                        hideKeyboard()
                         if (action.stickers.isEmpty()){
                             CustomDialog.showCustomDialog(requireContext(),resources.getString(R.string.no_stickers_found),resources.getString(R.string.ok))
                             CustomDialog.alertDialog.setOnDismissListener {
@@ -174,6 +177,7 @@ class StickerFragment : Fragment(), GPHGridCallback,
                                 binding.tietSearch.text?.clear()
                             }
                         }else{
+                            removeChangeListeners(tietSearch)
                             rvStickers.adapter = commonStickerAdapter
                             commonStickerAdapter.updateList(action.stickers)
                             tietSearch.setText(action.query)

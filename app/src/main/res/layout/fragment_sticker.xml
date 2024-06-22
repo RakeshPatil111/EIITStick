@@ -4,7 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/color_primary"
     tools:context=".presentation.sticker.StickerFragment">
 
 
@@ -20,14 +19,23 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />-->
 
+    <View
+        android:id="@+id/view_top_bg"
+        android:layout_width="@dimen/dimen_0dp"
+        android:layout_height="@dimen/dimen_150dp"
+        android:background="@color/color_secondary"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+
     <ImageView
         android:id="@+id/img_app_icon"
         android:layout_width="72dp"
         android:layout_height="68dp"
+        android:layout_margin="@dimen/dimen_8dp"
         android:contentDescription="@string/app_name"
         android:scaleType="centerCrop"
         android:src="@drawable/app_icon_new"
-        android:background="@color/white"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -64,9 +72,6 @@
             android:layout_height="wrap_content"
             android:digits="abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ 0123456789"
             android:hint="@string/search"
-            android:textColor="@color/white"
-            android:textColorHint="@color/white"
-            android:drawableTint="@color/white"
             android:imeOptions="actionSearch"
             android:inputType="textCapWords"
             android:singleLine="true"/>
@@ -76,14 +81,13 @@
         android:id="@+id/img_screen_bg"
         android:layout_width="match_parent"
         android:layout_height="@dimen/dimen_0dp"
-        android:layout_marginTop="@dimen/dimen_12dp"
         android:contentDescription="@string/background_image"
         android:scaleType="centerCrop"
         android:src="@drawable/background"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/til_search" />
+        app:layout_constraintTop_toBottomOf="@+id/view_top_bg" />
 
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/cv_recent_sticker"
@@ -194,7 +198,7 @@
         android:paddingHorizontal="@dimen/dimen_2dp"
         tools:itemCount="10"
         tools:listitem="@layout/item_recent_search"
-        android:background="@color/color_primary"
+        android:background="@color/color_secondary"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

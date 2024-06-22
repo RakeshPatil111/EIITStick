@@ -40,6 +40,10 @@ class SettingsFragment : Fragment() {
                     R.id.action_settingsFragment_to_contactUsFragment
                 )
             }
+
+            tvDeletedStickers.setOnClickListener {
+                findNavController().navigate(R.id.action_settingsFragment_to_deletedStickerFragment)
+            }
         }
     }
 }

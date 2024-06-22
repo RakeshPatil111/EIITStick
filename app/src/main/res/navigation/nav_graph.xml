@@ -34,6 +34,9 @@
         <action
             android:id="@+id/action_settingsFragment_to_contactUsFragment"
             app:destination="@id/contactUsFragment" />
+        <action
+            android:id="@+id/action_settingsFragment_to_deletedStickerFragment"
+            app:destination="@id/deletedStickerFragment" />
     </fragment>
     <fragment
         android:id="@+id/tutorialsFragment"
@@ -54,5 +57,17 @@
             android:id="@+id/action_stickerDetailsFragment_to_stickerFragment"
             app:destination="@id/stickerFragment"
             app:popUpTo="@id/stickerFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/deletedStickerFragment"
+        android:name="com.android.stickerpocket.DeletedStickerFragment"
+        android:label="fragment_deleted_sticker"
+        tools:layout="@layout/fragment_deleted_sticker" >
+        <action
+            android:id="@+id/action_deletedStickerFragment_to_settingsFragment"
+            app:destination="@id/settingsFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/settingsFragment"
+            app:popUpToInclusive="true" />
     </fragment>
 </navigation>

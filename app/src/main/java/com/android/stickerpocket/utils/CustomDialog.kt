@@ -16,7 +16,7 @@ import com.android.stickerpocket.presentation.sticker.StickerFragmentInteractor
 
 
 object CustomDialog {
-    private lateinit var alertDialog: AlertDialog
+    lateinit var alertDialog: AlertDialog
 
     @SuppressLint("MissingInflatedId")
     fun showCustomDialog(

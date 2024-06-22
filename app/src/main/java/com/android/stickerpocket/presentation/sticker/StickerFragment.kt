@@ -72,29 +72,46 @@ class StickerFragment : Fragment(), GPHGridCallback,
         initAdapters()
         handleBackPress()
 
-        binding.tietSearch.setOnEditorActionListener { view, actionId, event ->
-            if (actionId == EditorInfo.IME_ACTION_SEARCH ||
-                (event != null && event.keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_DOWN)) {
-                val query = view.text.toString()
-                hideKeyboard()
-                if (query.isEmpty() && binding.tietSearch.hasFocus()) {
-                    binding.rvRecentSearch.visibility = View.VISIBLE
-                    binding.rvStickers.visibility = View.GONE
-                    interactor.onQueryBlank()
-                } else {
-                    searchJob?.cancel()
-                    searchJob = MainScope().launch {
-                        query.let {
-                            if (it.trim()
-                                    .isNotEmpty()) {
-                                interactor.onQuerySearch(it)
+        binding.apply{
+            tietSearch.setOnEditorActionListener { view, actionId, event ->
+                if (actionId == EditorInfo.IME_ACTION_SEARCH ||
+                    (event != null && event.keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_DOWN)) {
+                    val query = view.text.toString()
+                    hideKeyboard()
+                    if (query.isEmpty() && tietSearch.hasFocus()) {
+                        rvRecentSearch.visibility = View.VISIBLE
+                        rvStickers.visibility = View.GONE
+                        interactor.onQueryBlank()
+                    } else {
+                        searchJob?.cancel()
+                        searchJob = MainScope().launch {
+                            query.let {
+                                if (it.trim()
+                                        .isNotEmpty()) {
+                                    interactor.onQuerySearch(it)
+                                }
                             }
                         }
                     }
+                    true
+                } else {
+                    false
                 }
-                true
-            } else {
-                false
+            }
+
+            tilSearch.setEndIconOnClickListener {
+                if(tietSearch.text.isNullOrEmpty()){
+                    hideKeyboard()
+                    removeChangeListeners(tietSearch)
+                    tietSearch.clearFocus()
+                    tietSearch.text?.clear()
+                    rvRecentSearch.visibility = View.GONE
+                    currentRecyclerView = rvStickers
+                    currentRecyclerView.visibility = View.VISIBLE
+                } else{
+                    tietSearch.clearFocus()
+                    tietSearch.text?.clear()
+                }
             }
         }
         return binding.root
@@ -148,18 +165,25 @@ class StickerFragment : Fragment(), GPHGridCallback,
                     binding.apply {
                         rvRecentSearch.visibility = View.GONE
                         rvStickers.visibility = View.VISIBLE
-                        rvStickers.adapter = commonStickerAdapter
                         if (action.stickers.isEmpty()){
                             CustomDialog.showCustomDialog(requireContext(),resources.getString(R.string.no_stickers_found),resources.getString(R.string.ok))
+                            CustomDialog.alertDialog.setOnDismissListener {
+                                rvRecentSearch.visibility = View.GONE
+                                rvStickers.visibility = View.VISIBLE
+                                removeChangeListeners(tietSearch)
+                                binding.tietSearch.clearFocus()
+                                binding.tietSearch.text?.clear()
+                            }
+                        }else{
+                            rvStickers.adapter = commonStickerAdapter
+                            commonStickerAdapter.updateList(action.stickers)
+                            tietSearch.setText(action.query)
+                            tietSearch.setSelection(tietSearch.length())
+                            addChangeListeners(tietSearch)
+                            currentRecyclerView = rvStickers
+                            commonStickerAdapter.isOpenedForCategory(false)
+                            commonStickerAdapter.isOpenedForOrganizeCategory(false)
                         }
-                        commonStickerAdapter.updateList(action.stickers)
-                        removeChangeListeners(tietSearch)
-                        tietSearch.setText(action.query)
-                        tietSearch.setSelection(tietSearch.length())
-                        addChangeListeners(tietSearch)
-                        currentRecyclerView = rvStickers
-                        commonStickerAdapter.isOpenedForCategory(false)
-                        commonStickerAdapter.isOpenedForOrganizeCategory(false)
                     }
                 }
 

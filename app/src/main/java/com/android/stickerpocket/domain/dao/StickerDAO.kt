@@ -31,7 +31,7 @@ interface StickerDAO {
     @Query("SELECT * FROM sticker WHERE categoryId = :id AND isDeleted = 0 ORDER BY position ASC")
     fun fetchForCategory(id: Int): Flow<List<Sticker>>
 
-    @Query("SELECT * FROM sticker WHERE tags AND isDeleted = 0 LIKE '%' || :query || '%'")
+    @Query("SELECT * FROM sticker WHERE tags LIKE '%' || :query || '%' AND isDeleted = 0")
     fun fetchStickersForQuery(query: String): List<Sticker>
 
     @Query("SELECT * FROM sticker WHERE mediaId= :mediaId")

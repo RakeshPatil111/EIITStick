@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="@color/color_primary"
+    android:background="@color/color_secondary"
     tools:context=".presentation.stickerdetail.StickerDetailsFragment">
 
     <ImageView
@@ -14,7 +14,7 @@
         android:layout_margin="@dimen/dimen_32dp"
         android:contentDescription="@string/app_name"
         android:scaleType="centerCrop"
-        android:src="@drawable/app_icon"
+        android:src="@drawable/app_icon_new"
         app:layout_constraintBottom_toTopOf="@+id/img_screen_bg"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"

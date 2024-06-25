@@ -161,6 +161,7 @@ class StickerFragmentInteractor {
     }
 
     fun onRecentSearchItemClick(position: Int) {
+        viewModel.updateViewMode(StickerViewModel.ViewMode.RecentSearch)
         viewModel.getStickersForQuery(
             viewModel.getRecentSearches()[position].query
         )
@@ -221,7 +222,6 @@ class StickerFragmentInteractor {
         sticker: com.android.stickerpocket.domain.model.Sticker,
         didOpenForDelete: Boolean
     ) {
-        sticker.isOrganizeMode = false
         if (!didOpenForDelete) viewModel.removeStickerFromDeleted(sticker) else viewModel.addToDeletedStickers(
             sticker
         )
@@ -278,5 +278,10 @@ class StickerFragmentInteractor {
     fun onRecentStickerClick() {
         viewModel.updateViewMode(StickerViewModel.ViewMode.Recent)
         viewModel.fetchRecentStickers()
+    }
+
+    fun onEditTextClear() {
+        viewModel.updateViewMode(StickerViewModel.ViewMode.Category)
+        loadStickers()
     }
 }

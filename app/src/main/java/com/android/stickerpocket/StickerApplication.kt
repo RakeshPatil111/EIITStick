@@ -12,6 +12,7 @@ import com.android.stickerpocket.domain.usecase.InsertCategoriesUseCase
 import com.android.stickerpocket.domain.usecase.InsertStickersUseCase
 import com.android.stickerpocket.dtos.getCategories
 import com.android.stickerpocket.dtos.getMappedStickersToCategory
+import com.appodeal.ads.Appodeal
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -27,6 +28,9 @@ class StickerApplication: Application() {
         instance = this
         // load data, this will be done only once
         loadDataIntoDB()
+
+        // Initialize Appodeal with your App Key and required ad types
+        Appodeal.initialize(this, BuildConfig.API_KEY_APPO_DEAL, Appodeal.BANNER)
     }
 
     private fun loadDataIntoDB() {

@@ -15,7 +15,7 @@ class FetchAllDownloadedUseCase(private val repository: StickerRepository) {
     private var list: List<Sticker> = listOf()
 
     suspend fun execute(): Flow<Result> =
-        repository.fetchFavourites()
+        repository.getDownloaded()
             .map {
                 list = it
                 Result.Success(list!!)

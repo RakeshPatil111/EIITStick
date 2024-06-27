@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.ksp)
     id("kotlin-parcelize")
     id("org.jetbrains.kotlin.plugin.serialization") version "1.9.10"
+    id("androidx.navigation.safeargs.kotlin")
 }
 
 android {

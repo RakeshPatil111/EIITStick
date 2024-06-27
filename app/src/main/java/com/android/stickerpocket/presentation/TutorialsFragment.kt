@@ -1,12 +1,16 @@
 package com.android.stickerpocket.presentation
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.navigation.fragment.findNavController
+import com.android.stickerpocket.R
 import com.android.stickerpocket.databinding.FragmentTutorialsBinding
-import com.android.stickerpocket.utils.AppConstants
+import com.android.stickerpocket.utils.tutorials
+import com.google.android.material.textview.MaterialTextView
 
 class TutorialsFragment : Fragment() {
 
@@ -22,64 +26,63 @@ class TutorialsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setupClickListeners()
         binding.apply {
+            tvWelcomeMessage.setOnClickListener {
+                showWelcomeDialog()
+            }
+            tvImportStickersFromWhatsapp.setOnClickListener {
 
+            }
+            tvImportStickersFromPhoto.setOnClickListener {
+
+            }
+            tvStickerPocketLayout.setOnClickListener {
+
+            }
         }
     }
 
-    fun onTutorialClick(view: View) {
-        when (view.tag) {
-            AppConstants.SEND_STICKER_FROM_APP -> {
-                // Handle click for SEND_STICKER_FROM_APP
+    private fun showWelcomeDialog() {
+
+    }
+
+    private fun setupClickListeners() {
+        val textViewIds = listOf(
+            R.id.tv_send_sticker_from_app,
+            R.id.tv_send_sticker_from_keyboard,
+            R.id.tv_open_sticker_pocket_keyboard,
+            R.id.tv_setup_sticker_pocket_keyboard,
+            R.id.tv_download_stickers,
+            R.id.tv_manage_stickers,
+            R.id.tv_add_tags_to_sticker,
+            R.id.tv_reorder_stickers,
+            R.id.tv_move_sticker_to_new_pocket,
+            R.id.tv_move_multiple_stickers_to_new_pocket,
+            R.id.tv_manage_pockets,
+            R.id.tv_reorganize_pockets,
+        )
+
+        textViewIds.forEach { id ->
+            val textView = binding.root.findViewById<MaterialTextView>(id)
+            if (textView != null) {
+                textView.setOnClickListener { view -> onTutorialClick(view) }
+            } else {
+                Log.e("TutorialsFragment", "TextView with ID $id not found")
             }
-            AppConstants.SEND_STICKER_FROM_KEYBOARD -> {
-                // Handle click for SEND_STICKER_FROM_KEYBOARD
-            }
-            AppConstants.OPEN_STICKER_POCKET_KEYBOARD -> {
-                // Handle click for OPEN_STICKER_POCKET_KEYBOARD
-            }
-            AppConstants.SETUP_STICKER_POCKET_KEYBOARD -> {
-                // Handle click for SETUP_STICKER_POCKET_KEYBOARD
-            }
-            AppConstants.DOWNLOAD_STICKER -> {
-                // Handle click for DOWNLOAD_STICKER
-            }
-            AppConstants.MANAGE_STICKERS -> {
-                // Handle click for MANAGE_STICKERS
-            }
-            AppConstants.ADD_TAG_TO_STICKER -> {
-                // Handle click for ADD_TAG_TO_STICKER
-            }
-            AppConstants.REORDER_STICKERS -> {
-                // Handle click for REORDER_STICKERS
-            }
-            AppConstants.MOVE_STICKER_TO_NEW_POCKET -> {
-                // Handle click for MOVE_STICKER_TO_NEW_POCKET
-            }
-            AppConstants.MOVE_MULTIPLE_STICKER_TO_NEW_POCKET -> {
-                // Handle click for MOVE_MULTIPLE_STICKER_TO_NEW_POCKET
-            }
-            AppConstants.MANAGE_POCKETS -> {
-                // Handle click for MANAGE_POCKETS
-            }
-            AppConstants.REORGANIZE_POCKET -> {
-                // Handle click for REORGANIZE_POCKET
-            }
-            AppConstants.WELCOME_MESSAGE -> {
-                // Handle click for WELCOME_MESSAGE
-            }
-            AppConstants.STICKER_POCKET_LAYOUT -> {
-                // Handle click for STICKER_POCKET_LAYOUT
-            }
-            AppConstants.IMPORT_STICKER_FROM_WHATSAPP -> {
-                // Handle click for IMPORT_STICKER_FROM_WHATSAPP
-            }
-            AppConstants.IMPORT_STICKER_FROM_PHOTO -> {
-                // Handle click for IMPORT_STICKER_FROM_PHOTO
-            }
-            else -> {
-                // Default case, handle unknown tag
-            }
+        }
+    }
+
+    private fun onTutorialClick(view: View) {
+        val tag = view.tag as String
+        val selectedTutorial = tutorials.find { it.tag == tag }
+        selectedTutorial?.let {
+            Log.d("tut click tag", it.tag)
+            Log.d("tut click title ", "details : ${it.title}")
+            Log.d("tut click gif ","details : ${it.gif}")
+            val action =
+                TutorialsFragmentDirections.actionTutorialsFragmentToTutorialDetailsFragment(it)
+            findNavController().navigate(action)
         }
     }
 

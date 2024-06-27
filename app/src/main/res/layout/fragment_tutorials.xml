@@ -300,7 +300,6 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:padding="@dimen/dimen_12dp"
-                        android:onClick="onTutorialClick"
                         android:tag="WELCOME_MESSAGE"
                         style="@style/Widget.AppCompat.TextView.Setting.Options"
                         android:text="@string/welcome_message"/>
@@ -320,7 +319,6 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:padding="@dimen/dimen_12dp"
-                        android:onClick="onTutorialClick"
                         android:tag="STICKER_POCKET_LAYOUT"
                         style="@style/Widget.AppCompat.TextView.Setting.Options"
                         android:text="@string/sticker_pocket_layout"/>
@@ -340,7 +338,6 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:padding="@dimen/dimen_12dp"
-                        android:onClick="onTutorialClick"
                         android:tag="IMPORT_STICKER_FROM_WHATSAPP"
                         style="@style/Widget.AppCompat.TextView.Setting.Options"
                         android:text="@string/import_stickers_from_whatsapp"/>
@@ -360,7 +357,6 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:padding="@dimen/dimen_12dp"
-                        android:onClick="onTutorialClick"
                         android:tag="IMPORT_STICKER_FROM_PHOTO"
                         style="@style/Widget.AppCompat.TextView.Setting.Options"
                         android:text="@string/import_stickers_from_photo"/>

@@ -1,13 +1,16 @@
 package com.android.stickerpocket.utils
 
+import android.os.Parcelable
 import androidx.annotation.StringRes
 import com.android.stickerpocket.R
+import kotlinx.parcelize.Parcelize
 
+@Parcelize
 data class Tutorials (
     val tag: String,
     @StringRes val title: Int,
     val gif: Int?
-)
+): Parcelable
 
 val sendStickerFromAppTut = Tutorials(
     AppConstants.SEND_STICKER_FROM_APP,

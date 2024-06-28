@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
@@ -32,6 +33,7 @@ import com.android.stickerpocket.presentation.StickerCategoryDialog
 import com.android.stickerpocket.presentation.StickerDetailsNavDirections
 import com.android.stickerpocket.presentation.StickerDialog
 import com.android.stickerpocket.utils.CustomDialog
+import com.android.stickerpocket.utils.EmptySpaceClickItemDecoration
 import com.android.stickerpocket.utils.ItemTouchHelperAdapter
 import com.android.stickerpocket.utils.ItemTouchHelperCallback
 import com.android.stickerpocket.utils.ViewExt.removeBorder
@@ -347,11 +349,8 @@ class StickerFragment : Fragment(), GPHGridCallback,
                     Toast.makeText(requireContext(), action.message, Toast.LENGTH_SHORT).show()
                 }
                 is StickerFragmentInteractor.Actions.clearAllRecentSearchAndHideView ->{
-                    hideKeyboard()
-                    binding.apply {
-                        rvRecentSearch.visibility = View.GONE
-                        rvStickers.visibility = View.VISIBLE
-                    }
+                    recentSearchAdapter.updateList(arrayListOf())
+                    recentSearchAdapter.notifyDataSetChanged()
                 }
 
                 is StickerFragmentInteractor.Actions.ShowStickers -> {
@@ -450,6 +449,15 @@ class StickerFragment : Fragment(), GPHGridCallback,
         binding.rvStickers.visibility = View.VISIBLE
         currentRecyclerView = binding.rvStickers
         setupRecentSearchRecyclerView()
+
+        val emptySpaceClickItemDecoration = EmptySpaceClickItemDecoration {
+            if (CommunicationBridge.isOrganizationMode.value == true) {
+                Log.d("test click0", "empty click")
+                exitSelectionMode()
+            }
+        }
+        binding.rvStickers.addItemDecoration(emptySpaceClickItemDecoration)
+
         commonStickerAdapter.onItemClick { sticker, position ->
             interactor.onStickerClick(sticker, position)
         }
@@ -509,11 +517,6 @@ class StickerFragment : Fragment(), GPHGridCallback,
                 }
             }
             btnCancel.setOnClickListener {
-                //commonStickerAdapter.isOpenedForOrganizeCategory(true,true)
-                exitSelectionMode()
-            }
-
-            rvStickers.setOnClickListener {
                 //commonStickerAdapter.isOpenedForOrganizeCategory(true,true)
                 exitSelectionMode()
             }
@@ -598,8 +601,12 @@ class StickerFragment : Fragment(), GPHGridCallback,
         stickerItemTouchHelper.attachToRecyclerView(binding.rvStickers)
 
         emojiCategoryListAdapter.stickerActionClick { sticker, _, previous ->
-            interactor.onCategoryItemClick(sticker, previous)
-            clearStaticPagesBorder()
+            if (CommunicationBridge.isOrganizationMode.value==true){
+                exitSelectionMode()
+            }else {
+                interactor.onCategoryItemClick(sticker, previous)
+                clearStaticPagesBorder()
+            }
         }
         emojiCategoryListAdapter.stickerActionLongClick { category, pos, previous ->
             binding.tietSearch.isCursorVisible = false

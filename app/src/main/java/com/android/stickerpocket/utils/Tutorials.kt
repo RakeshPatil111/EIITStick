@@ -83,7 +83,7 @@ val reorganizePocketTut = Tutorials(
     R.string.reorganize_pockets,
     R.raw.reorgnize_pockets
 )
-
+/*
 val welcomeMessageTut = Tutorials(
     AppConstants.WELCOME_MESSAGE,
     R.string.welcome_message,
@@ -106,7 +106,7 @@ val importStickerFromPhotoTut = Tutorials(
     AppConstants.IMPORT_STICKER_FROM_PHOTO,
     R.string.import_stickers_from_photo,
     null
-)
+)*/
 
 
 val tutorials = arrayListOf(
@@ -121,9 +121,5 @@ val tutorials = arrayListOf(
     moveStickerToNewPocketTut,
     moveMultipleStickerToNewPocketTut,
     managePocketsTut,
-    reorganizePocketTut,
-    welcomeMessageTut,
-    stickerPocketLayoutTut,
-    importStickerFromWhatsappTut,
-    importStickerFromPhotoTut
+    reorganizePocketTut
 )

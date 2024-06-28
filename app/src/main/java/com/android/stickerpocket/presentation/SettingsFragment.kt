@@ -8,6 +8,8 @@ import android.view.ViewGroup
 import androidx.navigation.fragment.findNavController
 import com.android.stickerpocket.R
 import com.android.stickerpocket.databinding.FragmentSettingsBinding
+import com.android.stickerpocket.utils.Tutorials
+import com.android.stickerpocket.utils.tutorials
 
 class SettingsFragment : Fragment() {
 
@@ -43,6 +45,13 @@ class SettingsFragment : Fragment() {
 
             tvDeletedStickers.setOnClickListener {
                 findNavController().navigate(R.id.action_settingsFragment_to_deletedStickerFragment)
+            }
+
+            tvTipOfTheDay.setOnClickListener {
+                val tipsArray = tutorials.toArray(arrayOf<Tutorials>())
+                val action = SettingsFragmentDirections.actionSettingsFragmentToSlideFragment(
+                    tipsArray)
+                findNavController().navigate(action)
             }
         }
     }

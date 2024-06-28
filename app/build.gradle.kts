@@ -80,4 +80,6 @@ dependencies {
     implementation(libs.okhttp)
     implementation(libs.androidx.emoji2.emojipicker)
     implementation(libs.fresco)
+
+    implementation(libs.androidx.viewpager2)
 }

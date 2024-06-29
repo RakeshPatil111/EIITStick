@@ -25,7 +25,7 @@
     <string name="import_stickers_from_whatsapp">Import Stickers from WhatsApp</string>
     <string name="sticker_pocket_layout">Sticker Pocket Layout</string>
     <string name="welcome_message">Welcome Message</string>
-    <string name="recognize_pockets">Recognize Pockets</string>
+    <string name="reorganize_pockets">Reorganize Pockets</string>
     <string name="manage_pockets">Manage Pockets</string>
     <string name="move_multiple_stickers_to_new_pocket">Move Multiple Stickers to New Pocket</string>
     <string name="move_sticker_to_new_pocket">Move Sticker to New Pocket</string>
@@ -60,4 +60,6 @@
     <string name="move">Move</string>
     <string name="recent_searches">Recent Searches</string>
     <string name="remove_from_favourites">Remove from favourites</string>
+    <string name="next">Next</string>
+    <string name="back">Back</string>
 </resources>

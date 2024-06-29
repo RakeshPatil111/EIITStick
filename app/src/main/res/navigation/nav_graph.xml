@@ -37,12 +37,22 @@
         <action
             android:id="@+id/action_settingsFragment_to_deletedStickerFragment"
             app:destination="@id/deletedStickerFragment" />
+        <action
+            android:id="@+id/action_settingsFragment_to_slideFragment"
+            app:destination="@id/slideFragment" />
     </fragment>
     <fragment
         android:id="@+id/tutorialsFragment"
         android:name="com.android.stickerpocket.presentation.TutorialsFragment"
         android:label="fragment_tutorials"
-        tools:layout="@layout/fragment_tutorials" />
+        tools:layout="@layout/fragment_tutorials" >
+        <action
+            android:id="@+id/action_tutorialsFragment_to_tutorialDetailsFragment"
+            app:destination="@id/tutorialDetailsFragment" />
+        <action
+            android:id="@+id/action_tutorialsFragment_to_slideFragment"
+            app:destination="@id/slideFragment" />
+    </fragment>
     <fragment
         android:id="@+id/contactUsFragment"
         android:name="com.android.stickerpocket.presentation.ContactUsFragment"
@@ -69,5 +79,23 @@
             app:launchSingleTop="true"
             app:popUpTo="@id/settingsFragment"
             app:popUpToInclusive="true" />
+    </fragment>
+    <fragment
+        android:id="@+id/tutorialDetailsFragment"
+        android:name="com.android.stickerpocket.TutorialDetailsFragment"
+        android:label="fragment_tutorial_details"
+        tools:layout="@layout/fragment_tutorial_details" >
+        <argument
+            android:name="selectedTut"
+            app:argType="com.android.stickerpocket.utils.Tutorials" />
+    </fragment>
+    <fragment
+        android:id="@+id/slideFragment"
+        android:name="com.android.stickerpocket.SlideFragment"
+        android:label="fragment_slide"
+        tools:layout="@layout/fragment_slide" >
+        <argument
+            android:name="informationList"
+            app:argType="com.android.stickerpocket.utils.Tutorials[]" />
     </fragment>
 </navigation>

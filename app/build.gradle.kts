@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.ksp)
     id("kotlin-parcelize")
     id("org.jetbrains.kotlin.plugin.serialization") version "1.9.10"
+    id("androidx.navigation.safeargs.kotlin")
 }
 
 android {
@@ -24,7 +25,6 @@ android {
         val properties = Properties()
         properties.load(project.rootProject.file("local.properties").inputStream())
         buildConfigField("String", "API_KEY", properties["API_KEY"].toString())
-        buildConfigField("String", "API_KEY_APPO_DEAL", properties["API_KEY_APPO_DEAL"].toString())
     }
     buildFeatures {
         viewBinding = true
@@ -80,6 +80,8 @@ dependencies {
     implementation(libs.okhttp)
     implementation(libs.androidx.emoji2.emojipicker)
     implementation(libs.fresco)
+
+    implementation(libs.androidx.viewpager2)
 
     // Add the Appodeal SDK dependency
     implementation(libs.appodeal)

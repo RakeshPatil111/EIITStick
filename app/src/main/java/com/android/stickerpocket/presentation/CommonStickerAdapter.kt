@@ -74,14 +74,14 @@ class CommonStickerAdapter() : RecyclerView.Adapter<StickerViewHolder>() {
         this.actionItemDelete = action
     }
 
-    fun isOpenedForOrganizeCategory(value: Boolean, selectionOn :Boolean=false) {
+   /* fun isOpenedForOrganizeCategory(value: Boolean, selectionOn :Boolean=false) {
         stickers.forEachIndexed { index, _ ->
             stickers[index].isOrganizeMode = value
             stickers[index].selectionon = selectionOn
         }
 
         notifyDataSetChanged()
-    }
+    }*/
 
     fun onRowMoved(fromPosition: Int, toPosition: Int) {
         if (fromPosition < toPosition) {

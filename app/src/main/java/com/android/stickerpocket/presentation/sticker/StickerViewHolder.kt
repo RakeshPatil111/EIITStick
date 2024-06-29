@@ -4,6 +4,7 @@ import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import coil.ImageLoader
 import coil.load
+import com.android.stickerpocket.CommunicationBridge
 import com.android.stickerpocket.databinding.CvGifItemBinding
 import com.android.stickerpocket.domain.model.Sticker
 import com.android.stickerpocket.utils.DragListener
@@ -34,33 +35,25 @@ class StickerViewHolder(
                     }
                 )
             }
-            if (!sticker.isOrganizeMode) {
                 itemClickListener?.let { gif ->
-
+                    if (CommunicationBridge.isOrganizationMode.value==false)
                     sivGifImage.setOnClickListener {
                         gif(sticker, adapterPosition)
                     }
                 }
-            } else {
-
-            }
 
             itemLongClickListener?.let { gif ->
-                if (!sticker.isOrganizeMode) {
                     sivGifImage.setOnLongClickListener {
                         gif(sticker, adapterPosition)
                         true
                     }
-                }
             }
 
             itemDeleteClickListener?.let { gif ->
-                if (sticker.isOrganizeMode) {
                     ivRemove.setOnClickListener {
                         gif(sticker, adapterPosition)
                         true
                     }
-                }
             }
 
             if (sticker.isFavourite) {
@@ -69,14 +62,14 @@ class StickerViewHolder(
                 favImg.visibility = View.GONE
             }
 
-            if (sticker.isOrganizeMode) {
+            if (CommunicationBridge.isOrganizationMode.value==true) {
                 ivRemove.visibility = View.VISIBLE
                 sivGifImage.shakeMe()
             } else {
                 ivRemove.visibility = View.GONE
             }
 
-            if (sticker.selectionon) {
+            if (CommunicationBridge.isSelectionMode.value==true) {
                 cbSelect.visibility = View.VISIBLE
                 sivGifImage.shakeMe()
             } else {

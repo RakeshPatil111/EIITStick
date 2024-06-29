@@ -20,6 +20,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.android.stickerpocket.CommunicationBridge
 import com.android.stickerpocket.EmojiPickerDialog
 import com.android.stickerpocket.R
 import com.android.stickerpocket.databinding.FragmentStickerBinding
@@ -57,6 +58,8 @@ class StickerFragment : Fragment(), GPHGridCallback,
     var searchJob: Job? = null
     private lateinit var currentRecyclerView: RecyclerView
 
+
+
     private val interactor by lazy {
         StickerFragmentInteractor()
     }
@@ -72,29 +75,47 @@ class StickerFragment : Fragment(), GPHGridCallback,
         initAdapters()
         handleBackPress()
 
-        binding.tietSearch.setOnEditorActionListener { view, actionId, event ->
-            if (actionId == EditorInfo.IME_ACTION_SEARCH ||
-                (event != null && event.keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_DOWN)) {
-                val query = view.text.toString()
-                hideKeyboard()
-                if (query.isEmpty() && binding.tietSearch.hasFocus()) {
-                    binding.rvRecentSearch.visibility = View.VISIBLE
-                    binding.rvStickers.visibility = View.GONE
-                    interactor.onQueryBlank()
-                } else {
-                    searchJob?.cancel()
-                    searchJob = MainScope().launch {
-                        query.let {
-                            if (it.trim()
-                                    .isNotEmpty()) {
-                                interactor.onQuerySearch(it)
+        binding.apply{
+            tietSearch.setOnEditorActionListener { view, actionId, event ->
+                if (actionId == EditorInfo.IME_ACTION_SEARCH ||
+                    (event != null && event.keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_DOWN)) {
+                    val query = view.text.toString()
+                    hideKeyboard()
+                    if (query.isEmpty() && tietSearch.hasFocus()) {
+                        rvRecentSearch.visibility = View.VISIBLE
+                        rvStickers.visibility = View.GONE
+                        interactor.onQueryBlank()
+                    } else {
+                        searchJob?.cancel()
+                        searchJob = MainScope().launch {
+                            query.let {
+                                if (it.trim()
+                                        .isNotEmpty()) {
+                                    interactor.onQuerySearch(it)
+                                }
                             }
                         }
                     }
+                    true
+                } else {
+                    false
                 }
-                true
-            } else {
-                false
+            }
+
+            tilSearch.setEndIconOnClickListener {
+                if(tietSearch.text.isNullOrEmpty()){
+                    hideKeyboard()
+                    removeChangeListeners(tietSearch)
+                    tietSearch.clearFocus()
+                    tietSearch.text?.clear()
+                    addChangeListeners(tietSearch)
+                    rvRecentSearch.visibility = View.GONE
+                    currentRecyclerView = rvStickers
+                    interactor.onEditTextClear()
+                    currentRecyclerView.visibility = View.VISIBLE
+                } else {
+                    tietSearch.text?.clear()
+                }
             }
         }
         return binding.root
@@ -148,18 +169,28 @@ class StickerFragment : Fragment(), GPHGridCallback,
                     binding.apply {
                         rvRecentSearch.visibility = View.GONE
                         rvStickers.visibility = View.VISIBLE
-                        rvStickers.adapter = commonStickerAdapter
+                        hideKeyboard()
                         if (action.stickers.isEmpty()){
                             CustomDialog.showCustomDialog(requireContext(),resources.getString(R.string.no_stickers_found),resources.getString(R.string.ok))
+                            CustomDialog.alertDialog.setOnDismissListener {
+                                rvRecentSearch.visibility = View.GONE
+                                rvStickers.visibility = View.VISIBLE
+                                removeChangeListeners(tietSearch)
+                                binding.tietSearch.clearFocus()
+                                binding.tietSearch.text?.clear()
+                            }
+                        }else{
+                            removeChangeListeners(tietSearch)
+                            rvStickers.adapter = commonStickerAdapter
+                            commonStickerAdapter.updateList(action.stickers)
+                            tietSearch.setText(action.query)
+                            tietSearch.setSelection(tietSearch.length())
+                            addChangeListeners(tietSearch)
+                            currentRecyclerView = rvStickers
+                            commonStickerAdapter.isOpenedForCategory(false)
+                            //commonStickerAdapter.isOpenedForOrganizeCategory(false)
+                            exitSelectionMode()
                         }
-                        commonStickerAdapter.updateList(action.stickers)
-                        removeChangeListeners(tietSearch)
-                        tietSearch.setText(action.query)
-                        tietSearch.setSelection(tietSearch.length())
-                        addChangeListeners(tietSearch)
-                        currentRecyclerView = rvStickers
-                        commonStickerAdapter.isOpenedForCategory(false)
-                        commonStickerAdapter.isOpenedForOrganizeCategory(false)
                     }
                 }
 
@@ -257,9 +288,10 @@ class StickerFragment : Fragment(), GPHGridCallback,
 
                         override fun onReOrganizeClick() {
                             stickerDialog.dismiss()
-
-                            commonStickerAdapter.isOpenedForOrganizeCategory(true)
-                            binding.txtSelect.visibility=View.VISIBLE
+                            CommunicationBridge.isOrganizationMode.value=true
+                            commonStickerAdapter.notifyDataSetChanged()
+                            binding.btnSelect.visibility=View.VISIBLE
+                            binding.btnCancel.visibility=View.VISIBLE
                             applyShakeAnimation(binding.rvStickers)
                         }
 
@@ -268,7 +300,10 @@ class StickerFragment : Fragment(), GPHGridCallback,
                         }
 
                     })
-                    stickerDialog.show(childFragmentManager, "StickerDialog")
+                    if (CommunicationBridge.isOrganizationMode.value==false){
+                        stickerDialog.show(childFragmentManager, "StickerDialog")
+                    }
+
                 }
 
                 is StickerFragmentInteractor.Actions.ShareSticker -> {
@@ -282,18 +317,24 @@ class StickerFragment : Fragment(), GPHGridCallback,
                 }
 
                 is StickerFragmentInteractor.Actions.ShowFavoritesSticker -> {
-                    if (!emojiCategoryListAdapter.isCategorySelected()) {
-                        binding.apply {
-                            setStaticPagesBorder(action)
-                            rvRecentSearch.visibility = View.GONE
-                            rvStickers.visibility = View.VISIBLE
-                            txtSelect.visibility=View.GONE
-                            rvStickers.adapter = favouritesAdapter
-                            favouritesAdapter.updateList(action.favoriteStickers)
+
+                    if (CommunicationBridge.isOrganizationMode.value==true){
+                        exitSelectionMode()
+                    }else {
+                        if (!emojiCategoryListAdapter.isCategorySelected()) {
                             binding.apply {
-                                cvFavSticker.setBorder()
-                                cvDownloadedSticker.removeBorder()
-                                cvRecentSticker.removeBorder()
+                                setStaticPagesBorder(action)
+                                rvRecentSearch.visibility = View.GONE
+                                rvStickers.visibility = View.VISIBLE
+                                binding.btnSelect.visibility=View.GONE
+                                binding.btnCancel.visibility=View.GONE
+                                rvStickers.adapter = favouritesAdapter
+                                favouritesAdapter.updateList(action.favoriteStickers)
+                                binding.apply {
+                                    cvFavSticker.setBorder()
+                                    cvDownloadedSticker.removeBorder()
+                                    cvRecentSticker.removeBorder()
+                                }
                             }
                         }
                     }
@@ -314,39 +355,67 @@ class StickerFragment : Fragment(), GPHGridCallback,
                 }
 
                 is StickerFragmentInteractor.Actions.ShowStickers -> {
-                    commonStickerAdapter.updateList(action.stickers)
-                    if (emojiCategoryListAdapter.isCategorySelected()) {
-                        binding.rvStickers.visibility = View.VISIBLE
-                        binding.txtSelect.visibility=View.GONE
-                        binding.rvStickers.adapter = commonStickerAdapter
-                        currentRecyclerView = binding.rvStickers
-                        commonStickerAdapter.isOpenedForCategory(true)
-                        commonStickerAdapter.isOpenedForOrganizeCategory(false)
+                    if (CommunicationBridge.isOrganizationMode.value==true){
+                        exitSelectionMode()
+                    }else {
+                        commonStickerAdapter.updateList(action.stickers)
+                        if (emojiCategoryListAdapter.isCategorySelected()) {
+                            binding.rvStickers.visibility = View.VISIBLE
+                            binding.btnSelect.visibility=View.GONE
+                            binding.btnCancel.visibility=View.GONE
+                            binding.rvStickers.adapter = commonStickerAdapter
+                            currentRecyclerView = binding.rvStickers
+                            commonStickerAdapter.isOpenedForCategory(true)
+                            CommunicationBridge.isOrganizationMode.value = false
+                            CommunicationBridge.isSelectionMode.value = false
+                        }
                     }
                 }
 
                 is StickerFragmentInteractor.Actions.ShowDownloadedStickers -> {
-                    commonStickerAdapter.updateList(action.stickers)
-                    commonStickerAdapter.isOpenedForCategory(false)
-                    binding.txtSelect.visibility=View.GONE
-                    commonStickerAdapter.isOpenedForOrganizeCategory(false)
-                    binding.rvStickers.visibility = View.VISIBLE
-                    binding.rvStickers.adapter = commonStickerAdapter
-                    currentRecyclerView = binding.rvStickers
+
+                    if (CommunicationBridge.isOrganizationMode.value==true){
+                        exitSelectionMode()
+                    }else {
+                        commonStickerAdapter.updateList(action.stickers)
+                        commonStickerAdapter.isOpenedForCategory(false)
+                        binding.btnSelect.visibility=View.GONE
+                        binding.btnCancel.visibility=View.GONE
+                        //commonStickerAdapter.isOpenedForOrganizeCategory(false)
+                        binding.rvStickers.visibility = View.VISIBLE
+                        binding.rvStickers.adapter = commonStickerAdapter
+                        currentRecyclerView = binding.rvStickers
+                    }
+
                 }
 
                 is StickerFragmentInteractor.Actions.ShowRecentStickers -> {
-                    commonStickerAdapter.updateList(action.stickers)
-                    commonStickerAdapter.isOpenedForCategory(false)
-                    binding.txtSelect.visibility=View.GONE
-                    commonStickerAdapter.isOpenedForOrganizeCategory(false)
-                    binding.rvStickers.adapter = commonStickerAdapter
-                    currentRecyclerView = binding.rvStickers
+                    if (CommunicationBridge.isOrganizationMode.value==true){
+                        exitSelectionMode()
+                    }else {
+                        commonStickerAdapter.updateList(action.stickers)
+                        commonStickerAdapter.isOpenedForCategory(false)
+                        binding.btnSelect.visibility=View.GONE
+                        binding.btnCancel.visibility=View.GONE
+                        //commonStickerAdapter.isOpenedForOrganizeCategory(false)
+                        CommunicationBridge.isOrganizationMode.value = false
+                        CommunicationBridge.isSelectionMode.value = false
+                        binding.rvStickers.adapter = commonStickerAdapter
+                        currentRecyclerView = binding.rvStickers
+                    }
                 }
                 else -> {
-                    binding.txtSelect.visibility=View.GONE
+                    exitSelectionMode()
                 }
             }
+        })
+
+        CommunicationBridge.isSelectionMode.observe(viewLifecycleOwner, Observer {
+        if (it){
+            binding.btnSelect.text=resources.getString(R.string.move)
+            }else{
+            binding.btnSelect.text=resources.getString(R.string.select)
+        }
         })
     }
 
@@ -385,9 +454,7 @@ class StickerFragment : Fragment(), GPHGridCallback,
             interactor.onStickerClick(sticker, position)
         }
         commonStickerAdapter.onItemLongClick { sticker, position ->
-            if (!sticker.isOrganizeMode) {
-                interactor.onStickerLongClick(sticker, position)
-            }
+            interactor.onStickerLongClick(sticker, position)
         }
 
         commonStickerAdapter.onItemDelete { sticker, position ->
@@ -398,9 +465,7 @@ class StickerFragment : Fragment(), GPHGridCallback,
             interactor.onFavStickerClick(sticker, position)
         }
         favouritesAdapter.onItemLongClick { sticker, position ->
-            if (!sticker.isOrganizeMode) {
-                interactor.onFavStickerLongClick(sticker, position)
-            }
+            interactor.onFavStickerLongClick(sticker, position)
         }
     }
 
@@ -434,8 +499,42 @@ class StickerFragment : Fragment(), GPHGridCallback,
             }
             addChangeListeners(tietSearch)
 
-            txtSelect.setOnClickListener {
-                commonStickerAdapter.isOpenedForOrganizeCategory(true,true)
+            btnSelect.setOnClickListener {
+                //commonStickerAdapter.isOpenedForOrganizeCategory(true,true)
+                if ( CommunicationBridge.isSelectionMode.value==false) {
+                    CommunicationBridge.isSelectionMode.value = true
+                    commonStickerAdapter.notifyDataSetChanged()
+                }else {
+                    moveToSelectedCategory()
+                }
+            }
+            btnCancel.setOnClickListener {
+                //commonStickerAdapter.isOpenedForOrganizeCategory(true,true)
+                exitSelectionMode()
+            }
+
+            rvStickers.setOnClickListener {
+                //commonStickerAdapter.isOpenedForOrganizeCategory(true,true)
+                exitSelectionMode()
+            }
+
+            tilSearch.setOnClickListener {
+                //commonStickerAdapter.isOpenedForOrganizeCategory(true,true)
+                exitSelectionMode()
+            }
+
+            viewTopBg.setOnClickListener {
+                //commonStickerAdapter.isOpenedForOrganizeCategory(true,true)
+                exitSelectionMode()
+            }
+
+            imgScreenBg.setOnClickListener {
+                //commonStickerAdapter.isOpenedForOrganizeCategory(true,true)
+                exitSelectionMode()
+            }
+            imgAppIcon.setOnClickListener {
+                //commonStickerAdapter.isOpenedForOrganizeCategory(true,true)
+                exitSelectionMode()
             }
         }
     }
@@ -455,6 +554,7 @@ class StickerFragment : Fragment(), GPHGridCallback,
     private fun removeChangeListeners(tietSearch: TextInputEditText) {
         tietSearch.removeTextChangedListener(this)
         tietSearch.setOnClickListener(null)
+        exitSelectionMode()
     }
 
     private fun setupEmojiRecyclerView() {
@@ -568,5 +668,19 @@ class StickerFragment : Fragment(), GPHGridCallback,
         if (currentFocusedView != null) {
             inputMethodManager.hideSoftInputFromWindow(currentFocusedView.windowToken, 0)
         }
+    }
+
+
+    private fun exitSelectionMode(){
+        CommunicationBridge.isOrganizationMode.value=false
+        CommunicationBridge.isSelectionMode.value=false
+        binding.btnSelect.visibility=View.GONE
+        binding.btnCancel.visibility=View.GONE
+        commonStickerAdapter.notifyDataSetChanged()
+    }
+
+    private fun moveToSelectedCategory(){
+        Toast.makeText(requireContext(), "moved", Toast.LENGTH_SHORT).show()
+        exitSelectionMode()
     }
 }

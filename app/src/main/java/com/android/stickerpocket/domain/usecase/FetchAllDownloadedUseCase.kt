@@ -18,7 +18,7 @@ class FetchAllDownloadedUseCase(private val repository: StickerRepository) {
         repository.getDownloaded()
             .map {
                 list = it
-                Result.Success(list)
+                Result.Success(list!!)
             }
             .flowOn(Dispatchers.IO)
 }

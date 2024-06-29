@@ -40,16 +40,33 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/txtSelect"
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_select"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="@color/white"
-        android:textStyle="bold"
+        android:textAllCaps="false"
         android:visibility="gone"
-        android:layout_marginEnd="@dimen/dimen_10dp"
+        android:backgroundTint="@color/color_primary_variant"
+        android:textColor="@color/white"
+        android:layout_marginEnd="@dimen/dimen_5dp"
         app:layout_constraintEnd_toEndOf="@id/img_screen_bg"
         android:text="@string/gph_select"
+        app:layout_constraintBottom_toBottomOf="@id/img_app_icon"
+        />
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_cancel"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAllCaps="false"
+        android:layout_marginEnd="@dimen/dimen_12dp"
+        android:backgroundTint="@color/color_primary_variant"
+        android:textColor="@color/white"
+        android:layout_marginStart="@dimen/dimen_5dp"
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="@id/img_screen_bg"
+        android:text="@string/cancel"
         app:layout_constraintBottom_toBottomOf="@id/img_app_icon"
         />
 
@@ -57,7 +74,7 @@
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/til_search"
         style="@style/Widget.App.TextInputLayout.Dark"
-        app:endIconMode="clear_text"
+        app:endIconMode="custom"
         app:hintEnabled="false"
         app:endIconDrawable="@drawable/ic_outline_cancel"
         app:endIconTint="@color/white"

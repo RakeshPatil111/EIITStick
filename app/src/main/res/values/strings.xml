@@ -55,6 +55,9 @@
     <string name="choose_an_emoji">Choose an Emoji</string>
     <string name="ok">ok</string>
     <string name="clear_all">Clear All</string>
+    <string name="cancel">Cancel</string>
+    <string name="select">Select</string>
+    <string name="move">Move</string>
     <string name="recent_searches">Recent Searches</string>
     <string name="remove_from_favourites">Remove from favourites</string>
     <string name="next">Next</string>

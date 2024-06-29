@@ -82,4 +82,8 @@ dependencies {
     implementation(libs.fresco)
 
     implementation(libs.androidx.viewpager2)
+
+    // Add the Appodeal SDK dependency
+    implementation(libs.appodeal)
+
 }

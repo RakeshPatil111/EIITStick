@@ -16,6 +16,8 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+        // Add Appodeal repository
+        maven { url = uri("https://artifactory.appodeal.com/appodeal") }
     }
 }
 

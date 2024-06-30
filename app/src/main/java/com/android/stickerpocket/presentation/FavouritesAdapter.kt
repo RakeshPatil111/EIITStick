@@ -39,8 +39,6 @@ class FavouritesAdapter: RecyclerView.Adapter<StickerViewHolder>() {
             itemClickListener = actionItemClick,
             itemLongClickListener=actionItemLongClick,
             itemDeleteClickListener = actionItemDelete,
-            didOpenForCategory = false,
-            didOpenForReorganize = false
         )
     }
 

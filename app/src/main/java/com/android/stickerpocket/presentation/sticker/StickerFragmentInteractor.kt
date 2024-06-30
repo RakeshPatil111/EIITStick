@@ -284,4 +284,8 @@ class StickerFragmentInteractor {
         viewModel.updateViewMode(StickerViewModel.ViewMode.Category)
         loadStickers()
     }
+
+    fun onStickerDroppedOnCategory(sourceStickerPosition: Int, targetCategoryPosition: Int) {
+        viewModel.moveStickerToCategory(sourceStickerPosition, targetCategoryPosition)
+    }
 }

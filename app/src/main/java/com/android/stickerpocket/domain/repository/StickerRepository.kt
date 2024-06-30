@@ -23,4 +23,6 @@ class StickerRepository(private val dao: StickerDAO) {
     suspend fun checkDuplicate(mediaId: String) = dao.checkDuplicate(mediaId)
 
     suspend fun fetch(id: Int) = dao.fetch(id)
+
+    fun fetchStickerCountForCategory(id: Int) = dao.stickerCountInCategory(id)
 }

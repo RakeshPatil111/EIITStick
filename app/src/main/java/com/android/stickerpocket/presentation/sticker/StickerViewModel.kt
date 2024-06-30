@@ -20,6 +20,7 @@ import com.android.stickerpocket.domain.usecase.FetchAllFavoritesUseCase
 import com.android.stickerpocket.domain.usecase.FetchCategoriesUseCase
 import com.android.stickerpocket.domain.usecase.FetchEmojiByEmojiIcon
 import com.android.stickerpocket.domain.usecase.FetchRecentStickersUseCase
+import com.android.stickerpocket.domain.usecase.FetchStickerCountInCategoryUseCase
 import com.android.stickerpocket.domain.usecase.FetchStickerUseCase
 import com.android.stickerpocket.domain.usecase.FetchStickersForCategoryUseCase
 import com.android.stickerpocket.domain.usecase.FetchStickersForQueryUseCase
@@ -100,6 +101,7 @@ class StickerViewModel : ViewModel() {
     private val fetchRecentStickersUseCase: FetchRecentStickersUseCase
     private val insertRecentStickersUseCase: InsertRecentStickerUseCase
     private var currentViewMode = ViewMode.Category
+    private val fetchStickerCountInCategoryUseCase: FetchStickerCountInCategoryUseCase
     init {
         deleteRecentSearchUseCase =
             DeleteRecentSearchUseCase(StickerApplication.instance.recentSearchRepository)
@@ -130,6 +132,7 @@ class StickerViewModel : ViewModel() {
         fetchStickerUseCase = FetchStickerUseCase(StickerApplication.instance.stickerRepository)
         insertRecentStickersUseCase = InsertRecentStickerUseCase(StickerApplication.instance.recentStickerRepository)
         fetchRecentStickersUseCase = FetchRecentStickersUseCase(StickerApplication.instance.recentStickerRepository)
+        fetchStickerCountInCategoryUseCase = FetchStickerCountInCategoryUseCase(StickerApplication.instance.stickerRepository)
         fetchCategories()
         loadAndSaveEmoji(R.raw.emojis)
         fetchRecentSearches()
@@ -530,6 +533,22 @@ class StickerViewModel : ViewModel() {
     }
 
     fun getViewMode() = currentViewMode
+
+    fun moveStickerToCategory(sourceStickerPosition: Int, targetCategoryPosition: Int) {
+        // Fetch Sticker
+        // Fetch Existing Category
+        // Fetch Selected category
+        // Remove sticker from existing category
+        // Add sticker to new category
+
+        CoroutineScope(Dispatchers.Default).launch {
+            val selectedSticker = fetchStickerUseCase.execute(stickers[sourceStickerPosition].id!!)
+            val stickerCount = fetchStickerCountInCategoryUseCase.execute(categories[targetCategoryPosition].id!!)
+            selectedSticker?.categoryId = categories[targetCategoryPosition].id
+            selectedSticker?.position = stickerCount+1
+            updateStickerUseCase.execute(selectedSticker!!)
+        }
+    }
 
     enum class ViewMode {
         Recent,

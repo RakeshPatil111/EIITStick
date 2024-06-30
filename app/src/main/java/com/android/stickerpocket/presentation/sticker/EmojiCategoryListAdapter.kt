@@ -43,6 +43,8 @@ class EmojiCategoryListAdapter :
     inner class StepperViewHolder(private val binding: CvStickerItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(category: Category, position: Int) {
+            binding.cvSticker.tag = position
+            binding.ivStickerThumbnail.tag = position
             binding.apply {
                 binding.cvSticker.tag = position
                 ivStickerThumbnail.text = Html.fromHtml(category.html)

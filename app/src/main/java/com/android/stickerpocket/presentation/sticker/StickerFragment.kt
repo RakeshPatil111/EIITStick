@@ -32,6 +32,8 @@ import com.android.stickerpocket.presentation.StickerCategoryDialog
 import com.android.stickerpocket.presentation.StickerDetailsNavDirections
 import com.android.stickerpocket.presentation.StickerDialog
 import com.android.stickerpocket.utils.CustomDialog
+import com.android.stickerpocket.utils.ItemClickSupport
+import com.android.stickerpocket.utils.ItemClickSupport.OnItemClickListener
 import com.android.stickerpocket.utils.ItemTouchHelperAdapter
 import com.android.stickerpocket.utils.ItemTouchHelperCallback
 import com.android.stickerpocket.utils.ViewExt.removeBorder
@@ -466,6 +468,10 @@ class StickerFragment : Fragment(), GPHGridCallback,
         }
         favouritesAdapter.onItemLongClick { sticker, position ->
             interactor.onFavStickerLongClick(sticker, position)
+        }
+
+        commonStickerAdapter.onStickerDrop { sourceStickerPosition, targetCategoryPosition ->
+            interactor.onStickerDroppedOnCategory(sourceStickerPosition, targetCategoryPosition)
         }
     }
 

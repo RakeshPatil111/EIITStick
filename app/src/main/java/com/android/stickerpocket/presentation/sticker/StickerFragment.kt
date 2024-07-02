@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
@@ -48,7 +49,7 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class StickerFragment : Fragment(), GPHGridCallback,
-        ItemTouchHelperAdapter, TextWatcher {
+    ItemTouchHelperAdapter, TextWatcher {
     private lateinit var binding: FragmentStickerBinding
     private lateinit var emojiCategoryListAdapter: EmojiCategoryListAdapter
     private lateinit var itemTouchHelper: ItemTouchHelper
@@ -59,7 +60,6 @@ class StickerFragment : Fragment(), GPHGridCallback,
     private lateinit var favouritesAdapter: FavouritesAdapter
     var searchJob: Job? = null
     private lateinit var currentRecyclerView: RecyclerView
-
 
 
     private val interactor by lazy {
@@ -77,10 +77,11 @@ class StickerFragment : Fragment(), GPHGridCallback,
         initAdapters()
         handleBackPress()
 
-        binding.apply{
+        binding.apply {
             tietSearch.setOnEditorActionListener { view, actionId, event ->
                 if (actionId == EditorInfo.IME_ACTION_SEARCH ||
-                    (event != null && event.keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_DOWN)) {
+                    (event != null && event.keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_DOWN)
+                ) {
                     val query = view.text.toString()
                     hideKeyboard()
                     if (query.isEmpty() && tietSearch.hasFocus()) {
@@ -92,7 +93,8 @@ class StickerFragment : Fragment(), GPHGridCallback,
                         searchJob = MainScope().launch {
                             query.let {
                                 if (it.trim()
-                                        .isNotEmpty()) {
+                                        .isNotEmpty()
+                                ) {
                                     interactor.onQuerySearch(it)
                                 }
                             }
@@ -105,7 +107,7 @@ class StickerFragment : Fragment(), GPHGridCallback,
             }
 
             tilSearch.setEndIconOnClickListener {
-                if(tietSearch.text.isNullOrEmpty()){
+                if (tietSearch.text.isNullOrEmpty()) {
                     hideKeyboard()
                     removeChangeListeners(tietSearch)
                     tietSearch.clearFocus()
@@ -127,7 +129,7 @@ class StickerFragment : Fragment(), GPHGridCallback,
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object :
             OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                if ( requireActivity().currentFocus != null) {
+                if (requireActivity().currentFocus != null) {
                     requireActivity().currentFocus?.let {
                         if (it.id == R.id.tiet_search) {
                             removeChangeListeners(binding.tietSearch)
@@ -172,8 +174,12 @@ class StickerFragment : Fragment(), GPHGridCallback,
                         rvRecentSearch.visibility = View.GONE
                         rvStickers.visibility = View.VISIBLE
                         hideKeyboard()
-                        if (action.stickers.isEmpty()){
-                            CustomDialog.showCustomDialog(requireContext(),resources.getString(R.string.no_stickers_found),resources.getString(R.string.ok))
+                        if (action.stickers.isEmpty()) {
+                            CustomDialog.showCustomDialog(
+                                requireContext(),
+                                resources.getString(R.string.no_stickers_found),
+                                resources.getString(R.string.ok)
+                            )
                             CustomDialog.alertDialog.setOnDismissListener {
                                 rvRecentSearch.visibility = View.GONE
                                 rvStickers.visibility = View.VISIBLE
@@ -181,7 +187,7 @@ class StickerFragment : Fragment(), GPHGridCallback,
                                 binding.tietSearch.clearFocus()
                                 binding.tietSearch.text?.clear()
                             }
-                        }else{
+                        } else {
                             removeChangeListeners(tietSearch)
                             rvStickers.adapter = commonStickerAdapter
                             commonStickerAdapter.updateList(action.stickers)
@@ -280,20 +286,26 @@ class StickerFragment : Fragment(), GPHGridCallback,
                             interactor.onStickerShare(sticker)
                         }
 
-                        override fun onAddStickerToFavoritesClick(sticker: Sticker, didOpenForFav: Boolean) {
+                        override fun onAddStickerToFavoritesClick(
+                            sticker: Sticker,
+                            didOpenForFav: Boolean
+                        ) {
                             interactor.onAddStickerToFavoritesClick(sticker, didOpenForFav)
                         }
 
-                        override fun onAddStickerToDeletedClick(sticker: Sticker, didOpenForFav: Boolean) {
+                        override fun onAddStickerToDeletedClick(
+                            sticker: Sticker,
+                            didOpenForFav: Boolean
+                        ) {
                             interactor.onAddStickerToDeletedClick(sticker, didOpenForFav)
                         }
 
                         override fun onReOrganizeClick() {
                             stickerDialog.dismiss()
-                            CommunicationBridge.isOrganizationMode.value=true
+                            CommunicationBridge.isOrganizationMode.value = true
                             commonStickerAdapter.notifyDataSetChanged()
-                            binding.btnSelect.visibility=View.VISIBLE
-                            binding.btnCancel.visibility=View.VISIBLE
+                            binding.btnSelect.visibility = View.VISIBLE
+                            binding.btnCancel.visibility = View.VISIBLE
                             applyShakeAnimation(binding.rvStickers)
                         }
 
@@ -302,7 +314,7 @@ class StickerFragment : Fragment(), GPHGridCallback,
                         }
 
                     })
-                    if (CommunicationBridge.isOrganizationMode.value==false){
+                    if (CommunicationBridge.isOrganizationMode.value == false) {
                         stickerDialog.show(childFragmentManager, "StickerDialog")
                     }
 
@@ -320,16 +332,16 @@ class StickerFragment : Fragment(), GPHGridCallback,
 
                 is StickerFragmentInteractor.Actions.ShowFavoritesSticker -> {
 
-                    if (CommunicationBridge.isOrganizationMode.value==true){
+                    if (CommunicationBridge.isOrganizationMode.value == true) {
                         exitSelectionMode()
-                    }else {
+                    } else {
                         if (!emojiCategoryListAdapter.isCategorySelected()) {
                             binding.apply {
                                 setStaticPagesBorder(action)
                                 rvRecentSearch.visibility = View.GONE
                                 rvStickers.visibility = View.VISIBLE
-                                binding.btnSelect.visibility=View.GONE
-                                binding.btnCancel.visibility=View.GONE
+                                binding.btnSelect.visibility = View.GONE
+                                binding.btnCancel.visibility = View.GONE
                                 rvStickers.adapter = favouritesAdapter
                                 favouritesAdapter.updateList(action.favoriteStickers)
                                 binding.apply {
@@ -345,10 +357,12 @@ class StickerFragment : Fragment(), GPHGridCallback,
                 is StickerFragmentInteractor.Actions.ReloadCategories -> {
                     emojiCategoryListAdapter.updateList(action.categories)
                 }
+
                 is StickerFragmentInteractor.Actions.ShowMessage -> {
                     Toast.makeText(requireContext(), action.message, Toast.LENGTH_SHORT).show()
                 }
-                is StickerFragmentInteractor.Actions.clearAllRecentSearchAndHideView ->{
+
+                is StickerFragmentInteractor.Actions.clearAllRecentSearchAndHideView -> {
                     hideKeyboard()
                     binding.apply {
                         rvRecentSearch.visibility = View.GONE
@@ -357,14 +371,14 @@ class StickerFragment : Fragment(), GPHGridCallback,
                 }
 
                 is StickerFragmentInteractor.Actions.ShowStickers -> {
-                    if (CommunicationBridge.isOrganizationMode.value==true){
+                    if (CommunicationBridge.isOrganizationMode.value == true) {
                         exitSelectionMode()
-                    }else {
+                    } else {
                         commonStickerAdapter.updateList(action.stickers)
                         if (emojiCategoryListAdapter.isCategorySelected()) {
                             binding.rvStickers.visibility = View.VISIBLE
-                            binding.btnSelect.visibility=View.GONE
-                            binding.btnCancel.visibility=View.GONE
+                            binding.btnSelect.visibility = View.GONE
+                            binding.btnCancel.visibility = View.GONE
                             binding.rvStickers.adapter = commonStickerAdapter
                             currentRecyclerView = binding.rvStickers
                             commonStickerAdapter.isOpenedForCategory(true)
@@ -376,13 +390,13 @@ class StickerFragment : Fragment(), GPHGridCallback,
 
                 is StickerFragmentInteractor.Actions.ShowDownloadedStickers -> {
 
-                    if (CommunicationBridge.isOrganizationMode.value==true){
+                    if (CommunicationBridge.isOrganizationMode.value == true) {
                         exitSelectionMode()
-                    }else {
+                    } else {
                         commonStickerAdapter.updateList(action.stickers)
                         commonStickerAdapter.isOpenedForCategory(false)
-                        binding.btnSelect.visibility=View.GONE
-                        binding.btnCancel.visibility=View.GONE
+                        binding.btnSelect.visibility = View.GONE
+                        binding.btnCancel.visibility = View.GONE
                         //commonStickerAdapter.isOpenedForOrganizeCategory(false)
                         binding.rvStickers.visibility = View.VISIBLE
                         binding.rvStickers.adapter = commonStickerAdapter
@@ -392,13 +406,13 @@ class StickerFragment : Fragment(), GPHGridCallback,
                 }
 
                 is StickerFragmentInteractor.Actions.ShowRecentStickers -> {
-                    if (CommunicationBridge.isOrganizationMode.value==true){
+                    if (CommunicationBridge.isOrganizationMode.value == true) {
                         exitSelectionMode()
-                    }else {
+                    } else {
                         commonStickerAdapter.updateList(action.stickers)
                         commonStickerAdapter.isOpenedForCategory(false)
-                        binding.btnSelect.visibility=View.GONE
-                        binding.btnCancel.visibility=View.GONE
+                        binding.btnSelect.visibility = View.GONE
+                        binding.btnCancel.visibility = View.GONE
                         //commonStickerAdapter.isOpenedForOrganizeCategory(false)
                         CommunicationBridge.isOrganizationMode.value = false
                         CommunicationBridge.isSelectionMode.value = false
@@ -406,6 +420,7 @@ class StickerFragment : Fragment(), GPHGridCallback,
                         currentRecyclerView = binding.rvStickers
                     }
                 }
+
                 else -> {
                     exitSelectionMode()
                 }
@@ -413,11 +428,11 @@ class StickerFragment : Fragment(), GPHGridCallback,
         })
 
         CommunicationBridge.isSelectionMode.observe(viewLifecycleOwner, Observer {
-        if (it){
-            binding.btnSelect.text=resources.getString(R.string.move)
-            }else{
-            binding.btnSelect.text=resources.getString(R.string.select)
-        }
+            if (it) {
+                binding.btnSelect.text = resources.getString(R.string.move)
+            } else {
+                binding.btnSelect.text = resources.getString(R.string.select)
+            }
         })
     }
 
@@ -507,10 +522,10 @@ class StickerFragment : Fragment(), GPHGridCallback,
 
             btnSelect.setOnClickListener {
                 //commonStickerAdapter.isOpenedForOrganizeCategory(true,true)
-                if ( CommunicationBridge.isSelectionMode.value==false) {
+                if (CommunicationBridge.isSelectionMode.value == false) {
                     CommunicationBridge.isSelectionMode.value = true
                     commonStickerAdapter.notifyDataSetChanged()
-                }else {
+                } else {
                     moveToSelectedCategory()
                 }
             }
@@ -569,14 +584,15 @@ class StickerFragment : Fragment(), GPHGridCallback,
         callback = ItemTouchHelperCallback(this)
         itemTouchHelper = ItemTouchHelper(callback)
         itemTouchHelper.attachToRecyclerView(binding.rvCategory)
-        stickerItemTouchHelper = ItemTouchHelper(object :ItemTouchHelper.Callback() {
+        stickerItemTouchHelper = ItemTouchHelper(object : ItemTouchHelper.Callback() {
             override fun getMovementFlags(
                 recyclerView: RecyclerView,
                 viewHolder: RecyclerView.ViewHolder
             ): Int {
-                val dragFlags =  if (recyclerView.adapter is CommonStickerAdapter && (recyclerView.adapter as CommonStickerAdapter).didOpenForCategory) {
+                val dragFlags =
+                    if (recyclerView.adapter is CommonStickerAdapter && (recyclerView.adapter as CommonStickerAdapter).didOpenForCategory) {
                         ItemTouchHelper.UP or ItemTouchHelper.DOWN or ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT
-                } else 0
+                    } else 0
                 val swipeFlags = 0
                 return makeMovementFlags(dragFlags, swipeFlags)
             }
@@ -586,7 +602,10 @@ class StickerFragment : Fragment(), GPHGridCallback,
                 viewHolder: RecyclerView.ViewHolder,
                 target: RecyclerView.ViewHolder
             ): Boolean {
-                interactor.onStickerMoved(viewHolder.absoluteAdapterPosition, target.absoluteAdapterPosition)
+                interactor.onStickerMoved(
+                    viewHolder.absoluteAdapterPosition,
+                    target.absoluteAdapterPosition
+                )
                 commonStickerAdapter.onRowMoved(viewHolder.adapterPosition, target.adapterPosition)
                 return true
             }
@@ -595,7 +614,10 @@ class StickerFragment : Fragment(), GPHGridCallback,
                 // No action required as swipe is disabled
             }
 
-            override fun clearView(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder) {
+            override fun clearView(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder
+            ) {
                 super.clearView(recyclerView, viewHolder)
                 interactor.onStickerDragComplete()
             }
@@ -666,10 +688,11 @@ class StickerFragment : Fragment(), GPHGridCallback,
 
     override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
 
-    override fun afterTextChanged(s: Editable?) { }
+    override fun afterTextChanged(s: Editable?) {}
 
     private fun hideKeyboard() {
-        val inputMethodManager = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        val inputMethodManager =
+            requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         val currentFocusedView = requireActivity().currentFocus
         if (currentFocusedView != null) {
             inputMethodManager.hideSoftInputFromWindow(currentFocusedView.windowToken, 0)
@@ -677,16 +700,29 @@ class StickerFragment : Fragment(), GPHGridCallback,
     }
 
 
-    private fun exitSelectionMode(){
-        CommunicationBridge.isOrganizationMode.value=false
-        CommunicationBridge.isSelectionMode.value=false
-        binding.btnSelect.visibility=View.GONE
-        binding.btnCancel.visibility=View.GONE
+    private fun exitSelectionMode() {
+        CommunicationBridge.isOrganizationMode.value = false
+        CommunicationBridge.isSelectionMode.value = false
+
+        binding.btnSelect.visibility = View.GONE
+        binding.btnCancel.visibility = View.GONE
+
         commonStickerAdapter.notifyDataSetChanged()
     }
 
-    private fun moveToSelectedCategory(){
-        Toast.makeText(requireContext(), "moved", Toast.LENGTH_SHORT).show()
-        exitSelectionMode()
+    private fun moveToSelectedCategory() {
+
+        if (CommunicationBridge.selectedCatPosition.value==-1){
+            Toast.makeText(requireContext(),"Please select category",Toast.LENGTH_LONG).show()
+        }else {
+            CommunicationBridge.selectedCatPosition.value?.let {
+                interactor.onStickerMovedToCategory(
+                    it
+                )
+            }
+
+            Toast.makeText(requireContext(), "moved", Toast.LENGTH_SHORT).show()
+            exitSelectionMode()
+        }
     }
 }

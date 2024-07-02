@@ -3,6 +3,7 @@ package com.android.stickerpocket.presentation.sticker
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.android.stickerpocket.CommunicationBridge
 import com.android.stickerpocket.R
 import com.android.stickerpocket.StickerApplication
 import com.android.stickerpocket.domain.model.Category
@@ -547,6 +548,38 @@ class StickerViewModel : ViewModel() {
             selectedSticker?.categoryId = categories[targetCategoryPosition].id
             selectedSticker?.position = stickerCount+1
             updateStickerUseCase.execute(selectedSticker!!)
+        }
+    }
+
+    fun moveMultipleStickersToCategory( targetCategoryPosition: Int) {
+        // Fetch Sticker
+        // Fetch Existing Category
+        // Fetch Selected category
+        // Remove sticker from existing category
+        // Add sticker to new category
+
+        CoroutineScope(Dispatchers.Default).launch {
+            //val selectedSticker = fetchStickerUseCase.execute(stickers[sourceStickerPosition].id!!)
+
+            val selectedStickers = CommunicationBridge.selectedStickes.value
+            val targetedId =categories[targetCategoryPosition].id
+            val stickerCount = fetchStickerCountInCategoryUseCase.execute(categories[targetCategoryPosition].id!!)
+            for(index in CommunicationBridge.selectedStickes.value!!.indices) {
+                var selectedSticker=selectedStickers?.get(index)
+                selectedSticker?.categoryId = targetedId
+                selectedSticker?.position = stickerCount + (index+1)
+                if (selectedSticker != null) {
+                    updateStickerUseCase.execute( selectedSticker)
+                }
+            }
+
+            categories.filter { it.isHighlighted == true }.first().id?.let {
+                fetchStickersForCategoryUseCase.execute(
+                    it
+                )
+            }
+            CommunicationBridge.selectedStickes.value?.clear()
+            CommunicationBridge.selectedCatPosition.postValue(-1)
         }
     }
 

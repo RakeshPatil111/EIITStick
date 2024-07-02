@@ -38,16 +38,17 @@ class StickerViewHolder(
                 )
             }
                 itemClickListener?.let { gif ->
-                    if (CommunicationBridge.isOrganizationMode.value==false)
-                    sivGifImage.setOnClickListener {
-                        gif(sticker, adapterPosition)
+                    if (CommunicationBridge.isOrganizationMode.value==false) {
+                        sivGifImage.setOnClickListener {
+                            gif(sticker, adapterPosition)
+                        }
                     }
                 }
 
             itemLongClickListener?.let { gif ->
                     sivGifImage.setOnLongClickListener {
-                        //gif(sticker, adapterPosition)
-                        if (CommunicationBridge.isOrganizationMode.value == false) {
+                        gif(sticker, adapterPosition)
+                        /*if (CommunicationBridge.isOrganizationMode.value == false) {
                             val dbs= View.DragShadowBuilder(it)
                             var clipData= ClipData.newPlainText("","")
                             it.startDragAndDrop(clipData,dbs,it,0)
@@ -64,7 +65,7 @@ class StickerViewHolder(
                             })
                         } else {
                             binding.root.setOnDragListener(null)
-                        }
+                        }*/
                         true
                     }
             }
@@ -74,6 +75,14 @@ class StickerViewHolder(
                         gif(sticker, adapterPosition)
                         true
                     }
+            }
+
+            cbSelect.setOnCheckedChangeListener { buttonView, isChecked ->
+                if (isChecked){
+                    CommunicationBridge.selectedStickes.value?.add(sticker)
+                }else{
+                    CommunicationBridge.selectedStickes.value?.remove(sticker)
+                }
             }
 
             if (sticker.isFavourite) {

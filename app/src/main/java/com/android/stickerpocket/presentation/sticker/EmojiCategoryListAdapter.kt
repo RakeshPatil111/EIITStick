@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import com.android.stickerpocket.CommunicationBridge
 import com.android.stickerpocket.databinding.CvStickerItemBinding
 import com.android.stickerpocket.domain.model.Category
 import com.android.stickerpocket.utils.ViewExt.removeBorder
@@ -61,8 +62,13 @@ class EmojiCategoryListAdapter :
                 }
                 stickerClickAction?.let { c ->
                     cvSticker.setOnClickListener {
-                        c.invoke(category, adapterPosition, selected)
-                        setSelectedItem(position)
+
+                        if (CommunicationBridge.isSelectionMode.value==true){
+                            CommunicationBridge.selectedCatPosition.value=category.position
+                        }else {
+                            c.invoke(category, adapterPosition, selected)
+                            setSelectedItem(position)
+                        }
                     }
                 }
             }

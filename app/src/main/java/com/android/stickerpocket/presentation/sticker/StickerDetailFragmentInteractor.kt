@@ -15,6 +15,7 @@ class StickerDetailFragmentInteractor {
         data class ShowStickerDetails(val stickerDTO: StickerDTO) : Actions()
         object ShowFilledFavIcon : Actions()
         object ShowOutlinedFavIcon : Actions()
+        object ShowAddTagBottomSheet : Actions()
     }
     fun initObserver(viewLifecycleOwner: LifecycleOwner, viewModel: StickerViewModel) {
         this.viewModel = viewModel
@@ -23,6 +24,13 @@ class StickerDetailFragmentInteractor {
                 is StickerViewModel.Result.StickerDTOUpdated -> {
                     _livedata.value = Event(Actions.ShowStickerDetails(viewModel.getStickerDto()!!))
                     changeStateOfFav(viewModel.getStickerDto()!!.isFavourite)
+                }
+
+                is StickerViewModel.Result.StickerUpdated -> {
+                    viewModel.getStickerDto()?.apply {
+                        this.tags = listOf(it.updatedSticker.tags!!)
+                    }
+                    _livedata.value = Event(Actions.ShowStickerDetails(viewModel.getStickerDto()!!))
                 }
                 else -> {
 
@@ -65,5 +73,13 @@ class StickerDetailFragmentInteractor {
         viewModel.getStickerDto()?.let {
             viewModel.shareSticker(it.sticker())
         }
+    }
+
+    fun onAddTagClick() {
+        _livedata.value = Event(Actions.ShowAddTagBottomSheet)
+    }
+
+    fun onAddTag(tag: String, stickerId: Int?) {
+        viewModel.addTagToSticker(stickerId!!, tag)
     }
 }

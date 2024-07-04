@@ -1,13 +1,12 @@
 package com.android.stickerpocket.presentation.stickerdetail
 
-import android.content.res.ColorStateList
 import android.os.Build
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import coil.ImageLoader
 import coil.decode.GifDecoder
@@ -60,6 +59,9 @@ class StickerDetailsFragment : Fragment() {
             ibtnShare.setOnClickListener {
                 interactor.onShareClick()
             }
+            btAddTag.setOnClickListener {
+                interactor.onAddTagClick()
+            }
         }
     }
 
@@ -104,6 +106,22 @@ class StickerDetailsFragment : Fragment() {
                        setImageResource(R.drawable.ic_favorite_border)
                         setColorFilter(ContextCompat.getColor(this.context, R.color.color_primary))
                     }
+                }
+
+                is StickerDetailFragmentInteractor.Actions.ShowAddTagBottomSheet -> {
+                    val addTagBottomSheet = AddTagBottomSheet()
+                    addTagBottomSheet.setListener(object : AddTagBottomSheet.OnAddTagAction {
+                        override fun onIgnoreClick() {
+                            addTagBottomSheet.dismiss()
+                        }
+
+                        override fun onAddClick(tag: String) {
+                            addTagBottomSheet.dismiss()
+                            interactor.onAddTag(tag, stickerDTO!!.stickerId)
+                        }
+
+                    })
+                    addTagBottomSheet.show(parentFragmentManager, "AddTagBottomSheet")
                 }
                 else -> {}
             }

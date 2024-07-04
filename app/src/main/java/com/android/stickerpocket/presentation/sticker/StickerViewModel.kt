@@ -66,6 +66,7 @@ class StickerViewModel : ViewModel() {
         data class RecentSearchCleared(val searches: List<RecentSearch>) : Result()
         class FetchedRecentStickers(val list: List<Sticker>) : Result()
         object StickerDTOUpdated : Result()
+        data class StickerUpdated(val updatedSticker: Sticker) : Result()
     }
 
     private val _liveData = MutableLiveData<Result>()
@@ -475,6 +476,7 @@ class StickerViewModel : ViewModel() {
     }
 
     fun getStickerDto() = stickerDTO
+
     fun shareSticker(sticker: Sticker) {
         _liveData.value = Result.ShareSticker(sticker.toFile()!!)
     }
@@ -530,6 +532,20 @@ class StickerViewModel : ViewModel() {
     }
 
     fun getViewMode() = currentViewMode
+
+    fun addTagToSticker(stickerId: Int, tag: String) {
+        CoroutineScope(Dispatchers.Default).launch {
+            fetchStickerUseCase.execute(stickerId)?.let {
+                if (it.tags == null) {
+                    it.tags = tag
+                } else {
+                    it.tags = it.tags+","+tag
+                }
+                updateStickerUseCase.execute(it)
+                _liveData.postValue(Result.StickerUpdated(it))
+            }
+        }
+    }
 
     enum class ViewMode {
         Recent,

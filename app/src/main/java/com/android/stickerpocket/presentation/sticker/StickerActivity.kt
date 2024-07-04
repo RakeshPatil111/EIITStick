@@ -47,7 +47,7 @@ class StickerActivity : AppCompatActivity() {
         GiphyConfigure.configGiphy(this)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        setUpAppodealSDK(binding)
+        //setUpAppodealSDK(binding)
         initObserver()
         initNavigation()
 

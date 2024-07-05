@@ -24,7 +24,6 @@ import com.android.stickerpocket.CommunicationBridge
 import com.android.stickerpocket.EmojiPickerDialog
 import com.android.stickerpocket.R
 import com.android.stickerpocket.databinding.FragmentStickerBinding
-import com.android.stickerpocket.domain.model.Category
 import com.android.stickerpocket.domain.model.Sticker
 import com.android.stickerpocket.presentation.CommonStickerAdapter
 import com.android.stickerpocket.presentation.FavouritesAdapter
@@ -170,7 +169,7 @@ class StickerFragment : Fragment(), GPHGridCallback,
                         rvRecentSearch.visibility = View.GONE
                         rvStickers.visibility = View.VISIBLE
                         hideKeyboard()
-                        if (action.stickers.isEmpty()){
+                        if (action.recentSearchStickers.isEmpty()) {
                             CustomDialog.showCustomDialog(requireContext(),resources.getString(R.string.no_stickers_found),resources.getString(R.string.ok))
                             CustomDialog.alertDialog.setOnDismissListener {
                                 rvRecentSearch.visibility = View.GONE
@@ -179,10 +178,10 @@ class StickerFragment : Fragment(), GPHGridCallback,
                                 binding.tietSearch.clearFocus()
                                 binding.tietSearch.text?.clear()
                             }
-                        }else{
+                        } else {
                             removeChangeListeners(tietSearch)
                             rvStickers.adapter = commonStickerAdapter
-                            commonStickerAdapter.updateList(action.stickers)
+                            commonStickerAdapter.updateList(action.recentSearchStickers)
                             tietSearch.setText(action.query)
                             tietSearch.setSelection(tietSearch.length())
                             addChangeListeners(tietSearch)
@@ -190,6 +189,19 @@ class StickerFragment : Fragment(), GPHGridCallback,
                             commonStickerAdapter.isOpenedForCategory(false)
                             //commonStickerAdapter.isOpenedForOrganizeCategory(false)
                             exitSelectionMode()
+                        }
+
+                        // Show Stickers with no tags
+                        if (action.stickersWithNoTags.isNotEmpty()) {
+                            llNoTags.visibility = View.VISIBLE
+                            val noTagStickerAdapter = NoTagStickerAdapter()
+                            rvNoTags.adapter = noTagStickerAdapter
+                            noTagStickerAdapter.updateList(action.stickersWithNoTags)
+                            noTagStickerAdapter.setListener(object : NoTagStickerAdapter.OnStickerClickListener{
+                                override fun onStickerClick(position: Int, sticker: Sticker) {
+                                    interactor.onStickerInfoClick(sticker)
+                                }
+                            })
                         }
                     }
                 }

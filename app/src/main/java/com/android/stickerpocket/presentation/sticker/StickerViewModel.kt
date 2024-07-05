@@ -23,6 +23,7 @@ import com.android.stickerpocket.domain.usecase.FetchRecentStickersUseCase
 import com.android.stickerpocket.domain.usecase.FetchStickerUseCase
 import com.android.stickerpocket.domain.usecase.FetchStickersForCategoryUseCase
 import com.android.stickerpocket.domain.usecase.FetchStickersForQueryUseCase
+import com.android.stickerpocket.domain.usecase.FetchStickersWithNoTagsUseCase
 import com.android.stickerpocket.domain.usecase.GetRecentSearchUseCase
 import com.android.stickerpocket.domain.usecase.InsertOrReplaceCategoriesUseCase
 import com.android.stickerpocket.domain.usecase.InsertRecentStickerUseCase
@@ -39,7 +40,6 @@ import com.android.stickerpocket.utils.toEmoji
 import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -101,6 +101,9 @@ class StickerViewModel : ViewModel() {
     private val fetchRecentStickersUseCase: FetchRecentStickersUseCase
     private val insertRecentStickersUseCase: InsertRecentStickerUseCase
     private var currentViewMode = ViewMode.Category
+    private val fetchStickersWithNoTagsUseCase: FetchStickersWithNoTagsUseCase
+    private var stickersWithNoTags = listOf<Sticker>()
+
     init {
         deleteRecentSearchUseCase =
             DeleteRecentSearchUseCase(StickerApplication.instance.recentSearchRepository)
@@ -129,12 +132,14 @@ class StickerViewModel : ViewModel() {
             FetchAllDownloadedUseCase(StickerApplication.instance.stickerRepository)
         insertStickersUseCase = InsertStickersUseCase(StickerApplication.instance.stickerRepository)
         fetchStickerUseCase = FetchStickerUseCase(StickerApplication.instance.stickerRepository)
+        fetchStickersWithNoTagsUseCase = FetchStickersWithNoTagsUseCase(StickerApplication.instance.stickerRepository)
         insertRecentStickersUseCase = InsertRecentStickerUseCase(StickerApplication.instance.recentStickerRepository)
         fetchRecentStickersUseCase = FetchRecentStickersUseCase(StickerApplication.instance.recentStickerRepository)
         fetchCategories()
         loadAndSaveEmoji(R.raw.emojis)
         fetchRecentSearches()
         fetchAllFavorites()
+        fetchStickersNoTags()
     }
 
     private fun fetchCategories() {
@@ -544,6 +549,17 @@ class StickerViewModel : ViewModel() {
                 updateStickerUseCase.execute(it)
                 _liveData.postValue(Result.StickerUpdated(it))
             }
+        }
+    }
+
+    fun getStickersWithNullTags(): List<Sticker> {
+        fetchStickersNoTags()
+        return stickersWithNoTags
+    }
+
+    private fun fetchStickersNoTags() {
+        CoroutineScope(Dispatchers.Default).launch {
+            stickersWithNoTags = fetchStickersWithNoTagsUseCase.execute()
         }
     }
 

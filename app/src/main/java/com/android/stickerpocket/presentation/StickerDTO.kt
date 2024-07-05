@@ -10,7 +10,7 @@ data class StickerDTO(
     val title: String?,
     val creator: String? = null,
     val source: String? = null,
-    val tags: List<String>? = null,
+    var tags: List<String>? = null,
     val mediaId: String? = null,
     val stickerId: Int? = null,
     val isFavourite: Boolean = false,

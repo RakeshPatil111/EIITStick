@@ -30,7 +30,7 @@ class StickerApplication: Application() {
         loadDataIntoDB()
 
         // Initialize Appodeal with your App Key and required ad types
-        Appodeal.initialize(this, BuildConfig.API_KEY_APPO_DEAL, Appodeal.BANNER)
+        //Appodeal.initialize(this, BuildConfig.API_KEY_APPO_DEAL, Appodeal.BANNER)
     }
 
     private fun loadDataIntoDB() {

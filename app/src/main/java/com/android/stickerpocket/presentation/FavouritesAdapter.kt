@@ -12,6 +12,7 @@ import coil.decode.ImageDecoderDecoder
 import com.android.stickerpocket.databinding.CvGifItemBinding
 import com.android.stickerpocket.domain.model.Sticker
 import com.android.stickerpocket.presentation.sticker.StickerViewHolder
+import com.android.stickerpocket.utils.OnItemDoubleClickListener
 
 class FavouritesAdapter: RecyclerView.Adapter<StickerViewHolder>() {
     private val differ = AsyncListDiffer(this, stickerDiffUtil)
@@ -19,6 +20,7 @@ class FavouritesAdapter: RecyclerView.Adapter<StickerViewHolder>() {
     private var actionItemLongClick: ((sticker: Sticker, position: Int) -> Unit)? = null
     private var actionItemDelete: ((sticker: Sticker, position: Int) -> Unit)? = null
     private lateinit var imageLoader: ImageLoader
+    private var doubleClickListener: OnItemDoubleClickListener? = null
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): StickerViewHolder {
         imageLoader = ImageLoader
             .Builder(parent.context)
@@ -40,7 +42,8 @@ class FavouritesAdapter: RecyclerView.Adapter<StickerViewHolder>() {
             itemLongClickListener=actionItemLongClick,
             itemDeleteClickListener = actionItemDelete,
             didOpenForCategory = false,
-            didOpenForReorganize = false
+            didOpenForReorganize = false,
+            doubleClickListener
         )
     }
 
@@ -69,5 +72,9 @@ class FavouritesAdapter: RecyclerView.Adapter<StickerViewHolder>() {
             }
 
         }
+    }
+
+    fun setOnItemDoubleClickListener(listener: OnItemDoubleClickListener) {
+        doubleClickListener = listener
     }
 }

@@ -251,6 +251,9 @@ class StickerFragmentInteractor {
     fun onStickerClick(sticker: com.android.stickerpocket.domain.model.Sticker, position: Int) {
         _liveData.value = Event(Actions.ShareSticker(sticker, position, sticker.isFavourite))
     }
+    fun onStickerDoubleClick(sticker: com.android.stickerpocket.domain.model.Sticker, position: Int) {
+        _liveData.value = Event(Actions.ShowStickerDialog(sticker, position, sticker.isFavourite))
+    }
     fun onStickerLongClick(sticker: com.android.stickerpocket.domain.model.Sticker, position: Int) {
         _liveData.value = Event(Actions.ShowStickerDialog(sticker, position, sticker.isFavourite))
     }
@@ -258,6 +261,11 @@ class StickerFragmentInteractor {
     fun onFavStickerClick(sticker: com.android.stickerpocket.domain.model.Sticker, position: Int) {
         _liveData.value = Event(Actions.ShareSticker(sticker, position, isFavourite = true))
     }
+
+    fun onFavStickerDoubleClick(sticker: com.android.stickerpocket.domain.model.Sticker, position: Int) {
+        _liveData.value = Event(Actions.ShowStickerDialog(sticker, position, isFavourite = true))
+    }
+
     fun onFavStickerLongClick(sticker: com.android.stickerpocket.domain.model.Sticker, position: Int) {
         _liveData.value = Event(Actions.ShowStickerDialog(sticker, position, isFavourite = true))
     }

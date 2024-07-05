@@ -34,6 +34,7 @@ import com.android.stickerpocket.presentation.StickerDialog
 import com.android.stickerpocket.utils.CustomDialog
 import com.android.stickerpocket.utils.ItemTouchHelperAdapter
 import com.android.stickerpocket.utils.ItemTouchHelperCallback
+import com.android.stickerpocket.utils.OnItemDoubleClickListener
 import com.android.stickerpocket.utils.ViewExt.removeBorder
 import com.android.stickerpocket.utils.ViewExt.setBorder
 import com.android.stickerpocket.utils.ViewExt.shakeMe
@@ -457,6 +458,12 @@ class StickerFragment : Fragment(), GPHGridCallback,
             interactor.onStickerLongClick(sticker, position)
         }
 
+        commonStickerAdapter.setOnItemDoubleClickListener(object : OnItemDoubleClickListener {
+            override fun onItemDoubleClick(sticker: Sticker, position: Int) {
+                interactor.onStickerDoubleClick(sticker, position)
+            }
+        })
+
         commonStickerAdapter.onItemDelete { sticker, position ->
             interactor.onAddStickerToDeletedClick(sticker, true)
         }
@@ -467,6 +474,12 @@ class StickerFragment : Fragment(), GPHGridCallback,
         favouritesAdapter.onItemLongClick { sticker, position ->
             interactor.onFavStickerLongClick(sticker, position)
         }
+
+        favouritesAdapter.setOnItemDoubleClickListener(object : OnItemDoubleClickListener {
+            override fun onItemDoubleClick(sticker: Sticker, position: Int) {
+                interactor.onFavStickerDoubleClick(sticker, position)
+            }
+        })
     }
 
     private fun setClickListeners() {

@@ -4,29 +4,17 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fillViewport="true"
     tools:context=".presentation.sticker.StickerFragment">
-
-
-    <!--<ImageView
-        android:id="@+id/img_app_icon_back"
-        android:layout_width="43dp"
-        android:layout_height="40dp"
-        android:contentDescription="@string/app_name"
-        android:scaleType="centerCrop"
-        android:src="@color/white"
-        android:layout_marginTop="@dimen/dimen_12dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />-->
 
     <View
         android:id="@+id/view_top_bg"
         android:layout_width="@dimen/dimen_0dp"
         android:layout_height="@dimen/dimen_150dp"
         android:background="@color/color_secondary"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
         android:id="@+id/img_app_icon"
@@ -45,39 +33,37 @@
         style="@style/Widget.MaterialComponents.Button.OutlinedButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAllCaps="false"
-        android:visibility="gone"
-        android:backgroundTint="@color/color_primary_variant"
-        android:textColor="@color/white"
         android:layout_marginEnd="@dimen/dimen_5dp"
-        app:layout_constraintEnd_toEndOf="@id/img_screen_bg"
+        android:backgroundTint="@color/color_primary_variant"
         android:text="@string/gph_select"
+        android:textAllCaps="false"
+        android:textColor="@color/white"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@id/img_app_icon"
-        />
+        app:layout_constraintEnd_toEndOf="@id/img_screen_bg" />
+
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btn_cancel"
         style="@style/Widget.MaterialComponents.Button.OutlinedButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAllCaps="false"
+        android:layout_marginStart="@dimen/dimen_5dp"
         android:layout_marginEnd="@dimen/dimen_12dp"
         android:backgroundTint="@color/color_primary_variant"
-        android:textColor="@color/white"
-        android:layout_marginStart="@dimen/dimen_5dp"
-        android:visibility="gone"
-        app:layout_constraintStart_toStartOf="@id/img_screen_bg"
         android:text="@string/cancel"
+        android:textAllCaps="false"
+        android:textColor="@color/white"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@id/img_app_icon"
-        />
-
+        app:layout_constraintStart_toStartOf="@id/img_screen_bg" />
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/til_search"
         style="@style/Widget.App.TextInputLayout.Dark"
-        app:endIconMode="custom"
-        app:hintEnabled="false"
         app:endIconDrawable="@drawable/ic_outline_cancel"
+        app:endIconMode="custom"
         app:endIconTint="@color/white"
+        app:hintEnabled="false"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/img_app_icon"
@@ -91,7 +77,7 @@
             android:hint="@string/search"
             android:imeOptions="actionSearch"
             android:inputType="textCapWords"
-            android:singleLine="true"/>
+            android:singleLine="true" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <ImageView
@@ -190,34 +176,78 @@
         tools:itemCount="4"
         tools:listitem="@layout/cv_sticker_item" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rv_stickers"
+    <androidx.core.widget.NestedScrollView
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
-        app:spanCount="3"
-        tools:listitem="@layout/cv_gif_item"
-        android:layout_marginStart="@dimen/dimen_10dp"
-        android:layout_marginEnd="@dimen/dimen_8dp"
-       android:paddingTop="@dimen/dimen_12dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toBottomOf="@+id/img_screen_bg"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/rv_category"
-        app:layout_constraintTop_toTopOf="@+id/img_screen_bg" />
+        app:layout_constraintTop_toBottomOf="@+id/view_top_bg">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_stickers"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/dimen_10dp"
+                android:layout_marginEnd="@dimen/dimen_8dp"
+                android:paddingTop="@dimen/dimen_12dp"
+                app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:spanCount="3"
+                tools:listitem="@layout/cv_gif_item" />
+
+            <LinearLayout
+                android:id="@+id/ll_no_tags"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/dimen_10dp"
+                android:layout_marginEnd="@dimen/dimen_8dp"
+                android:orientation="vertical"
+                android:paddingTop="@dimen/dimen_12dp"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/rv_stickers">
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    style="@style/Widget.AppCompat.TextView.Header"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="No Tags"
+                    android:textSize="@dimen/text_dimen_18sp" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rv_no_tags"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/dimen_12dp"
+                    app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+                    app:spanCount="3"
+                    tools:itemCount="10"
+                    tools:listitem="@layout/cv_gif_item" />
+            </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.core.widget.NestedScrollView>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_recent_search"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:visibility="gone"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        android:background="@color/color_secondary"
         android:orientation="vertical"
         android:paddingHorizontal="@dimen/dimen_2dp"
-        tools:itemCount="10"
-        tools:listitem="@layout/item_recent_search"
-        android:background="@color/color_secondary"
+        android:visibility="gone"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/img_screen_bg"/>
+        app:layout_constraintTop_toTopOf="@+id/img_screen_bg"
+        tools:itemCount="10"
+        tools:listitem="@layout/item_recent_search" />
 </androidx.constraintlayout.widget.ConstraintLayout>

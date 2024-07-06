@@ -53,7 +53,8 @@ class StickerFragmentInteractor {
 
         data class ShowStickerForRecentSearch(
             val query: String,
-            val stickers: List<com.android.stickerpocket.domain.model.Sticker>
+            val recentSearchStickers: List<com.android.stickerpocket.domain.model.Sticker>,
+            val stickersWithNoTags: List<com.android.stickerpocket.domain.model.Sticker>
         ) : Actions()
 
         data class ShowRecentStickers(val stickers: List<com.android.stickerpocket.domain.model.Sticker>) :
@@ -100,7 +101,8 @@ class StickerFragmentInteractor {
                             Event(
                                 Actions.ShowStickerForRecentSearch(
                                     it.query,
-                                    it.stickers
+                                    it.stickers,
+                                    viewModel.getStickersWithNullTags()
                                 )
                             )
                         )

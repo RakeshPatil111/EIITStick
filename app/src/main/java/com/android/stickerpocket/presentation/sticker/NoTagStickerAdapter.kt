@@ -47,6 +47,7 @@ class NoTagStickerAdapter: RecyclerView.Adapter<NoTagStickerAdapter.ViewHolder>(
         holder.view.apply {
             ivRemove.visibility = View.GONE
             cbSelect.visibility = View.GONE
+            favImg.visibility = View.GONE
             sivGifImage.load(sticker.toLoadableImage(), imageLoader) {
                 target(
                     onStart = {

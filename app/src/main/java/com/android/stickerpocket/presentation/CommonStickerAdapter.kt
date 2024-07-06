@@ -12,6 +12,7 @@ import com.android.stickerpocket.databinding.CvGifItemBinding
 import com.android.stickerpocket.domain.model.Sticker
 import com.android.stickerpocket.presentation.sticker.StickerViewHolder
 import com.android.stickerpocket.utils.ItemClickSupport
+import com.android.stickerpocket.utils.OnItemDoubleClickListener
 import java.util.Collections
 
 class CommonStickerAdapter() : RecyclerView.Adapter<StickerViewHolder>() {
@@ -23,6 +24,7 @@ class CommonStickerAdapter() : RecyclerView.Adapter<StickerViewHolder>() {
     private lateinit var imageLoader: ImageLoader
     var didOpenForCategory: Boolean = true
     var didOpenForReorganize: Boolean = false
+    private var doubleClickListener: OnItemDoubleClickListener? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): StickerViewHolder {
         imageLoader = ImageLoader
@@ -40,10 +42,14 @@ class CommonStickerAdapter() : RecyclerView.Adapter<StickerViewHolder>() {
                 LayoutInflater.from(parent.context),
                 parent,
                 false
-            ), imageLoader = imageLoader,
+            ),
+            imageLoader = imageLoader,
             itemClickListener = actionItemClick,
             itemLongClickListener = actionItemLongClick,
             itemDeleteClickListener = actionItemDelete,
+            didOpenForCategory = didOpenForCategory,
+            didOpenForReorganize=didOpenForReorganize,
+            doubleClickListener
             itemStickerDropListener = actionStickerDrop,
         )
     }
@@ -89,6 +95,10 @@ class CommonStickerAdapter() : RecyclerView.Adapter<StickerViewHolder>() {
         }
 
         notifyItemMoved(fromPosition, toPosition)
+    }
+
+    fun setOnItemDoubleClickListener(listener: OnItemDoubleClickListener) {
+        doubleClickListener = listener
     }
 
     fun onStickerDrop(action: (sourceStickerPosition: Int, targetCategoryPosition: Int) -> Unit) {

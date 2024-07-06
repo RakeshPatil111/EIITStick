@@ -81,7 +81,17 @@
 
     <!--option title Style-->
     <style name="Widget.AppCompat.TextView.Options" parent="Widget.MaterialComponents.TextView">
-        <item name="android:textColor">@color/color_primary</item>
+        <item name="android:textColor">@color/color_secondary</item>
+        <item name="fontFamily">@font/geologic_medium</item>
+        <item name="android:fontFamily">@font/geologic_medium</item>
+        <item name="android:textSize">@dimen/text_dimen_18sp</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:drawablePadding">@dimen/dimen_12dp</item>
+    </style>
+
+    <style name="Widget.AppCompat.TextView.OptionsValue" parent="Widget.MaterialComponents.TextView">
+        <item name="android:textColor">@color/color_secondary</item>
         <item name="fontFamily">@font/geologic_regular</item>
         <item name="android:fontFamily">@font/geologic_regular</item>
         <item name="android:textSize">@dimen/text_dimen_18sp</item>
@@ -92,7 +102,7 @@
 
     <!--header title Style-->
     <style name="Widget.AppCompat.TextView.Header" parent="Widget.MaterialComponents.TextView">
-        <item name="android:textColor">@color/color_primary</item>
+        <item name="android:textColor">@color/color_secondary</item>
         <item name="fontFamily">@font/geologic_medium</item>
         <item name="android:fontFamily">@font/geologic_medium</item>
         <item name="android:textSize">@dimen/text_dimen_30sp</item>
@@ -154,7 +164,7 @@
     </style>
 
     <style name="ThemeOverlay.App.Button" parent="">
-        <item name="colorPrimary">@color/color_primary</item>
+        <item name="colorPrimary">@color/color_secondary</item>
         <item name="colorOnPrimary">@color/white</item>
     </style>
 
@@ -181,4 +191,25 @@
         <item name="shapeAppearance">@style/ShapeAppearance.LargeComponent</item>
     </style>
 
+    <style name="Widget.App.TextInputLayout.Tag" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">56dp</item>
+        <item name="android:layout_marginStart">@dimen/dimen_12dp</item>
+        <item name="android:layout_marginEnd">@dimen/dimen_12dp</item>
+        <item name="android:layout_marginTop">@dimen/dimen_8dp</item>
+        <item name="android:layout_marginBottom">@dimen/dimen_8dp</item>
+        <item name="boxBackgroundMode">outline</item>
+        <item name="strokeColor">@color/color_secondary</item>
+        <item name="android:strokeColor">@color/color_secondary</item>
+        <item name="boxCornerRadiusBottomStart">@dimen/dimen_24dp</item>
+        <item name="boxCornerRadiusBottomEnd">@dimen/dimen_24dp</item>
+        <item name="boxCornerRadiusTopEnd">@dimen/dimen_24dp</item>
+        <item name="boxCornerRadiusTopStart">@dimen/dimen_24dp</item>
+        <item name="boxStrokeWidthFocused">@dimen/dimen_1dp</item>
+        <item name="boxStrokeWidth">@dimen/dimen_1dp</item>
+        <item name="materialThemeOverlay">@style/ThemeOverlay.App.TextInputLayout</item>
+        <item name="shapeAppearance">@style/ShapeAppearance.MediumComponent</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textColorHint">@color/gph_dark_grey</item>
+    </style>
 </resources>

@@ -53,7 +53,8 @@ class StickerFragmentInteractor {
 
         data class ShowStickerForRecentSearch(
             val query: String,
-            val stickers: List<com.android.stickerpocket.domain.model.Sticker>
+            val recentSearchStickers: List<com.android.stickerpocket.domain.model.Sticker>,
+            val stickersWithNoTags: List<com.android.stickerpocket.domain.model.Sticker>
         ) : Actions()
 
         data class ShowRecentStickers(val stickers: List<com.android.stickerpocket.domain.model.Sticker>) :
@@ -100,7 +101,8 @@ class StickerFragmentInteractor {
                             Event(
                                 Actions.ShowStickerForRecentSearch(
                                     it.query,
-                                    it.stickers
+                                    it.stickers,
+                                    viewModel.getStickersWithNullTags()
                                 )
                             )
                         )
@@ -251,6 +253,9 @@ class StickerFragmentInteractor {
     fun onStickerClick(sticker: com.android.stickerpocket.domain.model.Sticker, position: Int) {
         _liveData.value = Event(Actions.ShareSticker(sticker, position, sticker.isFavourite))
     }
+    fun onStickerDoubleClick(sticker: com.android.stickerpocket.domain.model.Sticker, position: Int) {
+        _liveData.value = Event(Actions.ShowStickerDialog(sticker, position, sticker.isFavourite))
+    }
     fun onStickerLongClick(sticker: com.android.stickerpocket.domain.model.Sticker, position: Int) {
         _liveData.value = Event(Actions.ShowStickerDialog(sticker, position, sticker.isFavourite))
     }
@@ -258,6 +263,11 @@ class StickerFragmentInteractor {
     fun onFavStickerClick(sticker: com.android.stickerpocket.domain.model.Sticker, position: Int) {
         _liveData.value = Event(Actions.ShareSticker(sticker, position, isFavourite = true))
     }
+
+    fun onFavStickerDoubleClick(sticker: com.android.stickerpocket.domain.model.Sticker, position: Int) {
+        _liveData.value = Event(Actions.ShowStickerDialog(sticker, position, isFavourite = true))
+    }
+
     fun onFavStickerLongClick(sticker: com.android.stickerpocket.domain.model.Sticker, position: Int) {
         _liveData.value = Event(Actions.ShowStickerDialog(sticker, position, isFavourite = true))
     }

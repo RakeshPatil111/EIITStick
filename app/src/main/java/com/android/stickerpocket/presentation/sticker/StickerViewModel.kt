@@ -25,6 +25,7 @@ import com.android.stickerpocket.domain.usecase.FetchStickerCountInCategoryUseCa
 import com.android.stickerpocket.domain.usecase.FetchStickerUseCase
 import com.android.stickerpocket.domain.usecase.FetchStickersForCategoryUseCase
 import com.android.stickerpocket.domain.usecase.FetchStickersForQueryUseCase
+import com.android.stickerpocket.domain.usecase.FetchStickersWithNoTagsUseCase
 import com.android.stickerpocket.domain.usecase.GetRecentSearchUseCase
 import com.android.stickerpocket.domain.usecase.InsertOrReplaceCategoriesUseCase
 import com.android.stickerpocket.domain.usecase.InsertRecentStickerUseCase
@@ -41,7 +42,6 @@ import com.android.stickerpocket.utils.toEmoji
 import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -68,6 +68,7 @@ class StickerViewModel : ViewModel() {
         data class RecentSearchCleared(val searches: List<RecentSearch>) : Result()
         class FetchedRecentStickers(val list: List<Sticker>) : Result()
         object StickerDTOUpdated : Result()
+        data class StickerUpdated(val updatedSticker: Sticker) : Result()
     }
 
     private val _liveData = MutableLiveData<Result>()
@@ -103,6 +104,9 @@ class StickerViewModel : ViewModel() {
     private val insertRecentStickersUseCase: InsertRecentStickerUseCase
     private var currentViewMode = ViewMode.Category
     private val fetchStickerCountInCategoryUseCase: FetchStickerCountInCategoryUseCase
+    private val fetchStickersWithNoTagsUseCase: FetchStickersWithNoTagsUseCase
+    private var stickersWithNoTags = listOf<Sticker>()
+
     init {
         deleteRecentSearchUseCase =
             DeleteRecentSearchUseCase(StickerApplication.instance.recentSearchRepository)
@@ -131,6 +135,7 @@ class StickerViewModel : ViewModel() {
             FetchAllDownloadedUseCase(StickerApplication.instance.stickerRepository)
         insertStickersUseCase = InsertStickersUseCase(StickerApplication.instance.stickerRepository)
         fetchStickerUseCase = FetchStickerUseCase(StickerApplication.instance.stickerRepository)
+        fetchStickersWithNoTagsUseCase = FetchStickersWithNoTagsUseCase(StickerApplication.instance.stickerRepository)
         insertRecentStickersUseCase = InsertRecentStickerUseCase(StickerApplication.instance.recentStickerRepository)
         fetchRecentStickersUseCase = FetchRecentStickersUseCase(StickerApplication.instance.recentStickerRepository)
         fetchStickerCountInCategoryUseCase = FetchStickerCountInCategoryUseCase(StickerApplication.instance.stickerRepository)
@@ -138,6 +143,7 @@ class StickerViewModel : ViewModel() {
         loadAndSaveEmoji(R.raw.emojis)
         fetchRecentSearches()
         fetchAllFavorites()
+        fetchStickersNoTags()
     }
 
     private fun fetchCategories() {
@@ -479,6 +485,7 @@ class StickerViewModel : ViewModel() {
     }
 
     fun getStickerDto() = stickerDTO
+
     fun shareSticker(sticker: Sticker) {
         _liveData.value = Result.ShareSticker(sticker.toFile()!!)
     }
@@ -534,6 +541,31 @@ class StickerViewModel : ViewModel() {
     }
 
     fun getViewMode() = currentViewMode
+
+    fun addTagToSticker(stickerId: Int, tag: String) {
+        CoroutineScope(Dispatchers.Default).launch {
+            fetchStickerUseCase.execute(stickerId)?.let {
+                if (it.tags == null) {
+                    it.tags = tag
+                } else {
+                    it.tags = it.tags+","+tag
+                }
+                updateStickerUseCase.execute(it)
+                _liveData.postValue(Result.StickerUpdated(it))
+            }
+        }
+    }
+
+    fun getStickersWithNullTags(): List<Sticker> {
+        fetchStickersNoTags()
+        return stickersWithNoTags
+    }
+
+    private fun fetchStickersNoTags() {
+        CoroutineScope(Dispatchers.Default).launch {
+            stickersWithNoTags = fetchStickersWithNoTagsUseCase.execute()
+        }
+    }
 
     fun moveStickerToCategory(sourceStickerPosition: Int, targetCategoryPosition: Int) {
         // Fetch Sticker

@@ -25,7 +25,6 @@ import com.android.stickerpocket.CommunicationBridge
 import com.android.stickerpocket.EmojiPickerDialog
 import com.android.stickerpocket.R
 import com.android.stickerpocket.databinding.FragmentStickerBinding
-import com.android.stickerpocket.domain.model.Category
 import com.android.stickerpocket.domain.model.Sticker
 import com.android.stickerpocket.presentation.CommonStickerAdapter
 import com.android.stickerpocket.presentation.FavouritesAdapter
@@ -37,6 +36,7 @@ import com.android.stickerpocket.utils.ItemClickSupport
 import com.android.stickerpocket.utils.ItemClickSupport.OnItemClickListener
 import com.android.stickerpocket.utils.ItemTouchHelperAdapter
 import com.android.stickerpocket.utils.ItemTouchHelperCallback
+import com.android.stickerpocket.utils.OnItemDoubleClickListener
 import com.android.stickerpocket.utils.ViewExt.removeBorder
 import com.android.stickerpocket.utils.ViewExt.setBorder
 import com.android.stickerpocket.utils.ViewExt.shakeMe
@@ -60,6 +60,7 @@ class StickerFragment : Fragment(), GPHGridCallback,
     private lateinit var favouritesAdapter: FavouritesAdapter
     var searchJob: Job? = null
     private lateinit var currentRecyclerView: RecyclerView
+
 
 
     private val interactor by lazy {
@@ -174,12 +175,8 @@ class StickerFragment : Fragment(), GPHGridCallback,
                         rvRecentSearch.visibility = View.GONE
                         rvStickers.visibility = View.VISIBLE
                         hideKeyboard()
-                        if (action.stickers.isEmpty()) {
-                            CustomDialog.showCustomDialog(
-                                requireContext(),
-                                resources.getString(R.string.no_stickers_found),
-                                resources.getString(R.string.ok)
-                            )
+                        if (action.recentSearchStickers.isEmpty()) {
+                            CustomDialog.showCustomDialog(requireContext(),resources.getString(R.string.no_stickers_found),resources.getString(R.string.ok))
                             CustomDialog.alertDialog.setOnDismissListener {
                                 rvRecentSearch.visibility = View.GONE
                                 rvStickers.visibility = View.VISIBLE
@@ -190,7 +187,7 @@ class StickerFragment : Fragment(), GPHGridCallback,
                         } else {
                             removeChangeListeners(tietSearch)
                             rvStickers.adapter = commonStickerAdapter
-                            commonStickerAdapter.updateList(action.stickers)
+                            commonStickerAdapter.updateList(action.recentSearchStickers)
                             tietSearch.setText(action.query)
                             tietSearch.setSelection(tietSearch.length())
                             addChangeListeners(tietSearch)
@@ -198,6 +195,19 @@ class StickerFragment : Fragment(), GPHGridCallback,
                             commonStickerAdapter.isOpenedForCategory(false)
                             //commonStickerAdapter.isOpenedForOrganizeCategory(false)
                             exitSelectionMode()
+                        }
+
+                        // Show Stickers with no tags
+                        if (action.stickersWithNoTags.isNotEmpty()) {
+                            llNoTags.visibility = View.VISIBLE
+                            val noTagStickerAdapter = NoTagStickerAdapter()
+                            rvNoTags.adapter = noTagStickerAdapter
+                            noTagStickerAdapter.updateList(action.stickersWithNoTags)
+                            noTagStickerAdapter.setListener(object : NoTagStickerAdapter.OnStickerClickListener{
+                                override fun onStickerClick(position: Int, sticker: Sticker) {
+                                    interactor.onStickerInfoClick(sticker)
+                                }
+                            })
                         }
                     }
                 }
@@ -474,6 +484,12 @@ class StickerFragment : Fragment(), GPHGridCallback,
             interactor.onStickerLongClick(sticker, position)
         }
 
+        commonStickerAdapter.setOnItemDoubleClickListener(object : OnItemDoubleClickListener {
+            override fun onItemDoubleClick(sticker: Sticker, position: Int) {
+                interactor.onStickerDoubleClick(sticker, position)
+            }
+        })
+
         commonStickerAdapter.onItemDelete { sticker, position ->
             interactor.onAddStickerToDeletedClick(sticker, true)
         }
@@ -488,6 +504,12 @@ class StickerFragment : Fragment(), GPHGridCallback,
         commonStickerAdapter.onStickerDrop { sourceStickerPosition, targetCategoryPosition ->
             interactor.onStickerDroppedOnCategory(sourceStickerPosition, targetCategoryPosition)
         }
+
+        favouritesAdapter.setOnItemDoubleClickListener(object : OnItemDoubleClickListener {
+            override fun onItemDoubleClick(sticker: Sticker, position: Int) {
+                interactor.onFavStickerDoubleClick(sticker, position)
+            }
+        })
     }
 
     private fun setClickListeners() {

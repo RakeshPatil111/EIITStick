@@ -2,6 +2,7 @@ package com.android.stickerpocket.presentation
 
 import android.os.Build.VERSION.SDK_INT
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import coil.ImageLoader
@@ -10,6 +11,7 @@ import coil.decode.ImageDecoderDecoder
 import com.android.stickerpocket.databinding.CvGifItemBinding
 import com.android.stickerpocket.domain.model.Sticker
 import com.android.stickerpocket.presentation.sticker.StickerViewHolder
+import com.android.stickerpocket.utils.ItemClickSupport
 import com.android.stickerpocket.utils.OnItemDoubleClickListener
 import java.util.Collections
 
@@ -18,6 +20,7 @@ class CommonStickerAdapter() : RecyclerView.Adapter<StickerViewHolder>() {
     private var actionItemClick: ((sticker: Sticker, position: Int) -> Unit)? = null
     private var actionItemLongClick: ((sticker: Sticker, position: Int) -> Unit)? = null
     private var actionItemDelete: ((sticker: Sticker, position: Int) -> Unit)? = null
+    private var actionStickerDrop: ((sourceStickerPosition: Int, targetCategoryPosition: Int) -> Unit)? = null
     private lateinit var imageLoader: ImageLoader
     var didOpenForCategory: Boolean = true
     var didOpenForReorganize: Boolean = false
@@ -44,9 +47,8 @@ class CommonStickerAdapter() : RecyclerView.Adapter<StickerViewHolder>() {
             itemClickListener = actionItemClick,
             itemLongClickListener = actionItemLongClick,
             itemDeleteClickListener = actionItemDelete,
-            didOpenForCategory = didOpenForCategory,
-            didOpenForReorganize=didOpenForReorganize,
-            doubleClickListener
+            doubleClickListener,
+            itemStickerDropListener = actionStickerDrop,
         )
     }
 
@@ -79,15 +81,6 @@ class CommonStickerAdapter() : RecyclerView.Adapter<StickerViewHolder>() {
         this.actionItemDelete = action
     }
 
-   /* fun isOpenedForOrganizeCategory(value: Boolean, selectionOn :Boolean=false) {
-        stickers.forEachIndexed { index, _ ->
-            stickers[index].isOrganizeMode = value
-            stickers[index].selectionon = selectionOn
-        }
-
-        notifyDataSetChanged()
-    }*/
-
     fun onRowMoved(fromPosition: Int, toPosition: Int) {
         if (fromPosition < toPosition) {
             for (i in fromPosition until toPosition) {
@@ -104,5 +97,9 @@ class CommonStickerAdapter() : RecyclerView.Adapter<StickerViewHolder>() {
 
     fun setOnItemDoubleClickListener(listener: OnItemDoubleClickListener) {
         doubleClickListener = listener
+    }
+
+    fun onStickerDrop(action: (sourceStickerPosition: Int, targetCategoryPosition: Int) -> Unit) {
+        this.actionStickerDrop = action
     }
 }

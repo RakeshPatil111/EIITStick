@@ -40,6 +40,9 @@ interface StickerDAO {
     @Query("SELECT * FROM sticker WHERE id= :id")
     fun fetch(id: Int): Sticker?
 
+    @Query("SELECT COUNT(*) FROM sticker WHERE categoryId = :categoryId")
+    fun stickerCountInCategory(categoryId: Int): Int
+
     @Query("SELECT * FROM sticker WHERE tags IS NULL")
     fun fetchStickerWithNoTags(): List<Sticker>
 }

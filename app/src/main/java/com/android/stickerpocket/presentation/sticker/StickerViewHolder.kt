@@ -1,5 +1,6 @@
 package com.android.stickerpocket.presentation.sticker
 
+import android.content.ClipData
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import coil.ImageLoader
@@ -8,6 +9,7 @@ import com.android.stickerpocket.CommunicationBridge
 import com.android.stickerpocket.databinding.CvGifItemBinding
 import com.android.stickerpocket.domain.model.Sticker
 import com.android.stickerpocket.utils.DragListener
+import com.android.stickerpocket.utils.OnStickerDropOnCategoryListener
 import com.android.stickerpocket.utils.OnItemDoubleClickListener
 import com.android.stickerpocket.utils.StickerExt.toLoadableImage
 import com.android.stickerpocket.utils.ViewExt.shakeMe
@@ -19,15 +21,15 @@ class StickerViewHolder(
     private val itemClickListener: ((fav: Sticker, position: Int) -> Unit)?,
     private val itemLongClickListener: ((fav: Sticker, position: Int) -> Unit)?,
     private val itemDeleteClickListener: ((fav: Sticker, position: Int) -> Unit)?,
-    val didOpenForCategory: Boolean,
-    private val didOpenForReorganize: Boolean,
-    private val doubleClickListener: OnItemDoubleClickListener?
+    private val doubleClickListener: OnItemDoubleClickListener?,
+    private val itemStickerDropListener: ((sourceStickerPosition: Int, targetCategoryPosition: Int) -> Unit)? = null
 ) : RecyclerView.ViewHolder(binding.root) {
 
     private var lastClickTime: Long = 0
 
     fun bind(sticker: Sticker) {
-        if (didOpenForCategory) binding.root.setOnDragListener(DragListener())
+        binding.root.tag = position
+        binding.sivGifImage.tag = position
         binding.apply {
             sivGifImage.load(sticker.toLoadableImage(), imageLoader) {
                 target(
@@ -57,16 +59,42 @@ class StickerViewHolder(
             }
 
             itemLongClickListener?.let { gif ->
-                sivGifImage.setOnLongClickListener {
-                    gif(sticker, adapterPosition)
-                    true
-                }
+                    sivGifImage.setOnLongClickListener {
+                       // gif(sticker, adapterPosition)
+                        if (CommunicationBridge.isOrganizationMode.value == false) {
+                            val dbs= View.DragShadowBuilder(it)
+                            var clipData= ClipData.newPlainText("","")
+                            it.startDragAndDrop(clipData,dbs,it,0)
+                            val dragListener = DragListener()
+                            binding.root.setOnDragListener(dragListener)
+                            dragListener.setDropListener(object : OnStickerDropOnCategoryListener {
+                                override fun onDrop(
+                                    sourceStickerPosition: Int,
+                                    targetCategoryPosition: Int
+                                ) {
+                                    itemStickerDropListener?.invoke(sourceStickerPosition, targetCategoryPosition)
+                                }
+
+                            })
+                        } else {
+                            binding.root.setOnDragListener(null)
+                        }
+                        true
+                    }
             }
 
             itemDeleteClickListener?.let { gif ->
                 ivRemove.setOnClickListener {
                     gif(sticker, adapterPosition)
                     true
+                }
+            }
+
+            cbSelect.setOnCheckedChangeListener { buttonView, isChecked ->
+                if (isChecked){
+                    CommunicationBridge.selectedStickes.value?.add(sticker)
+                }else{
+                    CommunicationBridge.selectedStickes.value?.remove(sticker)
                 }
             }
 

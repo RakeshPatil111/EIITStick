@@ -3,6 +3,7 @@ package com.android.stickerpocket.presentation.sticker
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.android.stickerpocket.CommunicationBridge
 import com.android.stickerpocket.R
 import com.android.stickerpocket.StickerApplication
 import com.android.stickerpocket.domain.model.Category
@@ -20,6 +21,7 @@ import com.android.stickerpocket.domain.usecase.FetchAllFavoritesUseCase
 import com.android.stickerpocket.domain.usecase.FetchCategoriesUseCase
 import com.android.stickerpocket.domain.usecase.FetchEmojiByEmojiIcon
 import com.android.stickerpocket.domain.usecase.FetchRecentStickersUseCase
+import com.android.stickerpocket.domain.usecase.FetchStickerCountInCategoryUseCase
 import com.android.stickerpocket.domain.usecase.FetchStickerUseCase
 import com.android.stickerpocket.domain.usecase.FetchStickersForCategoryUseCase
 import com.android.stickerpocket.domain.usecase.FetchStickersForQueryUseCase
@@ -101,6 +103,7 @@ class StickerViewModel : ViewModel() {
     private val fetchRecentStickersUseCase: FetchRecentStickersUseCase
     private val insertRecentStickersUseCase: InsertRecentStickerUseCase
     private var currentViewMode = ViewMode.Category
+    private val fetchStickerCountInCategoryUseCase: FetchStickerCountInCategoryUseCase
     private val fetchStickersWithNoTagsUseCase: FetchStickersWithNoTagsUseCase
     private var stickersWithNoTags = listOf<Sticker>()
 
@@ -135,6 +138,7 @@ class StickerViewModel : ViewModel() {
         fetchStickersWithNoTagsUseCase = FetchStickersWithNoTagsUseCase(StickerApplication.instance.stickerRepository)
         insertRecentStickersUseCase = InsertRecentStickerUseCase(StickerApplication.instance.recentStickerRepository)
         fetchRecentStickersUseCase = FetchRecentStickersUseCase(StickerApplication.instance.recentStickerRepository)
+        fetchStickerCountInCategoryUseCase = FetchStickerCountInCategoryUseCase(StickerApplication.instance.stickerRepository)
         fetchCategories()
         loadAndSaveEmoji(R.raw.emojis)
         fetchRecentSearches()
@@ -560,6 +564,54 @@ class StickerViewModel : ViewModel() {
     private fun fetchStickersNoTags() {
         CoroutineScope(Dispatchers.Default).launch {
             stickersWithNoTags = fetchStickersWithNoTagsUseCase.execute()
+        }
+    }
+
+    fun moveStickerToCategory(sourceStickerPosition: Int, targetCategoryPosition: Int) {
+        // Fetch Sticker
+        // Fetch Existing Category
+        // Fetch Selected category
+        // Remove sticker from existing category
+        // Add sticker to new category
+
+        CoroutineScope(Dispatchers.Default).launch {
+            val selectedSticker = fetchStickerUseCase.execute(stickers[sourceStickerPosition].id!!)
+            val stickerCount = fetchStickerCountInCategoryUseCase.execute(categories[targetCategoryPosition].id!!)
+            selectedSticker?.categoryId = categories[targetCategoryPosition].id
+            selectedSticker?.position = stickerCount+1
+            updateStickerUseCase.execute(selectedSticker!!)
+        }
+    }
+
+    fun moveMultipleStickersToCategory( targetCategoryPosition: Int) {
+        // Fetch Sticker
+        // Fetch Existing Category
+        // Fetch Selected category
+        // Remove sticker from existing category
+        // Add sticker to new category
+
+        CoroutineScope(Dispatchers.Default).launch {
+            //val selectedSticker = fetchStickerUseCase.execute(stickers[sourceStickerPosition].id!!)
+
+            val selectedStickers = CommunicationBridge.selectedStickes.value
+            val targetedId =categories[targetCategoryPosition].id
+            val stickerCount = fetchStickerCountInCategoryUseCase.execute(categories[targetCategoryPosition].id!!)
+            for(index in CommunicationBridge.selectedStickes.value!!.indices) {
+                var selectedSticker=selectedStickers?.get(index)
+                selectedSticker?.categoryId = targetedId
+                selectedSticker?.position = stickerCount + (index+1)
+                if (selectedSticker != null) {
+                    updateStickerUseCase.execute( selectedSticker)
+                }
+            }
+
+            categories.filter { it.isHighlighted == true }.first().id?.let {
+                fetchStickersForCategoryUseCase.execute(
+                    it
+                )
+            }
+            CommunicationBridge.selectedStickes.value?.clear()
+            CommunicationBridge.selectedCatPosition.postValue(-1)
         }
     }
 

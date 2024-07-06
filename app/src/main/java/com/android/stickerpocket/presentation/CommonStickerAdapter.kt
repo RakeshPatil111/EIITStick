@@ -47,9 +47,7 @@ class CommonStickerAdapter() : RecyclerView.Adapter<StickerViewHolder>() {
             itemClickListener = actionItemClick,
             itemLongClickListener = actionItemLongClick,
             itemDeleteClickListener = actionItemDelete,
-            didOpenForCategory = didOpenForCategory,
-            didOpenForReorganize=didOpenForReorganize,
-            doubleClickListener
+            doubleClickListener,
             itemStickerDropListener = actionStickerDrop,
         )
     }

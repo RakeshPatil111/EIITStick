@@ -21,7 +21,7 @@ class StickerViewHolder(
     private val itemClickListener: ((fav: Sticker, position: Int) -> Unit)?,
     private val itemLongClickListener: ((fav: Sticker, position: Int) -> Unit)?,
     private val itemDeleteClickListener: ((fav: Sticker, position: Int) -> Unit)?,
-    private val doubleClickListener: OnItemDoubleClickListener?
+    private val doubleClickListener: OnItemDoubleClickListener?,
     private val itemStickerDropListener: ((sourceStickerPosition: Int, targetCategoryPosition: Int) -> Unit)? = null
 ) : RecyclerView.ViewHolder(binding.root) {
 

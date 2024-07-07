@@ -73,7 +73,7 @@ class TutorialsFragment : Fragment() {
         }
     }
 
-    private fun onTutorialClick(view: View) {
+    fun onTutorialClick(view: View) {
         val tag = view.tag as String
         val selectedTutorial = tutorials.find { it.tag == tag }
         selectedTutorial?.let {

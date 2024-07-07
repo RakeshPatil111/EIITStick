@@ -17,7 +17,7 @@ object GiphyConfigure {
     fun configGiphy(context: Context) {
         Giphy.configure(
             context,
-            BuildConfig.API_KEY,
+            "UE20qxVTbBaoaVzWtCnKV5ZBuhEfuWkm",
             verificationMode = false,
 //            frescoHandler = object : GiphyFrescoHandler {
 //                override fun handle(imagePipelineConfigBuilder: ImagePipelineConfig.Builder) {

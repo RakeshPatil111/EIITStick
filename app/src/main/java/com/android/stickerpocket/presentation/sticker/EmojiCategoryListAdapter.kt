@@ -11,6 +11,7 @@ import com.android.stickerpocket.databinding.CvStickerItemBinding
 import com.android.stickerpocket.domain.model.Category
 import com.android.stickerpocket.utils.ViewExt.removeBorder
 import com.android.stickerpocket.utils.ViewExt.setBorder
+import com.android.stickerpocket.utils.ViewExt.shakeMe
 
 class EmojiCategoryListAdapter :
     RecyclerView.Adapter<EmojiCategoryListAdapter.StepperViewHolder>(){
@@ -19,6 +20,7 @@ class EmojiCategoryListAdapter :
     private var stickerClickAction: ((category: Category, position: Int, previouslySelected: Int) -> Unit)? = null
     private var stickerLongClickAction: ((category: Category, position: Int, previouslySelected: Int) -> Unit)? = null
     private val differ = AsyncListDiffer(this, diffUtilEmoji)
+    private var hoverItem = -1
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
         StepperViewHolder(
@@ -34,6 +36,10 @@ class EmojiCategoryListAdapter :
     override fun onBindViewHolder(holder: StepperViewHolder, position: Int) {
         val category = differ.currentList[position]
         holder.bind(category, position)
+        if (position == hoverItem) {
+            holder.binding.root.shakeMe()
+            hoverItem = -1
+        }
     }
 
     fun updateList(list: List<Category>) {
@@ -41,7 +47,7 @@ class EmojiCategoryListAdapter :
         notifyDataSetChanged()
     }
 
-    inner class StepperViewHolder(private val binding: CvStickerItemBinding) :
+    inner class StepperViewHolder(val binding: CvStickerItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(category: Category, position: Int) {
             binding.cvSticker.tag = position
@@ -114,4 +120,9 @@ class EmojiCategoryListAdapter :
     }
 
     fun getList() = differ.currentList
+
+    fun hoverCategory(droppedCategoryTag: Int) {
+        hoverItem = droppedCategoryTag
+        notifyItemChanged(droppedCategoryTag)
+    }
 }

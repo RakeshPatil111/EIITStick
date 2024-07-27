@@ -1,4 +1,4 @@
-package com.android.stickerpocket
+package com.android.stickerpocket.utils
 
 data class Type(
     val typeId: String? = null,

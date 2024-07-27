@@ -1,4 +1,4 @@
-package com.android.stickerpocket
+package com.android.stickerpocket.presentation.settings
 
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
@@ -10,5 +10,6 @@ class ViewPagerAdapter(private val tutorials: ArrayList<Tutorials>, fragmentActi
 
     override fun getItemCount(): Int = tutorials.size
 
-    override fun createFragment(position: Int): Fragment = ViewpagerFragment.newInstance(tutorials[position], position)
+    override fun createFragment(position: Int): Fragment =
+        ViewpagerFragment.newInstance(tutorials[position], position)
 }

@@ -8,7 +8,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/tv_trending_title"
+        android:id="@+id/tv_giphy_trending_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/trending"
@@ -20,14 +20,14 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/tv_title"
+        android:id="@+id/tv_giphy_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?attr/textAppearanceSubtitle2"
         android:textColor="@color/color_primary_variant"
-        app:layout_constraintBottom_toBottomOf="@+id/tv_trending_title"
-        app:layout_constraintStart_toEndOf="@+id/tv_trending_title"
-        app:layout_constraintTop_toTopOf="@+id/tv_trending_title" />
+        app:layout_constraintBottom_toBottomOf="@+id/tv_giphy_trending_title"
+        app:layout_constraintStart_toEndOf="@+id/tv_giphy_trending_title"
+        app:layout_constraintTop_toTopOf="@+id/tv_giphy_trending_title" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_gifs"
@@ -41,6 +41,6 @@
         app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_trending_title"
+        app:layout_constraintTop_toBottomOf="@+id/tv_giphy_trending_title"
         app:spanCount="2" />
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,4 +1,4 @@
-package com.android.stickerpocket
+package com.android.stickerpocket.utils
 
 import androidx.lifecycle.MutableLiveData
 import com.android.stickerpocket.domain.model.Sticker

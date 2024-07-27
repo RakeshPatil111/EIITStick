@@ -1,4 +1,4 @@
-package com.android.stickerpocket.presentation
+package com.android.stickerpocket.presentation.dialog
 
 import android.os.Build
 import android.os.Bundle
@@ -11,7 +11,6 @@ import coil.decode.ImageDecoderDecoder
 import coil.load
 import com.android.stickerpocket.R
 import com.android.stickerpocket.databinding.CvGifStickerBinding
-import com.android.stickerpocket.utils.StickerExt.toFile
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.android.stickerpocket.domain.model.Sticker
 import com.android.stickerpocket.utils.StickerExt.toLoadableImage

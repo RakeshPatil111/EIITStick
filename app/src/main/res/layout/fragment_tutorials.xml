@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/color_primary"
-    tools:context=".presentation.TutorialsFragment">
+    tools:context=".presentation.settings.TutorialsFragment">
 
     <ImageView
         android:id="@+id/img_app_icon"

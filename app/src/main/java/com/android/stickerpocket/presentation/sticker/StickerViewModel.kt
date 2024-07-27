@@ -3,7 +3,7 @@ package com.android.stickerpocket.presentation.sticker
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.android.stickerpocket.CommunicationBridge
+import com.android.stickerpocket.utils.CommunicationBridge
 import com.android.stickerpocket.R
 import com.android.stickerpocket.StickerApplication
 import com.android.stickerpocket.domain.model.Category

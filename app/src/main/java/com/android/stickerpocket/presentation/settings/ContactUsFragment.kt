@@ -1,4 +1,4 @@
-package com.android.stickerpocket.presentation
+package com.android.stickerpocket.presentation.settings
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -7,7 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import com.android.stickerpocket.R
-import com.android.stickerpocket.Type
+import com.android.stickerpocket.utils.Type
 import com.android.stickerpocket.databinding.FragmentContactUsBinding
 
 class ContactUsFragment : Fragment() {

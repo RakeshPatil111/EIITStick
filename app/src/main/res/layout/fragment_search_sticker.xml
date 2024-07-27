@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".presentation.MoreStickersFragment">
+    tools:context=".presentation.moresticker.MoreStickersFragment">
 
     <View
         android:id="@+id/view_top_bg"
@@ -34,7 +34,7 @@
         app:endIconMode="clear_text"
         app:hintEnabled="false"
         app:endIconDrawable="@drawable/ic_outline_cancel"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/ibtn_config_sticker"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/img_app_icon"
         app:startIconDrawable="@drawable/ic_search">
@@ -50,6 +50,17 @@
             android:maxLines="1" />
     </com.google.android.material.textfield.TextInputLayout>
 
+    <androidx.appcompat.widget.AppCompatImageButton
+        android:id="@+id/ibtn_config_sticker"
+        android:layout_width="@dimen/dimen_48dp"
+        android:layout_height="@dimen/dimen_48dp"
+        android:layout_marginBottom="@dimen/dimen_12dp"
+        android:background="@android:color/transparent"
+        android:src="@drawable/ic_organize"
+        android:tint="@android:color/white"
+        app:layout_constraintBottom_toBottomOf="@+id/view_top_bg"
+        app:layout_constraintEnd_toEndOf="@+id/view_top_bg" />
+
     <ImageView
         android:id="@+id/img_screen_bg"
         android:layout_width="match_parent"
@@ -63,7 +74,7 @@
         app:layout_constraintTop_toBottomOf="@+id/view_top_bg" />
 
     <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/tv_trending_title"
+        android:id="@+id/tv_giphy_trending_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/trending"
@@ -76,31 +87,69 @@
         app:layout_constraintTop_toBottomOf="@id/view_top_bg"/>
 
     <TextView
-        android:id="@+id/tv_title"
+        android:id="@+id/tv_giphy_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?attr/textAppearanceSubtitle2"
         android:textColor="@color/color_primary_variant"
-        android:text="Power by Giphy"
-        app:layout_constraintBottom_toBottomOf="@+id/tv_trending_title"
-        app:layout_constraintStart_toEndOf="@+id/tv_trending_title"
-        app:layout_constraintTop_toTopOf="@+id/tv_trending_title" />
+        android:text="@string/power_by_giphy"
+        android:layout_marginStart="@dimen/dimen_4dp"
+        app:layout_constraintBottom_toBottomOf="@+id/tv_giphy_trending_title"
+        app:layout_constraintStart_toEndOf="@+id/tv_giphy_trending_title"
+        app:layout_constraintTop_toTopOf="@+id/tv_giphy_trending_title" />
 
     <com.giphy.sdk.ui.views.GiphyGridView
-        android:id="@+id/rv_sticker_section"
+        android:id="@+id/rv_giphy_sticker_section"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="180dp"
         android:clipToPadding="false"
         android:padding="@dimen/dimen_4dp"
+        app:gphDirection="horizontal"
         app:gphCellPadding="@dimen/dimen_10dp"
-        app:gphSpanCount="3"
+        app:gphSpanCount="2"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_trending_title"
+        app:layout_constraintTop_toBottomOf="@+id/tv_giphy_trending_title"
         app:layout_constraintVertical_bias="0.0"
         tools:listitem="@layout/cv_sticker_section_item" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/tv_tenor_trending_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dimen_12dp"
+        android:layout_marginStart="@dimen/dimen_8dp"
+        android:text="@string/trending"
+        android:textAppearance="?attr/textAppearanceCaption"
+        android:textColor="@color/color_primary_variant"
+        android:textStyle="italic"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/rv_giphy_sticker_section" />
+
+    <TextView
+        android:id="@+id/tv_tenor_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/power_by_tenor"
+        android:layout_marginStart="@dimen/dimen_4dp"
+        android:textAppearance="?attr/textAppearanceSubtitle2"
+        android:textColor="@color/color_primary_variant"
+        app:layout_constraintBottom_toBottomOf="@+id/tv_tenor_trending_title"
+        app:layout_constraintStart_toEndOf="@+id/tv_tenor_trending_title"
+        app:layout_constraintTop_toTopOf="@+id/tv_tenor_trending_title" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_tenor_sticker_section"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_tenor_title"
+        app:spanCount="2"/>
 
     <LinearLayout
         android:id="@+id/ll_progress"
@@ -132,4 +181,20 @@
             android:textColor="@color/color_primary_variant"
             android:textStyle="italic" />
     </LinearLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_recent_search"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@color/color_secondary"
+        android:orientation="vertical"
+        android:paddingHorizontal="@dimen/dimen_2dp"
+        android:visibility="gone"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/img_screen_bg"
+        tools:itemCount="10"
+        tools:listitem="@layout/item_recent_search" />
 </androidx.constraintlayout.widget.ConstraintLayout>

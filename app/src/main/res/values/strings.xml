@@ -62,4 +62,8 @@
     <string name="remove_from_favourites">Remove from favourites</string>
     <string name="next">Next</string>
     <string name="back">Back</string>
+    <string name="giphy">Giphy</string>
+    <string name="tenor">Tenor</string>
+    <string name="power_by_giphy">Power by Giphy</string>
+    <string name="power_by_tenor">Power by Tenor</string>
 </resources>

@@ -9,11 +9,9 @@ import coil.ImageLoader
 import coil.decode.GifDecoder
 import coil.decode.ImageDecoderDecoder
 import coil.load
-import com.android.stickerpocket.CommunicationBridge
 import com.android.stickerpocket.databinding.CvGifItemBinding
 import com.android.stickerpocket.domain.model.Sticker
 import com.android.stickerpocket.utils.StickerExt.toLoadableImage
-import com.android.stickerpocket.utils.ViewExt.shakeMe
 
 class NoTagStickerAdapter: RecyclerView.Adapter<NoTagStickerAdapter.ViewHolder>() {
     private var stickers: List<Sticker> = listOf()

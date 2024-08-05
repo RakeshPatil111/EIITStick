@@ -1,4 +1,4 @@
-package com.android.stickerpocket.presentation
+package com.android.stickerpocket.presentation.moresticker
 
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.MutableLiveData

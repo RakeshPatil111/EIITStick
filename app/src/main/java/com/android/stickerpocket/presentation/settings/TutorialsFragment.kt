@@ -1,4 +1,4 @@
-package com.android.stickerpocket.presentation
+package com.android.stickerpocket.presentation.settings
 
 import android.os.Bundle
 import android.util.Log

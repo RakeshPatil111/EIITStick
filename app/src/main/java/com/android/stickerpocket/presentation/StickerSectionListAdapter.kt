@@ -37,7 +37,7 @@ class StickerSectionListAdapter :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(stickerSection: StickerSection) {
             binding.apply {
-                tvTitle.text = stickerSection.title
+                //tvTitle.text = stickerSection.title
                 val gifListAdapter = CommonStickerAdapter()
                 rvGifs.adapter = gifListAdapter
                 //gifListAdapter.updateList(gifs, context, "HORIZONTAL")

@@ -76,6 +76,8 @@ dependencies {
     implementation(libs.okhttp)
     implementation(libs.androidx.emoji2.emojipicker)
     implementation(libs.fresco)
+    implementation(libs.converter.gson)
+    implementation (libs.logging.interceptor)
 
     implementation(libs.androidx.viewpager2)
 

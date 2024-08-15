@@ -26,6 +26,7 @@ import com.android.stickerpocket.domain.usecase.FetchStickerUseCase
 import com.android.stickerpocket.domain.usecase.FetchStickersForCategoryUseCase
 import com.android.stickerpocket.domain.usecase.FetchStickersForQueryUseCase
 import com.android.stickerpocket.domain.usecase.FetchStickersWithNoTagsUseCase
+import com.android.stickerpocket.domain.usecase.FetchTrendingGifUseCase
 import com.android.stickerpocket.domain.usecase.GetRecentSearchUseCase
 import com.android.stickerpocket.domain.usecase.InsertOrReplaceCategoriesUseCase
 import com.android.stickerpocket.domain.usecase.InsertRecentStickerUseCase
@@ -33,12 +34,15 @@ import com.android.stickerpocket.domain.usecase.InsertSingleStickersUseCase
 import com.android.stickerpocket.domain.usecase.InsertStickersUseCase
 import com.android.stickerpocket.domain.usecase.UpdateStickerUseCase
 import com.android.stickerpocket.dtos.getCategories
+import com.android.stickerpocket.network.response.Data
 import com.android.stickerpocket.network.response.Emojis
+import com.android.stickerpocket.network.response.GifResponse
 import com.android.stickerpocket.presentation.StickerDTO
 import com.android.stickerpocket.utils.StickerExt.sticker
 import com.android.stickerpocket.utils.StickerExt.toFile
 import com.android.stickerpocket.utils.StickerExt.toStickerDTO
 import com.android.stickerpocket.utils.toEmoji
+import com.android.stickerpocket.utils.toStickerDTO
 import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -51,6 +55,7 @@ import java.io.FileOutputStream
 import java.io.InputStreamReader
 import java.net.URL
 import java.util.Date
+import java.util.UUID
 
 class StickerViewModel : ViewModel() {
 
@@ -69,6 +74,7 @@ class StickerViewModel : ViewModel() {
         class FetchedRecentStickers(val list: List<Sticker>) : Result()
         object StickerDTOUpdated : Result()
         data class StickerUpdated(val updatedSticker: Sticker) : Result()
+        data class TrendingStickers(val data: List<StickerDTO>, val page: Int = 0) : Result()
     }
 
     private val _liveData = MutableLiveData<Result>()
@@ -106,6 +112,10 @@ class StickerViewModel : ViewModel() {
     private val fetchStickerCountInCategoryUseCase: FetchStickerCountInCategoryUseCase
     private val fetchStickersWithNoTagsUseCase: FetchStickersWithNoTagsUseCase
     private var stickersWithNoTags = listOf<Sticker>()
+    private var trendingGifResponse: GifResponse? = null
+    private var trendingGIPHYGifs = mutableListOf<StickerDTO>()
+    private val fetchTrendingGifUseCase = FetchTrendingGifUseCase()
+    private val randomId = UUID.randomUUID().toString()
 
     init {
         deleteRecentSearchUseCase =
@@ -615,6 +625,38 @@ class StickerViewModel : ViewModel() {
         }
     }
 
+    fun getTrendingStickers() {
+        if (trendingGifResponse == null) {
+            CoroutineScope(Dispatchers.IO).launch {
+                trendingGifResponse = fetchTrendingGifUseCase.execute(randomId = randomId)
+                handleGiphyTrendingResponse(trendingGifResponse)
+            }
+        } else {
+            handleGiphyTrendingResponse(trendingGifResponse)
+        }
+    }
+
+    fun loadMoreGiphyStickers() {
+        CoroutineScope(Dispatchers.IO).launch {
+            val page = trendingGifResponse?.pagination?.offset?.plus(1) ?: 0
+            trendingGifResponse = fetchTrendingGifUseCase.execute(randomId = randomId, page = page)
+            handleGiphyTrendingResponse(trendingGifResponse)
+        }
+    }
+
+    fun resetResponse() {
+        trendingGifResponse = null
+    }
+
+    private fun handleGiphyTrendingResponse(trendingGifResponse: GifResponse?) {
+        trendingGifResponse?.let {
+            it.data.forEachIndexed { index, data ->
+                val item = data.toStickerDTO()
+                trendingGIPHYGifs.add(item)
+            }
+            _liveData.postValue(Result.TrendingStickers(trendingGIPHYGifs, it.pagination.offset))
+        }
+    }
     enum class ViewMode {
         Recent,
         Downloaded,

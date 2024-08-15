@@ -20,7 +20,14 @@ import android.view.inputmethod.EditorInfo.*
 import android.view.inputmethod.InputMethodManager
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.PagerSnapHelper
+import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.android.stickerpocket.databinding.FragmentSearchStickerBinding
+import com.android.stickerpocket.network.response.Data
+import com.android.stickerpocket.presentation.StickerDTO
 import com.android.stickerpocket.presentation.dialog.StickerConfigDialog
 import com.android.stickerpocket.presentation.dialog.StickerDownloadDialog
 import com.android.stickerpocket.presentation.sticker.StickerViewModel
@@ -42,6 +49,8 @@ class MoreStickersFragment : Fragment(),
     private val interactor by lazy {
         MoreStickerFragmentInteractor()
     }
+
+    private lateinit var trendingGifAdapter: TrendingGiphyAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -95,7 +104,6 @@ class MoreStickersFragment : Fragment(),
     private fun observeInteractor() {
         interactor.liveData.observe(viewLifecycleOwner, Observer {
             when (val action = it.getContentIfNotHandled()) {
-
                 is MoreStickerFragmentInteractor.Actions.ShowDownloadStickerDialog -> {
 
                     val stickerDownloadDialog = StickerDownloadDialog()
@@ -119,8 +127,32 @@ class MoreStickersFragment : Fragment(),
                 }
                 is MoreStickerFragmentInteractor.Actions.ShowProgress -> if(action.showProgress){
                     binding.llProgress.visibility = VISIBLE
-                }else{
+                } else {
                     binding.llProgress.visibility = GONE
+                }
+                is MoreStickerFragmentInteractor.Actions.ShowTrendingGiphyStickers -> {
+                    binding.apply {
+                        if (!::trendingGifAdapter.isInitialized) {
+                            trendingGifAdapter = TrendingGiphyAdapter()
+                            rvGiphyStickerSection.adapter = trendingGifAdapter
+                            val snapHelper = PagerSnapHelper()
+                            snapHelper.attachToRecyclerView(rvGiphyStickerSection)
+                            rvGiphyStickerSection.layoutManager =
+                                GridLayoutManager(requireContext(), 2, RecyclerView.HORIZONTAL, false)
+                            trendingGifAdapter.setListener(object : TrendingGiphyAdapter.OnTrendingGifListener {
+                                override fun onGifItemClick(item: StickerDTO) {
+
+                                }
+
+                                override fun loadMore() {
+                                    interactor.onLoadMoreTrendingStickers()
+                                }
+
+                            })
+                        }
+                        trendingGifAdapter.updateList(action.data, action.page)
+                        //rvGiphyStickerSection.scrollToPosition((action.page - 1) * 25)
+                    }
                 }
                 else -> {}
             }
@@ -131,16 +163,16 @@ class MoreStickersFragment : Fragment(),
         super.onViewCreated(view, savedInstanceState)
         interactor.initObserver(viewLifecycleOwner, viewModel)
         binding.apply {
-            rvGiphyStickerSection.content = GPHContent.trendingGifs
-            rvGiphyStickerSection.fixedSizeCells = true
-
-            rvGiphyStickerSection.callback = object : GPHGridCallback {
-                override fun contentDidUpdate(resultCount: Int) {}
-
-                override fun didSelectMedia(media: Media) {
-                    interactor.onStickerClick(media)
-                }
-            }
+//            rvGiphyStickerSection.content = GPHContent.trendingGifs
+//            rvGiphyStickerSection.fixedSizeCells = true
+//
+//            rvGiphyStickerSection.callback = object : GPHGridCallback {
+//                override fun contentDidUpdate(resultCount: Int) {}
+//
+//                override fun didSelectMedia(media: Media) {
+//                    interactor.onStickerClick(media)
+//                }
+//            }
 
             ibtnConfigSticker.setOnClickListener {
                 val rect = Rect()
@@ -150,6 +182,7 @@ class MoreStickersFragment : Fragment(),
                 StickerConfigDialog.newInstance(x, y).show(childFragmentManager, StickerConfigDialog.TAG)
             }
         }
+        interactor.onViewCreated()
     }
 
     private fun hideKeyboard() {
@@ -196,4 +229,9 @@ class MoreStickersFragment : Fragment(),
     override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
 
     override fun afterTextChanged(s: Editable?) {}
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        interactor.onDestroy()
+    }
 }

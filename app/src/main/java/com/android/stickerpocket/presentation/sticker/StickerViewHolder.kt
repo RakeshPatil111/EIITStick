@@ -1,6 +1,8 @@
 package com.android.stickerpocket.presentation.sticker
 
 import android.content.ClipData
+import android.os.Handler
+import android.os.Looper
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import coil.ImageLoader
@@ -26,6 +28,8 @@ class StickerViewHolder(
 ) : RecyclerView.ViewHolder(binding.root) {
 
     private var lastClickTime: Long = 0
+    private var handler: Handler = Handler(Looper.getMainLooper())
+    private val doubleClickDelay: Long = 300  // Milliseconds
 
     fun bind(sticker: Sticker) {
         binding.root.tag = position
@@ -46,16 +50,19 @@ class StickerViewHolder(
             itemClickListener?.let { gif ->
                 if (CommunicationBridge.isOrganizationMode.value == false)
                     sivGifImage.setOnClickListener {
-                        gif(sticker, adapterPosition)
-                    }
-            }
+                        val currentTime = System.currentTimeMillis()
 
-            sivGifImage.setOnClickListener {
-                val clickTime = System.currentTimeMillis()
-                if (clickTime - lastClickTime < DOUBLE_CLICK_TIME_DELTA) {
-                    doubleClickListener?.onItemDoubleClick(sticker, adapterPosition)
-                }
-                lastClickTime = clickTime
+                        if (currentTime - lastClickTime < doubleClickDelay) {
+                            handler.removeCallbacksAndMessages(null)
+                            doubleClickListener?.onItemDoubleClick(sticker, adapterPosition)
+                        } else {
+                            handler.postDelayed({
+                                gif(sticker, adapterPosition)
+                            }, doubleClickDelay)
+                        }
+
+                        lastClickTime = currentTime
+                    }
             }
 
             itemLongClickListener?.let { gif ->

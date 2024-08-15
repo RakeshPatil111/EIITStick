@@ -98,7 +98,7 @@ class MoreStickersFragment : Fragment(),
 
                 is MoreStickerFragmentInteractor.Actions.ShowDownloadStickerDialog -> {
 
-                    val stickerDownloadDialog = StickerDownloadDialog()
+                    val stickerDownloadDialog = StickerDownloadDialog(action.media)
                     stickerDownloadDialog.setupDialogInformation(
                         object : StickerDownloadDialog.StickerDownloadDialogListener {
                             override fun onDownloadSticker() {

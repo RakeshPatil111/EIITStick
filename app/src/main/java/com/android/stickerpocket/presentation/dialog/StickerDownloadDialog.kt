@@ -1,18 +1,29 @@
 package com.android.stickerpocket.presentation.dialog
 
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import coil.ImageLoader
+import coil.decode.GifDecoder
+import coil.decode.ImageDecoderDecoder
+import coil.load
 import com.android.stickerpocket.R
 import com.android.stickerpocket.databinding.CvStickerDownloadDialogBinding
+import com.android.stickerpocket.utils.StickerExt.stickerDTO
+import com.android.stickerpocket.utils.StickerExt.toLoadableImage
+import com.giphy.sdk.core.models.Media
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
-class StickerDownloadDialog : BottomSheetDialogFragment() {
+class StickerDownloadDialog(
+    private val media: Media
+) : BottomSheetDialogFragment() {
 
     private var _binding: CvStickerDownloadDialogBinding? = null
     val binding get() = _binding
     private var listener: StickerDownloadDialogListener? = null
+    private lateinit var imageLoader: ImageLoader
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -25,6 +36,17 @@ class StickerDownloadDialog : BottomSheetDialogFragment() {
             container,
             false
         )
+
+        imageLoader = ImageLoader
+            .Builder(requireContext())
+            .components {
+                if (Build.VERSION.SDK_INT >= 28) {
+                    add(ImageDecoderDecoder.Factory())
+                } else {
+                    add(GifDecoder.Factory())
+                }
+            }
+            .build()
 
         return binding?.root
     }
@@ -39,6 +61,22 @@ class StickerDownloadDialog : BottomSheetDialogFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding?.apply {
+            sivGifImage.load(media.stickerDTO().toLoadableImage(), imageLoader) {
+                target(
+                    onStart = {
+                        binding!!.loading.visibility = View.VISIBLE
+                    },
+                    onSuccess = {
+                        binding!!.loading.visibility = View.GONE
+                        sivGifImage.load(media.stickerDTO().toLoadableImage(), imageLoader)
+                    },
+                    onError = {
+                        // Show error image
+                        // Handle this scene
+                        binding!!.loading.visibility = View.GONE
+                    }
+                )
+            }
 
             tvDownloadSticker.setOnClickListener {
                 this@StickerDownloadDialog.dismiss()

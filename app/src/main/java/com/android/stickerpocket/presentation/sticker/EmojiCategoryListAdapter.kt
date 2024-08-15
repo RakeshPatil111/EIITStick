@@ -12,6 +12,7 @@ import com.android.stickerpocket.domain.model.Category
 import com.android.stickerpocket.utils.ViewExt.removeBorder
 import com.android.stickerpocket.utils.ViewExt.setBorder
 import com.android.stickerpocket.utils.ViewExt.shakeMe
+import com.android.stickerpocket.utils.ViewExt.zoomIn
 
 class EmojiCategoryListAdapter :
     RecyclerView.Adapter<EmojiCategoryListAdapter.StepperViewHolder>(){
@@ -37,7 +38,7 @@ class EmojiCategoryListAdapter :
         val category = differ.currentList[position]
         holder.bind(category, position)
         if (position == hoverItem) {
-            holder.binding.root.shakeMe()
+            holder.binding.root.zoomIn()
             hoverItem = -1
         }
     }

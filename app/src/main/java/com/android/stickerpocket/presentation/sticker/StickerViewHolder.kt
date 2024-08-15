@@ -58,6 +58,7 @@ class StickerViewHolder(
                 lastClickTime = clickTime
             }
 
+
             itemLongClickListener?.let { gif ->
                     sivGifImage.setOnLongClickListener {
                        // gif(sticker, adapterPosition)

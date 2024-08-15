@@ -1,5 +1,6 @@
 package com.android.stickerpocket.presentation.sticker
 
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -652,6 +653,7 @@ class StickerViewModel : ViewModel() {
         trendingGifResponse?.let {
             it.data.forEachIndexed { index, data ->
                 val item = data.toStickerDTO()
+                Log.w("ViewModle", "${item.thumbnail}")
                 trendingGIPHYGifs.add(item)
             }
             _liveData.postValue(Result.TrendingStickers(trendingGIPHYGifs, it.pagination.offset))

@@ -88,12 +88,9 @@ class TrendingGiphyAdapter: RecyclerView.Adapter<TrendingGiphyAdapter.ViewHolder
 
     fun updateList(newList: List<StickerDTO>, page: Int = 1) {
         items = newList
-        //items.addAll((page-1)*18, newList)
-        //items.addAll(newList)
         loading = false
         currentPage = page
-        notifyDataSetChanged()
-        //notifyItemRangeChanged((page-1)*18, items.size)
+        notifyItemRangeChanged((page-1)*18, items.size)
     }
 
     fun setListener(itemListener: OnTrendingGifListener) {

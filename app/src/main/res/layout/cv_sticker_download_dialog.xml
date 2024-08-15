@@ -1,21 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:background="@android:color/white"
-    android:paddingVertical="@dimen/dimen_24dp"
+    android:paddingVertical="@dimen/dimen_12dp"
     android:gravity="center_horizontal">
+
+    <ProgressBar
+        android:id="@+id/loading"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:elevation="4dp"
+        app:layout_constraintBottom_toBottomOf="@+id/siv_gif_image"
+        app:layout_constraintEnd_toEndOf="@+id/siv_gif_image"
+        app:layout_constraintStart_toStartOf="@+id/siv_gif_image"
+        app:layout_constraintTop_toTopOf="@+id/siv_gif_image" />
+
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/siv_gif_image"
+        android:layout_width="220dp"
+        android:layout_height="220dp"
+        android:layout_margin="@dimen/dimen_24dp"
+        android:background="@color/black"
+        android:padding="@dimen/dimen_1dp"
+        android:scaleType="centerCrop"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:shapeAppearance="@style/ShapeAppearance.ImageView"
+        tools:src="@tools:sample/avatars" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/tv_download_sticker"
         style="@style/Widget.AppCompat.TextView.Options"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="@dimen/text_dimen_12"
-        android:text="@string/download_sticker"
         android:drawablePadding="@dimen/dimen_24dp"
+        android:text="@string/download_sticker"
+        android:layout_marginTop="@dimen/dimen_8dp"
+        android:padding="@dimen/dimen_12dp"
+        android:textColor="@android:color/black"
         app:drawableStartCompat="@drawable/ic_download"
-        android:textColor="@android:color/black" />
-</LinearLayout>
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/siv_gif_image" />
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -73,7 +73,6 @@ class StickerViewHolder(
                                     sourceStickerPosition: Int,
                                     targetCategoryPosition: Int
                                 ) {
-                                    it.visibility = View.GONE
                                     itemStickerDropListener?.invoke(sourceStickerPosition, targetCategoryPosition)
                                 }
 

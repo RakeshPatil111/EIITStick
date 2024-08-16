@@ -14,6 +14,11 @@ object ViewExt {
         this.startAnimation(animation)
     }
 
+    fun View.zoomIn() {
+        val animation = android.view.animation.AnimationUtils.loadAnimation(this.context, R.anim.zoom_in_item)
+        this.startAnimation(animation)
+    }
+
     fun MaterialCardView.setBorder() {
         this.strokeColor = Color.GREEN
         this.strokeWidth = 6

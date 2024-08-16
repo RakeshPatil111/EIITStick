@@ -95,7 +95,7 @@
         android:text="@string/power_by_giphy"
         android:layout_marginStart="@dimen/dimen_4dp"
         app:layout_constraintBottom_toBottomOf="@+id/tv_giphy_trending_title"
-        app:layout_constraintStart_toEndOf="@+id/tv_giphy_trending_title"
+         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/tv_giphy_trending_title" />
 
     <androidx.recyclerview.widget.RecyclerView
@@ -135,7 +135,7 @@
         android:textAppearance="?attr/textAppearanceSubtitle2"
         android:textColor="@color/color_primary_variant"
         app:layout_constraintBottom_toBottomOf="@+id/tv_tenor_trending_title"
-        app:layout_constraintStart_toEndOf="@+id/tv_tenor_trending_title"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/tv_tenor_trending_title" />
 
     <androidx.recyclerview.widget.RecyclerView

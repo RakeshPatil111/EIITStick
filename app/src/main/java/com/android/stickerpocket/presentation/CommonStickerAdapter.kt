@@ -67,8 +67,6 @@ class CommonStickerAdapter() : RecyclerView.Adapter<StickerViewHolder>() {
         this.actionItemClick = action
     }
 
-    fun getList() = stickers
-
     fun onItemLongClick(action: (sticker: Sticker, position: Int) -> Unit){
         this.actionItemLongClick = action
     }

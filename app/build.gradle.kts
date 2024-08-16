@@ -1,3 +1,6 @@
+import com.android.build.gradle.internal.dsl.decorator.SupportedPropertyType.Var.Boolean.type
+import org.gradle.internal.impldep.bsh.commands.dir
+import org.jetbrains.kotlin.ir.backend.js.compile
 import java.util.Properties
 
 plugins {
@@ -76,10 +79,11 @@ dependencies {
     implementation(libs.okhttp)
     implementation(libs.androidx.emoji2.emojipicker)
     implementation(libs.fresco)
+    implementation(libs.converter.gson)
+    implementation (libs.logging.interceptor)
 
     implementation(libs.androidx.viewpager2)
 
     // Add the Appodeal SDK dependency
     implementation(libs.appodeal)
-
 }

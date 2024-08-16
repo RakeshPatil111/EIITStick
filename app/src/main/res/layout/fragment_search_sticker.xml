@@ -94,26 +94,25 @@
         android:textColor="@color/color_primary_variant"
         android:text="@string/power_by_giphy"
         android:layout_marginStart="@dimen/dimen_4dp"
+        android:layout_marginEnd="@dimen/dimen_12dp"
         app:layout_constraintBottom_toBottomOf="@+id/tv_giphy_trending_title"
          app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/tv_giphy_trending_title" />
 
-    <com.giphy.sdk.ui.views.GiphyGridView
+    <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_giphy_sticker_section"
-        android:layout_width="match_parent"
-        android:layout_height="180dp"
-        android:clipToPadding="false"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/dimen_200dp"
         android:padding="@dimen/dimen_4dp"
-        app:gphDirection="horizontal"
-        app:gphCellPadding="@dimen/dimen_10dp"
-        app:gphSpanCount="2"
+        android:layout_margin="@dimen/dimen_4dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tv_giphy_trending_title"
         app:layout_constraintVertical_bias="0.0"
-        tools:listitem="@layout/cv_sticker_section_item" />
+        tools:listitem="@layout/cv_gif_item"
+        tools:itemCount="25"/>
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/tv_tenor_trending_title"
@@ -134,6 +133,7 @@
         android:layout_height="wrap_content"
         android:text="@string/power_by_tenor"
         android:layout_marginStart="@dimen/dimen_4dp"
+        android:layout_marginEnd="@dimen/dimen_12dp"
         android:textAppearance="?attr/textAppearanceSubtitle2"
         android:textColor="@color/color_primary_variant"
         app:layout_constraintBottom_toBottomOf="@+id/tv_tenor_trending_title"
@@ -145,6 +145,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
+        android:padding="@dimen/dimen_4dp"
+        android:layout_margin="@dimen/dimen_4dp"
         app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

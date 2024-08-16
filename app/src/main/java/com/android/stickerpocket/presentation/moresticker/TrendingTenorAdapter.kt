@@ -9,20 +9,17 @@ import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import coil.ImageLoader
 import coil.decode.GifDecoder
 import coil.decode.ImageDecoderDecoder
 import coil.load
 import com.android.stickerpocket.databinding.CvGifItemBinding
-import com.android.stickerpocket.domain.model.Category
-import com.android.stickerpocket.network.response.Data
 import com.android.stickerpocket.presentation.StickerDTO
 import com.android.stickerpocket.presentation.sticker.StickerActivity
 
 
-class TrendingGiphyAdapter: RecyclerView.Adapter<TrendingGiphyAdapter.ViewHolder>() {
+class TrendingTenorAdapter: RecyclerView.Adapter<TrendingTenorAdapter.ViewHolder>() {
 
     var items: List<StickerDTO> = listOf()
     private lateinit var imageLoader: ImageLoader
@@ -60,10 +57,11 @@ class TrendingGiphyAdapter: RecyclerView.Adapter<TrendingGiphyAdapter.ViewHolder
         val item = items[position]
         Log.w("ITEM", "${item.id}, $position")
         val itemPadding = 12
+
         //here you may change the divide amount from 2.5 to whatever you need
         val itemWidth = (screenWidth - itemPadding).div(3.25)
         val layoutParams = holder.itemView.layoutParams as RecyclerView.LayoutParams
-        layoutParams.height = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 90F,
+        layoutParams.height = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 95F,
             holder.itemView.context.resources.displayMetrics).toInt()
         layoutParams.width = itemWidth.toInt()
         layoutParams.topMargin = 12
@@ -74,12 +72,12 @@ class TrendingGiphyAdapter: RecyclerView.Adapter<TrendingGiphyAdapter.ViewHolder
             cbSelect.visibility = View.GONE
             favImg.visibility = View.GONE
             sivGifImage.load(item.thumbnail, imageLoader) {
-            target(
-                onSuccess = {
-                    Log.w("ITEM", "${item.thumbnail}, $position")
-                    holder.binding.sivGifImage.load(item.thumbnail, imageLoader)
-                }
-            )
+                target(
+                    onSuccess = {
+                        Log.w("ITEM", "${item.thumbnail}, $position")
+                        holder.binding.sivGifImage.load(item.thumbnail, imageLoader)
+                    }
+                )
             }
         }
         if (!loading && position == items.size - 2) {
@@ -91,9 +89,7 @@ class TrendingGiphyAdapter: RecyclerView.Adapter<TrendingGiphyAdapter.ViewHolder
 
     fun updateList(newList: List<StickerDTO>, page: Int = 1) {
         items = newList
-        loading = false
-        currentPage = page
-        notifyItemRangeChanged((page-1)*18, items.size)
+        notifyDataSetChanged()
     }
 
     fun setListener(itemListener: OnTrendingGifListener) {

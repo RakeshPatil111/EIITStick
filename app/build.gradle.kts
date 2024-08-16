@@ -1,3 +1,6 @@
+import com.android.build.gradle.internal.dsl.decorator.SupportedPropertyType.Var.Boolean.type
+import org.gradle.internal.impldep.bsh.commands.dir
+import org.jetbrains.kotlin.ir.backend.js.compile
 import java.util.Properties
 
 plugins {
@@ -83,5 +86,4 @@ dependencies {
 
     // Add the Appodeal SDK dependency
     implementation(libs.appodeal)
-
 }

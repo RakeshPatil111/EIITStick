@@ -51,6 +51,7 @@ class MoreStickersFragment : Fragment(),
     }
 
     private lateinit var trendingGifAdapter: TrendingGiphyAdapter
+    private lateinit var trendingTenorAdapter: TrendingTenorAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -130,6 +131,7 @@ class MoreStickersFragment : Fragment(),
                 } else {
                     binding.llProgress.visibility = GONE
                 }
+
                 is MoreStickerFragmentInteractor.Actions.ShowTrendingGiphyStickers -> {
                     binding.apply {
                         if (!::trendingGifAdapter.isInitialized) {
@@ -151,6 +153,31 @@ class MoreStickersFragment : Fragment(),
                             })
                         }
                         trendingGifAdapter.updateList(action.data, action.page)
+                        //rvGiphyStickerSection.scrollToPosition((action.page - 1) * 25)
+                    }
+                }
+
+                is MoreStickerFragmentInteractor.Actions.ShowTrendingTenorStickers -> {
+                    binding.apply {
+                        if (!::trendingTenorAdapter.isInitialized) {
+                            trendingTenorAdapter = TrendingTenorAdapter()
+                            rvTenorStickerSection.adapter = trendingTenorAdapter
+                            val snapHelper = PagerSnapHelper()
+                            snapHelper.attachToRecyclerView(rvTenorStickerSection)
+                            rvTenorStickerSection.layoutManager =
+                                GridLayoutManager(requireContext(), 2, RecyclerView.HORIZONTAL, false)
+                            trendingTenorAdapter.setListener(object : TrendingTenorAdapter.OnTrendingGifListener {
+                                override fun onGifItemClick(item: StickerDTO) {
+
+                                }
+
+                                override fun loadMore() {
+                                    interactor.onLoadMoreTrendingStickers()
+                                }
+
+                            })
+                        }
+                        trendingTenorAdapter.updateList(action.data, action.page)
                         //rvGiphyStickerSection.scrollToPosition((action.page - 1) * 25)
                     }
                 }

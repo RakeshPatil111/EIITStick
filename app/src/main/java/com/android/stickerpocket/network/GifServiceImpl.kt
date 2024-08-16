@@ -5,7 +5,7 @@ import retrofit2.Response
 
 object GifServiceImpl {
     suspend fun getGifs(limit: Int = 25, query: String = "", page: Int = 0, randomId: String): Response<GifResponse> {
-        return GifAPI.retrofitService.getGifs(randomId = randomId, limit = 18, page = page)
+        return GifAPI.retrofitService.getGifs(randomId = randomId, limit = 25, page = page)
     }
 
     suspend fun getGifsForQuery(
@@ -14,6 +14,6 @@ object GifServiceImpl {
         page: Int = 0,
         randomId: String
     ): Response<GifResponse> {
-        return GifAPI.retrofitService.getGifsForQuery(randomId = randomId, limit = 18, query = query, page = page)
+        return GifAPI.retrofitService.getGifsForQuery(randomId = randomId, limit = 25, query = query, page = page)
     }
 }

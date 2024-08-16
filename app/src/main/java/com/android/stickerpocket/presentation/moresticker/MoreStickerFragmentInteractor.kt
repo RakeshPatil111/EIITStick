@@ -3,7 +3,6 @@ package com.android.stickerpocket.presentation.moresticker
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
-import com.android.stickerpocket.network.response.Data
 import com.android.stickerpocket.presentation.StickerDTO
 import com.android.stickerpocket.presentation.sticker.StickerViewModel
 import com.android.stickerpocket.utils.Event
@@ -15,6 +14,7 @@ class MoreStickerFragmentInteractor {
         data class ShowDownloadStickerDialog(val media: Media) : Actions()
         data class ShowProgress(val showProgress: Boolean) : Actions()
         data class ShowTrendingGiphyStickers(val data: List<StickerDTO>, val page: Int = 0) : Actions()
+        data class ShowTrendingTenorStickers(val data: List<StickerDTO>, val page: Int = 0) : Actions()
     }
     private val _liveData = MutableLiveData<Event<Actions>>()
     val liveData = _liveData
@@ -27,8 +27,11 @@ class MoreStickerFragmentInteractor {
                 is StickerViewModel.Result.ShowProgress -> {
                     _liveData.value = Event(Actions.ShowProgress(it.showProgress))
                 }
-                is StickerViewModel.Result.TrendingStickers -> {
+                is StickerViewModel.Result.TrendingGiphyStickers -> {
                     _liveData.value = Event(Actions.ShowTrendingGiphyStickers(it.data, it.page+1))
+                }
+                is StickerViewModel.Result.TrendingTenorStickers -> {
+                    _liveData.value = Event(Actions.ShowTrendingTenorStickers(it.data, it.page+1))
                 }
                 else -> {}
             }
@@ -40,7 +43,7 @@ class MoreStickerFragmentInteractor {
     }
 
     fun onViewCreated() {
-        viewModel.getTrendingStickers()
+        viewModel.getTrendingGifs()
     }
 
     fun onLoadMoreTrendingStickers() {

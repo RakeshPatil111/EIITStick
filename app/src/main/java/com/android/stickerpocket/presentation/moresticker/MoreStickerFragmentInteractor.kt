@@ -6,15 +6,13 @@ import androidx.lifecycle.Observer
 import com.android.stickerpocket.presentation.StickerDTO
 import com.android.stickerpocket.presentation.sticker.StickerViewModel
 import com.android.stickerpocket.utils.Event
-import com.giphy.sdk.core.models.Media
 
 class MoreStickerFragmentInteractor {
 
     sealed class Actions {
-        data class ShowDownloadStickerDialog(val media: Media) : Actions()
+        data class ShowDownloadStickerDialog(val media: StickerDTO) : Actions()
         data class ShowProgress(val showProgress: Boolean) : Actions()
-        data class ShowTrendingGiphyStickers(val data: List<StickerDTO>, val page: Int = 0) : Actions()
-        data class ShowTrendingTenorStickers(val data: List<StickerDTO>, val page: Int = 0) : Actions()
+        data class ShowTrendingGiphyStickers(val giphyGifs: List<StickerDTO>, val tenorGifs: List<StickerDTO>) : Actions()
     }
     private val _liveData = MutableLiveData<Event<Actions>>()
     val liveData = _liveData
@@ -22,28 +20,26 @@ class MoreStickerFragmentInteractor {
 
     fun initObserver(viewLifecycleOwner: LifecycleOwner, viewModel: StickerViewModel) {
         this.viewModel = viewModel
+        viewModel.getTrendingGifs()
         viewModel.liveData.observe(viewLifecycleOwner, Observer {
             when (it) {
                 is StickerViewModel.Result.ShowProgress -> {
                     _liveData.value = Event(Actions.ShowProgress(it.showProgress))
                 }
                 is StickerViewModel.Result.TrendingGiphyStickers -> {
-                    _liveData.value = Event(Actions.ShowTrendingGiphyStickers(it.data, it.page+1))
-                }
-                is StickerViewModel.Result.TrendingTenorStickers -> {
-                    _liveData.value = Event(Actions.ShowTrendingTenorStickers(it.data, it.page+1))
+                    _liveData.value = Event(Actions.ShowTrendingGiphyStickers(it.giphyGifs, it.tenorGifs))
                 }
                 else -> {}
             }
         })
     }
 
-    fun onStickerClick(media: Media) {
+    fun onStickerClick(media: StickerDTO) {
         _liveData.value = Event(Actions.ShowDownloadStickerDialog(media))
     }
 
     fun onViewCreated() {
-        viewModel.getTrendingGifs()
+        viewModel.loadTrendingGifs()
     }
 
     fun onLoadMoreTrendingStickers() {
@@ -51,6 +47,6 @@ class MoreStickerFragmentInteractor {
     }
 
     fun onDestroy() {
-        viewModel.resetResponse()
+        //viewModel.resetResponse()
     }
 }

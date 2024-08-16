@@ -17,17 +17,16 @@ import coil.load
 import com.android.stickerpocket.databinding.CvGifItemBinding
 import com.android.stickerpocket.presentation.StickerDTO
 import com.android.stickerpocket.presentation.sticker.StickerActivity
+import com.android.stickerpocket.utils.StickerExt.toLoadableImage
 
 
 class TrendingTenorAdapter: RecyclerView.Adapter<TrendingTenorAdapter.ViewHolder>() {
 
-    var items: List<StickerDTO> = listOf()
+    private var items: List<StickerDTO> = listOf()
     private lateinit var imageLoader: ImageLoader
     var displayMetrics = DisplayMetrics()
     private var screenWidth = 0
-    private var loading = false
     private lateinit var listenr: OnTrendingGifListener
-    private var currentPage = 0
 
     inner class ViewHolder(val binding: CvGifItemBinding): RecyclerView.ViewHolder(binding.root)
 
@@ -73,21 +72,21 @@ class TrendingTenorAdapter: RecyclerView.Adapter<TrendingTenorAdapter.ViewHolder
             favImg.visibility = View.GONE
             sivGifImage.load(item.thumbnail, imageLoader) {
                 target(
+                    onStart = {
+                        loader.visibility = View.VISIBLE
+                    },
                     onSuccess = {
-                        Log.w("ITEM", "${item.thumbnail}, $position")
-                        holder.binding.sivGifImage.load(item.thumbnail, imageLoader)
+                        loader.visibility = View.GONE
+                        sivGifImage.load(item.thumbnail, imageLoader)
                     }
                 )
             }
         }
-        if (!loading && position == items.size - 2) {
-            loading = true
-            listenr.loadMore()
-        }
+
         holder.binding.root.setOnClickListener { listenr.onGifItemClick(item) }
     }
 
-    fun updateList(newList: List<StickerDTO>, page: Int = 1) {
+    fun updateList(newList: List<StickerDTO>) {
         items = newList
         notifyDataSetChanged()
     }

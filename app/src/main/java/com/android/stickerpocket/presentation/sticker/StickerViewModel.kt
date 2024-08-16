@@ -48,6 +48,7 @@ import com.android.stickerpocket.utils.toStickerDTO
 import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -77,8 +78,7 @@ class StickerViewModel : ViewModel() {
         class FetchedRecentStickers(val list: List<Sticker>) : Result()
         object StickerDTOUpdated : Result()
         data class StickerUpdated(val updatedSticker: Sticker) : Result()
-        data class TrendingGiphyStickers(val data: List<StickerDTO>, val page: Int = 0) : Result()
-        data class TrendingTenorStickers(val data: List<StickerDTO>, val page: Int = 0) : Result()
+        data class TrendingGiphyStickers(val giphyGifs: List<StickerDTO>, val tenorGifs: List<StickerDTO>) : Result()
     }
 
     private val _liveData = MutableLiveData<Result>()
@@ -123,6 +123,7 @@ class StickerViewModel : ViewModel() {
     private val fetchTrendingGifUseCase = FetchTrendingGifUseCase()
     private val fetchTenorGifsUseCase = FetchTenorGifsUseCase()
     private val randomId = UUID.randomUUID().toString()
+    private lateinit var fetchAPIFromServeJob: Job
 
     init {
         deleteRecentSearchUseCase =
@@ -633,14 +634,21 @@ class StickerViewModel : ViewModel() {
     }
 
     fun getTrendingGifs() {
-        CoroutineScope(Dispatchers.IO).launch {
-            trendingGifResponse = fetchTrendingGifUseCase.execute(randomId = randomId)
-            handleGiphyTrendingResponse(trendingGifResponse)
+        if (trendingGifResponse != null && trendingTenorGifs != null) {
+            return
         }
-
-        CoroutineScope(Dispatchers.IO).launch {
-            trendingTenorGifsResponse = fetchTenorGifsUseCase.execute()
-            handleTenorTrendingResponse(trendingTenorGifsResponse)
+        // GIPHY API called twice to fetch 50 GIFS, max limit in one Req is 25
+        fetchAPIFromServeJob = CoroutineScope(Dispatchers.IO).launch {
+            launch {
+                for (i in 0..1) {
+                    trendingGifResponse = fetchTrendingGifUseCase.execute(randomId = randomId, page = i)
+                    handleGiphyTrendingResponse(trendingGifResponse)
+                }
+            }
+            launch {
+                trendingTenorGifsResponse = fetchTenorGifsUseCase.execute()
+                handleTenorTrendingResponse(trendingTenorGifsResponse)
+            }
         }
     }
 
@@ -664,7 +672,6 @@ class StickerViewModel : ViewModel() {
                 Log.w("ViewModle", "${trendingGIPHYGifs.contains(item)}")
                 trendingGIPHYGifs.add(item)
             }
-            _liveData.postValue(Result.TrendingGiphyStickers(trendingGIPHYGifs, it.pagination.offset))
         }
     }
 
@@ -674,7 +681,16 @@ class StickerViewModel : ViewModel() {
                 val item = it.toStickerDTO()
                 trendingTenorGifs.add(item)
             }
-            _liveData.postValue(Result.TrendingTenorStickers(trendingTenorGifs))
+        }
+    }
+
+    fun loadTrendingGifs() {
+        if (trendingGifResponse == null) {
+            fetchAPIFromServeJob.cancel()
+            getTrendingGifs()
+            fetchAPIFromServeJob.invokeOnCompletion { _liveData.postValue(Result.TrendingGiphyStickers(trendingGIPHYGifs, trendingTenorGifs)) }
+        } else {
+            _liveData.postValue(Result.TrendingGiphyStickers(trendingGIPHYGifs, trendingTenorGifs))
         }
     }
 

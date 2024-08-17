@@ -122,8 +122,13 @@ class StickerViewModel : ViewModel() {
     private var trendingTenorGifs = mutableListOf<StickerDTO>()
     private val fetchTrendingGifUseCase = FetchTrendingGifUseCase()
     private val fetchTenorGifsUseCase = FetchTenorGifsUseCase()
+    private var queryGifResponse: GifResponse? = null
+    private var queryTenorGifsResponse: TenorGifs? = null
+    private var queryGIPHYGifs = mutableListOf<StickerDTO>()
+    private var queryTenorGifs = mutableListOf<StickerDTO>()
     private val randomId = UUID.randomUUID().toString()
     private lateinit var fetchAPIFromServeJob: Job
+    private var query: String? = null
 
     init {
         deleteRecentSearchUseCase =
@@ -652,6 +657,35 @@ class StickerViewModel : ViewModel() {
         }
     }
 
+    fun getQueryGifs(searchQuery: String?) {
+        searchQuery?.let {
+            query = it
+            queryGIPHYGifs.clear()
+            queryTenorGifs.clear()
+            fetchAPIFromServeJob.cancel()
+            fetchAPIFromServeJob = CoroutineScope(Dispatchers.IO).launch {
+                launch {
+                    for (i in 0..1) {
+                        queryGifResponse = fetchTrendingGifUseCase.execute(
+                            randomId = randomId,
+                            page = i,
+                            query = query!!
+                        )
+                        handleGiphyTrendingResponse(queryGifResponse)
+                    }
+                }
+                launch {
+                    queryTenorGifsResponse = fetchTenorGifsUseCase.execute(query = query!!)
+                    handleTenorTrendingResponse(queryTenorGifsResponse)
+                }
+            }
+
+            fetchAPIFromServeJob.invokeOnCompletion {
+                _liveData.postValue(Result.TrendingGiphyStickers(queryGIPHYGifs, queryTenorGifs))
+            }
+        }
+    }
+
     fun loadMoreGiphyStickers() {
         CoroutineScope(Dispatchers.IO).launch {
             val page = trendingGifResponse?.pagination?.offset?.plus(1) ?: 0
@@ -664,22 +698,22 @@ class StickerViewModel : ViewModel() {
         trendingGifResponse = null
     }
 
-    private fun handleGiphyTrendingResponse(trendingGifResponse: GifResponse?) {
-        trendingGifResponse?.let {
+    private fun handleGiphyTrendingResponse(gifResponse: GifResponse?) {
+        gifResponse?.let {
             Log.w("ViewModle", "${it.data.size}")
             it.data.forEachIndexed { index, data ->
                 val item = data.toStickerDTO()
                 Log.w("ViewModle", "${trendingGIPHYGifs.contains(item)}")
-                trendingGIPHYGifs.add(item)
+                if(query != null) queryGIPHYGifs.add(item) else trendingGIPHYGifs.add(item)
             }
         }
     }
 
-    private fun handleTenorTrendingResponse(response: TenorGifs?) {
-        response?.let {
+    private fun handleTenorTrendingResponse(gifResponse: TenorGifs?) {
+        gifResponse?.let {
             it.results.forEach {
                 val item = it.toStickerDTO()
-                trendingTenorGifs.add(item)
+                if(query != null) queryTenorGifs.add(item) else trendingTenorGifs.add(item)
             }
         }
     }

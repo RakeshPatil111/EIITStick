@@ -26,9 +26,15 @@ import com.android.stickerpocket.databinding.FragmentSearchStickerBinding
 import com.android.stickerpocket.presentation.StickerDTO
 import com.android.stickerpocket.presentation.dialog.StickerConfigDialog
 import com.android.stickerpocket.presentation.dialog.StickerDownloadDialog
+import com.android.stickerpocket.presentation.sticker.RecentSearchAdapter
+import com.android.stickerpocket.presentation.sticker.StickerFragmentInteractor
 import com.android.stickerpocket.presentation.sticker.StickerViewModel
+import com.android.stickerpocket.utils.CommunicationBridge
 import com.android.stickerpocket.utils.StickerExt.stickerDTO
 import com.google.android.material.textfield.TextInputEditText
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.launch
 
 class MoreStickersFragment : Fragment(),
     StickerConfigDialog.StickerConfigDialogListener,
@@ -36,6 +42,8 @@ class MoreStickersFragment : Fragment(),
 
     private lateinit var binding: FragmentSearchStickerBinding
     private val viewModel by viewModels<StickerViewModel>()
+    private lateinit var recentSearchAdapter: RecentSearchAdapter
+    var searchJob: Job? = null
 
     private val interactor by lazy {
         MoreStickerFragmentInteractor()
@@ -50,6 +58,8 @@ class MoreStickersFragment : Fragment(),
     ): View? {
         binding = FragmentSearchStickerBinding.inflate(inflater, container, false)
         interactor.initObserver(viewLifecycleOwner, viewModel)
+        setClickListeners()
+        setupRecentSearchRecyclerView()
         observeInteractor()
 
         binding.apply {
@@ -60,13 +70,21 @@ class MoreStickersFragment : Fragment(),
                     val query = view.text.toString()
                     hideKeyboard()
                     if (query.isEmpty() && tietSearch.hasFocus()) {
-                        rvRecentSearch.visibility = View.VISIBLE
-                        rvGiphyStickerSection.visibility = View.GONE
-                        tvGiphyTrendingTitle.visibility = View.GONE
-                        tvGiphyTitle.visibility = View.GONE
-
+                        rvRecentSearch.visibility = VISIBLE
+                        nsvDefaultTrendingStickers.visibility = GONE
                     } else {
-
+                        searchJob?.cancel()
+                        searchJob = MainScope().launch {
+                            query.let {
+                                if (it.trim()
+                                        .isNotEmpty()
+                                ) {
+                                    rvRecentSearch.visibility = GONE
+                                    nsvDefaultTrendingStickers.visibility = VISIBLE
+                                    interactor.onQuerySearch(it)
+                                }
+                            }
+                        }
                     }
                     true
                 } else {
@@ -81,10 +99,9 @@ class MoreStickersFragment : Fragment(),
                     tietSearch.clearFocus()
                     tietSearch.text?.clear()
                     addChangeListeners(tietSearch)
-                    rvRecentSearch.visibility = View.GONE
-                    //currentRecyclerView = rvStickers
-                    //interactor.onEditTextClear()
-                    //currentRecyclerView.visibility = View.VISIBLE
+                    rvRecentSearch.visibility = GONE
+                    interactor.onEditTextClear()
+                    nsvDefaultTrendingStickers.visibility = VISIBLE
                 } else {
                     tietSearch.text?.clear()
                 }
@@ -97,17 +114,6 @@ class MoreStickersFragment : Fragment(),
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.apply {
-//            rvGiphyStickerSection.content = GPHContent.trendingGifs
-//            rvGiphyStickerSection.fixedSizeCells = true
-//
-//            rvGiphyStickerSection.callback = object : GPHGridCallback {
-//                override fun contentDidUpdate(resultCount: Int) {}
-//
-//                override fun didSelectMedia(media: Media) {
-//                    interactor.onStickerClick(media)
-//                }
-//            }
-
             ibtnConfigSticker.setOnClickListener {
                 val rect = Rect()
                 it.getGlobalVisibleRect(rect)
@@ -148,7 +154,6 @@ class MoreStickersFragment : Fragment(),
                 } else {
                     binding.llProgress.visibility = GONE
                 }
-
                 is MoreStickerFragmentInteractor.Actions.ShowTrendingGiphyStickers -> {
                     binding.apply {
                         if (!::trendingGifAdapter.isInitialized && !::trendingTenorAdapter.isInitialized ) {
@@ -159,10 +164,52 @@ class MoreStickersFragment : Fragment(),
                         trendingTenorAdapter.updateList(action.tenorGifs)
                     }
                 }
-
+                is MoreStickerFragmentInteractor.Actions.HideGiphyTenorGridViewAndShowRecentSearches -> {
+                    binding.apply {
+                        rvRecentSearch.visibility = VISIBLE
+                        nsvDefaultTrendingStickers.visibility = GONE
+                    }
+                }
+                is MoreStickerFragmentInteractor.Actions.ShowRecentSearches -> {
+                    recentSearchAdapter.updateList(action.recentSearches)
+                    binding.rvRecentSearch.visibility = VISIBLE
+                    binding.nsvDefaultTrendingStickers.visibility = GONE
+                }
+                is MoreStickerFragmentInteractor.Actions.clearAllRecentSearchAndHideView -> {
+                    hideKeyboard()
+                    binding.apply {
+                        binding.rvRecentSearch.visibility = GONE
+                        binding.nsvDefaultTrendingStickers.visibility = VISIBLE
+                    }
+                }
                 else -> {}
             }
         })
+    }
+
+    private fun setupRecentSearchRecyclerView() {
+        recentSearchAdapter = RecentSearchAdapter()
+        binding.rvRecentSearch.adapter = recentSearchAdapter
+        recentSearchAdapter.setOnRecentSearchClickListener(object :
+            RecentSearchAdapter.OnRecentSearchClickListener {
+            override fun onRecentSearchClick(position: Int) {
+                interactor.onRecentSearchItemClick(position)
+            }
+
+            override fun onRecentSearchRemove(position: Int) {
+                interactor.onRecentSearchRemove(position)
+            }
+
+            override fun onClearRecentSearchClick() {
+                interactor.onClearAllRecentSearch()
+            }
+        })
+    }
+
+    private fun setClickListeners() {
+        binding.apply {
+            addChangeListeners(tietSearch)
+        }
     }
 
     private fun initTenorAdapter() {
@@ -221,7 +268,7 @@ class MoreStickersFragment : Fragment(),
         tietSearch.setOnFocusChangeListener { v, hasFocus ->
             tietSearch.isCursorVisible = true
             if (hasFocus) {
-                //interactor.onSearchClick()
+                interactor.onSearchClick()
             } else {
                 tietSearch.isCursorVisible = false
             }
@@ -231,7 +278,6 @@ class MoreStickersFragment : Fragment(),
     private fun removeChangeListeners(tietSearch: TextInputEditText) {
         tietSearch.removeTextChangedListener(this)
         tietSearch.setOnClickListener(null)
-        //exitSelectionMode()
     }
 
     override fun onGiphyStatusChange(status: Boolean) {
@@ -244,7 +290,7 @@ class MoreStickersFragment : Fragment(),
 
     override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
         if (binding.tietSearch.hasFocus()) {
-            //interactor.onSearchClick()
+            interactor.onSearchClick()
         }
     }
 

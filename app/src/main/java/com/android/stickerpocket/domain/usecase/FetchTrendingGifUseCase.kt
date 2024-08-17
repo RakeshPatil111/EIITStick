@@ -7,7 +7,7 @@ class FetchTrendingGifUseCase {
     suspend fun execute(randomId: String, query: String = "", page: Int = 0): GifResponse? {
         try {
             val response = if (query.isEmpty()) GifServiceImpl.getGifs(randomId = randomId, page = page)
-            else GifServiceImpl.getGifsForQuery(randomId = randomId,page = page)
+            else GifServiceImpl.getGifsForQuery(randomId = randomId,page = page, query = query)
             if (response.isSuccessful) {
                 return response.body()
             }

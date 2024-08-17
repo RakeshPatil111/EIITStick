@@ -102,6 +102,7 @@ class MoreStickersFragment : Fragment(),
                     rvRecentSearch.visibility = GONE
                     interactor.onEditTextClear()
                     nsvDefaultTrendingStickers.visibility = VISIBLE
+                    interactor.onViewCreated()
                 } else {
                     tietSearch.text?.clear()
                 }
@@ -162,6 +163,8 @@ class MoreStickersFragment : Fragment(),
                         }
                         trendingGifAdapter.updateList(action.giphyGifs)
                         trendingTenorAdapter.updateList(action.tenorGifs)
+                        if(action.giphyGifs.isEmpty()) cvNoGiphySticker.visibility = VISIBLE else cvNoGiphySticker.visibility = GONE
+                        if(action.tenorGifs.isEmpty()) cvNoTenorSticker.visibility = VISIBLE else cvNoTenorSticker.visibility = GONE
                     }
                 }
                 is MoreStickerFragmentInteractor.Actions.HideGiphyTenorGridViewAndShowRecentSearches -> {

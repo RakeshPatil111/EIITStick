@@ -7,6 +7,7 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
+import retrofit2.http.POST
 import retrofit2.http.Query
 
 private const val BASE_URL =
@@ -22,11 +23,12 @@ interface GifService {
         @Query("rating") rating: String = "pg"
     ) : Response<GifResponse>
 
+    @GET("search")
     suspend fun getGifsForQuery(
-        @retrofit2.http.Query("api_key") apiKey: String = "UE20qxVTbBaoaVzWtCnKV5ZBuhEfuWkm",
-        @retrofit2.http.Query("limit") limit: Int = 25,
-        @retrofit2.http.Query("q") query: String = "",
-        @retrofit2.http.Query("offset") page: Int = 0,
+        @Query("api_key") apiKey: String = "UE20qxVTbBaoaVzWtCnKV5ZBuhEfuWkm",
+        @Query("limit") limit: Int = 25,
+        @Query("q") query: String = "",
+        @Query("offset") page: Int = 0,
         @Query("random_id") randomId: String,
         @Query("rating") rating: String = "pg"
     ) : Response<GifResponse>

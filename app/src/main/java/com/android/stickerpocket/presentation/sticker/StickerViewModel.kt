@@ -668,7 +668,7 @@ class StickerViewModel : ViewModel() {
                     for (i in 0..1) {
                         queryGifResponse = fetchTrendingGifUseCase.execute(
                             randomId = randomId,
-                            page = i,
+                            page = 1,
                             query = query!!
                         )
                         handleGiphyTrendingResponse(queryGifResponse)

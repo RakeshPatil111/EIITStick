@@ -95,6 +95,8 @@ class MoreStickersFragment : Fragment(),
                     if (query.isEmpty() && tietSearch.hasFocus()) {
                         rvRecentSearch.visibility = VISIBLE
                         nsvDefaultTrendingStickers.visibility = GONE
+                        tvGiphyTrendingTitle.text = "Trending"
+                        tvTenorTrendingTitle.text = "Trending"
                     } else {
                         searchJob?.cancel()
                         searchJob = MainScope().launch {
@@ -104,6 +106,8 @@ class MoreStickersFragment : Fragment(),
                                 ) {
                                     rvRecentSearch.visibility = GONE
                                     nsvDefaultTrendingStickers.visibility = VISIBLE
+                                    tvGiphyTrendingTitle.text = it
+                                    tvTenorTrendingTitle.text = it
                                     interactor.onQuerySearch(it)
                                 }
                             }
@@ -126,9 +130,8 @@ class MoreStickersFragment : Fragment(),
                     interactor.onEditTextClear()
                     nsvDefaultTrendingStickers.visibility = VISIBLE
                     interactor.onViewCreated()
-                    rvRecentSearch.visibility = View.GONE
-                    tvGiphyTrendingTitle.text = tietSearch.toString()
-                    tvTenorTrendingTitle.text = tietSearch.toString()
+                    tvGiphyTrendingTitle.text = tietSearch.text.toString()
+                    tvTenorTrendingTitle.text = tietSearch.text.toString()
                     //currentRecyclerView = rvStickers
                     //interactor.onEditTextClear()
                     //currentRecyclerView.visibility = View.VISIBLE
@@ -202,18 +205,23 @@ class MoreStickersFragment : Fragment(),
                     binding.apply {
                         rvRecentSearch.visibility = VISIBLE
                         nsvDefaultTrendingStickers.visibility = GONE
+                        tvGiphyTrendingTitle.text = "Trending"
+                        tvTenorTrendingTitle.text = "Trending"
                     }
                 }
                 is MoreStickerFragmentInteractor.Actions.ShowRecentSearches -> {
                     recentSearchAdapter.updateList(action.recentSearches)
                     binding.rvRecentSearch.visibility = VISIBLE
                     binding.nsvDefaultTrendingStickers.visibility = GONE
+
                 }
                 is MoreStickerFragmentInteractor.Actions.clearAllRecentSearchAndHideView -> {
                     hideKeyboard()
                     binding.apply {
                         binding.rvRecentSearch.visibility = GONE
                         binding.nsvDefaultTrendingStickers.visibility = VISIBLE
+                        tvGiphyTrendingTitle.text = "Trending"
+                        tvTenorTrendingTitle.text = "Trending"
                     }
                 }
                 else -> {}

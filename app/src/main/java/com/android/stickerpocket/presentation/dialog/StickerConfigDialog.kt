@@ -10,6 +10,7 @@ import android.view.WindowManager
 import androidx.fragment.app.DialogFragment
 import com.android.stickerpocket.R
 import com.android.stickerpocket.databinding.CvStickerConfigDialogBinding
+import com.android.stickerpocket.utils.CommunicationBridge
 
 class StickerConfigDialog: DialogFragment() {
 
@@ -68,6 +69,9 @@ class StickerConfigDialog: DialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        binding.scGiphy.isChecked= (CommunicationBridge.gifyEnabled.value == true)
+        binding.scTenor.isChecked= (CommunicationBridge.tenorEnabled.value == true)
 
         binding.scGiphy.setOnCheckedChangeListener { _, isChecked ->
             listener?.onGiphyStatusChange(isChecked)

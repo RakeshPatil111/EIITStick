@@ -9,4 +9,7 @@ object CommunicationBridge {
     var isSelectionMode= MutableLiveData(false)
     var selectedStickes= MutableLiveData(ArrayList<Sticker>())
     var selectedCatPosition= MutableLiveData(-1)
+
+    var gifyEnabled=MutableLiveData(true)
+    var tenorEnabled=MutableLiveData(true)
 }

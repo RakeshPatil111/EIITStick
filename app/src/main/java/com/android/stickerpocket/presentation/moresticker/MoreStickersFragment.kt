@@ -24,6 +24,7 @@ import com.android.stickerpocket.databinding.FragmentSearchStickerBinding
 import com.android.stickerpocket.presentation.dialog.StickerConfigDialog
 import com.android.stickerpocket.presentation.dialog.StickerDownloadDialog
 import com.android.stickerpocket.presentation.sticker.StickerViewModel
+import com.android.stickerpocket.utils.CommunicationBridge
 import com.android.stickerpocket.utils.StickerExt.stickerDTO
 import com.giphy.sdk.core.models.Media
 import com.giphy.sdk.ui.pagination.GPHContent
@@ -49,6 +50,29 @@ class MoreStickersFragment : Fragment(),
     ): View? {
         binding = FragmentSearchStickerBinding.inflate(inflater, container, false)
         observeInteractor()
+
+
+        if (CommunicationBridge.gifyEnabled.value==true){
+            binding.rvGiphyStickerSection.visibility= View.VISIBLE
+            binding.tvGiphyTitle.visibility= View.VISIBLE
+            binding.tvGiphyTrendingTitle.visibility= View.VISIBLE
+
+        }else{
+            binding.rvGiphyStickerSection.visibility= View.GONE
+            binding.tvGiphyTitle.visibility=  View.GONE
+            binding.tvGiphyTrendingTitle.visibility=  View.GONE
+        }
+
+        if (CommunicationBridge.tenorEnabled.value==true){
+            binding.rvTenorStickerSection.visibility= View.VISIBLE
+            binding.tvTenorTitle.visibility= View.VISIBLE
+            binding.tvTenorTrendingTitle.visibility= View.VISIBLE
+        }else{
+            binding.rvTenorStickerSection.visibility= View.GONE
+            binding.tvTenorTitle.visibility= View.GONE
+            binding.tvTenorTrendingTitle.visibility= View.GONE
+        }
+
 
         binding.apply {
             tietSearch.setOnEditorActionListener { view, actionId, event ->
@@ -80,11 +104,15 @@ class MoreStickersFragment : Fragment(),
                     tietSearch.text?.clear()
                     addChangeListeners(tietSearch)
                     rvRecentSearch.visibility = View.GONE
+                    tvGiphyTrendingTitle.text = tietSearch.toString()
+                    tvTenorTrendingTitle.text = tietSearch.toString()
                     //currentRecyclerView = rvStickers
                     //interactor.onEditTextClear()
                     //currentRecyclerView.visibility = View.VISIBLE
                 } else {
                     tietSearch.text?.clear()
+                    tvGiphyTrendingTitle.text = "Trending"
+                    tvTenorTrendingTitle.text = "Trending"
                 }
             }
         }
@@ -180,11 +208,31 @@ class MoreStickersFragment : Fragment(),
     }
 
     override fun onGiphyStatusChange(status: Boolean) {
-        Log.d("on giphy switch change :"," $status")
+       CommunicationBridge.gifyEnabled.value=status
+        if (status){
+            binding.rvGiphyStickerSection.visibility= View.VISIBLE
+            binding.tvGiphyTitle.visibility= View.VISIBLE
+            binding.tvGiphyTrendingTitle.visibility= View.VISIBLE
+
+        }else{
+            binding.rvGiphyStickerSection.visibility= View.GONE
+            binding.tvGiphyTitle.visibility=  View.GONE
+            binding.tvGiphyTrendingTitle.visibility=  View.GONE
+        }
     }
 
     override fun onTenorStatusChange(status: Boolean) {
         Log.d("on tenor switch change :"," $status")
+        CommunicationBridge.tenorEnabled.value=status
+        if (status){
+            binding.rvTenorStickerSection.visibility= View.VISIBLE
+            binding.tvTenorTitle.visibility= View.VISIBLE
+            binding.tvTenorTrendingTitle.visibility= View.VISIBLE
+        }else{
+            binding.rvTenorStickerSection.visibility= View.GONE
+            binding.tvTenorTitle.visibility= View.GONE
+            binding.tvTenorTrendingTitle.visibility= View.GONE
+        }
     }
 
     override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {

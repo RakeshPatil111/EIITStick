@@ -90,13 +90,13 @@
         android:id="@+id/tv_giphy_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:text="@string/power_by_giphy"
         android:textAppearance="?attr/textAppearanceSubtitle2"
         android:textColor="@color/color_primary_variant"
-        android:text="@string/power_by_giphy"
-        android:layout_marginStart="@dimen/dimen_4dp"
         app:layout_constraintBottom_toBottomOf="@+id/tv_giphy_trending_title"
-         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/tv_giphy_trending_title" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/tv_giphy_trending_title"
+        app:layout_constraintVertical_bias="0.0" />
 
     <com.giphy.sdk.ui.views.GiphyGridView
         android:id="@+id/rv_giphy_sticker_section"

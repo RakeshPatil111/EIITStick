@@ -31,7 +31,8 @@
         android:id="@+id/til_search"
         style="@style/Widget.App.TextInputLayout.Dark"
         android:layout_width="0dp"
-        app:endIconMode="clear_text"
+        app:endIconMode="custom"
+        app:endIconTint="@color/white"
         app:hintEnabled="false"
         app:endIconDrawable="@drawable/ic_outline_cancel"
         app:layout_constraintEnd_toStartOf="@id/ibtn_config_sticker"
@@ -47,7 +48,7 @@
             android:hint="@string/search"
             android:imeOptions="actionSearch"
             android:inputType="textCapWords"
-            android:maxLines="1" />
+            android:singleLine="true" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <androidx.appcompat.widget.AppCompatImageButton
@@ -73,83 +74,155 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/view_top_bg" />
 
-    <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/tv_giphy_trending_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/trending"
-        android:textStyle="italic"
-        android:layout_marginStart="@dimen/dimen_8dp"
-        android:layout_marginTop="@dimen/dimen_16dp"
-        android:textAppearance="?attr/textAppearanceCaption"
-        android:textColor="@color/color_primary_variant"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/view_top_bg"/>
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/nsv_default_trending_stickers"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="@+id/img_screen_bg"
+        app:layout_constraintEnd_toEndOf="@+id/img_screen_bg"
+        app:layout_constraintStart_toStartOf="@id/img_screen_bg"
+        app:layout_constraintTop_toTopOf="@id/img_screen_bg">
 
-    <TextView
-        android:id="@+id/tv_giphy_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/power_by_giphy"
-        android:textAppearance="?attr/textAppearanceSubtitle2"
-        android:textColor="@color/color_primary_variant"
-        app:layout_constraintBottom_toBottomOf="@+id/tv_giphy_trending_title"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/tv_giphy_trending_title"
-        app:layout_constraintVertical_bias="0.0" />
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-    <com.giphy.sdk.ui.views.GiphyGridView
-        android:id="@+id/rv_giphy_sticker_section"
-        android:layout_width="match_parent"
-        android:layout_height="180dp"
-        android:clipToPadding="false"
-        android:padding="@dimen/dimen_4dp"
-        app:gphDirection="horizontal"
-        app:gphCellPadding="@dimen/dimen_10dp"
-        app:gphSpanCount="2"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_giphy_trending_title"
-        app:layout_constraintVertical_bias="0.0"
-        tools:listitem="@layout/cv_sticker_section_item" />
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/tv_giphy_trending_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/trending"
+                android:textStyle="italic"
+                android:layout_marginStart="@dimen/dimen_8dp"
+                android:layout_marginTop="@dimen/dimen_16dp"
+                android:textAppearance="?attr/textAppearanceCaption"
+                android:textColor="@color/color_primary_variant"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"/>
 
-    <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/tv_tenor_trending_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/dimen_12dp"
-        android:layout_marginStart="@dimen/dimen_8dp"
-        android:text="@string/trending"
-        android:textAppearance="?attr/textAppearanceCaption"
-        android:textColor="@color/color_primary_variant"
-        android:textStyle="italic"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/rv_giphy_sticker_section" />
+            <TextView
+                android:id="@+id/tv_giphy_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?attr/textAppearanceSubtitle2"
+                android:textColor="@color/color_primary_variant"
+                android:text="@string/power_by_giphy"
+                android:layout_marginStart="@dimen/dimen_4dp"
+                android:layout_marginEnd="@dimen/dimen_12dp"
+                app:layout_constraintBottom_toBottomOf="@+id/tv_giphy_trending_title"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/tv_giphy_trending_title" />
 
-    <TextView
-        android:id="@+id/tv_tenor_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/power_by_tenor"
-        android:layout_marginStart="@dimen/dimen_4dp"
-        android:textAppearance="?attr/textAppearanceSubtitle2"
-        android:textColor="@color/color_primary_variant"
-        app:layout_constraintBottom_toBottomOf="@+id/tv_tenor_trending_title"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/tv_tenor_trending_title" />
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_giphy_sticker_section"
+                android:layout_width="0dp"
+                android:layout_height="@dimen/dimen_200dp"
+                android:padding="@dimen/dimen_4dp"
+                android:layout_margin="@dimen/dimen_4dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tv_giphy_trending_title"
+                app:layout_constraintVertical_bias="0.0"
+                tools:listitem="@layout/cv_gif_item"
+                tools:itemCount="25"/>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rv_tenor_sticker_section"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_tenor_title"
-        app:spanCount="2"/>
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/cv_no_giphy_sticker"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:background="@drawable/cv_border_rectangle"
+                android:padding="@dimen/dimen_16dp"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="@+id/rv_giphy_sticker_section"
+                app:layout_constraintEnd_toEndOf="@+id/rv_giphy_sticker_section"
+                app:layout_constraintStart_toStartOf="@+id/rv_giphy_sticker_section"
+                app:layout_constraintTop_toTopOf="@+id/rv_giphy_sticker_section">
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/tv_no_giphy_message"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:gravity="center"
+                    android:text="@string/no_stickers_found"
+                    android:textColor="@android:color/black"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/tv_tenor_trending_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dimen_12dp"
+                android:layout_marginStart="@dimen/dimen_8dp"
+                android:text="@string/trending"
+                android:textAppearance="?attr/textAppearanceCaption"
+                android:textColor="@color/color_primary_variant"
+                android:textStyle="italic"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/rv_giphy_sticker_section" />
+
+            <TextView
+                android:id="@+id/tv_tenor_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/power_by_tenor"
+                android:layout_marginStart="@dimen/dimen_4dp"
+                android:layout_marginEnd="@dimen/dimen_12dp"
+                android:textAppearance="?attr/textAppearanceSubtitle2"
+                android:textColor="@color/color_primary_variant"
+                app:layout_constraintBottom_toBottomOf="@+id/tv_tenor_trending_title"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/tv_tenor_trending_title" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_tenor_sticker_section"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:padding="@dimen/dimen_4dp"
+                android:layout_margin="@dimen/dimen_4dp"
+                app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tv_tenor_title"
+                app:spanCount="2"/>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/cv_no_tenor_sticker"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:background="@drawable/cv_border_rectangle"
+                android:padding="@dimen/dimen_16dp"
+                android:layout_marginTop="@dimen/dimen_120dp"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="@+id/rv_tenor_sticker_section"
+                app:layout_constraintEnd_toEndOf="@+id/rv_tenor_sticker_section"
+                app:layout_constraintStart_toStartOf="@+id/rv_tenor_sticker_section"
+                app:layout_constraintTop_toTopOf="@+id/rv_tenor_sticker_section">
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/tv_no_tenor_message"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:gravity="center"
+                    android:text="@string/no_stickers_found"
+                    android:textColor="@android:color/black"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.core.widget.NestedScrollView>
 
     <LinearLayout
         android:id="@+id/ll_progress"

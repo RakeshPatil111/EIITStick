@@ -11,13 +11,14 @@ import coil.decode.ImageDecoderDecoder
 import coil.load
 import com.android.stickerpocket.R
 import com.android.stickerpocket.databinding.CvStickerDownloadDialogBinding
+import com.android.stickerpocket.presentation.StickerDTO
 import com.android.stickerpocket.utils.StickerExt.stickerDTO
 import com.android.stickerpocket.utils.StickerExt.toLoadableImage
 import com.giphy.sdk.core.models.Media
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
 class StickerDownloadDialog(
-    private val media: Media
+    private val media: StickerDTO
 ) : BottomSheetDialogFragment() {
 
     private var _binding: CvStickerDownloadDialogBinding? = null
@@ -61,14 +62,14 @@ class StickerDownloadDialog(
         super.onViewCreated(view, savedInstanceState)
 
         binding?.apply {
-            sivGifImage.load(media.stickerDTO().toLoadableImage(), imageLoader) {
+            sivGifImage.load(media.toLoadableImage(), imageLoader) {
                 target(
                     onStart = {
                         binding!!.loading.visibility = View.VISIBLE
                     },
                     onSuccess = {
                         binding!!.loading.visibility = View.GONE
-                        sivGifImage.load(media.stickerDTO().toLoadableImage(), imageLoader)
+                        sivGifImage.load(media.toLoadableImage(), imageLoader)
                     },
                     onError = {
                         // Show error image

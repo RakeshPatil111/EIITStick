@@ -18,11 +18,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 
-class StickerApplication: Application() {
+class StickerApplication : Application() {
     companion object {
         lateinit var instance: StickerApplication
             private set
     }
+
     override fun onCreate() {
         super.onCreate()
         instance = this
@@ -30,7 +31,11 @@ class StickerApplication: Application() {
         loadDataIntoDB()
 
         // Initialize Appodeal with your App Key and required ad types
-        Appodeal.initialize(this, "d908f77a97ae0993514bc8edba7e776a36593c77e5f44994", Appodeal.BANNER)
+        Appodeal.initialize(
+            this,
+            "d908f77a97ae0993514bc8edba7e776a36593c77e5f44994",
+            Appodeal.BANNER
+        )
     }
 
     private fun loadDataIntoDB() {

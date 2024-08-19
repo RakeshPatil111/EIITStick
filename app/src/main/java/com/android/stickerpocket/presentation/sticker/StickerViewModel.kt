@@ -1,11 +1,12 @@
 package com.android.stickerpocket.presentation.sticker
 
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.android.stickerpocket.utils.CommunicationBridge
 import com.android.stickerpocket.R
 import com.android.stickerpocket.StickerApplication
+import com.android.stickerpocket.domain.FetchTenorGifsUseCase
 import com.android.stickerpocket.domain.model.Category
 import com.android.stickerpocket.domain.model.Emoji
 import com.android.stickerpocket.domain.model.RecentSearch
@@ -26,6 +27,7 @@ import com.android.stickerpocket.domain.usecase.FetchStickerUseCase
 import com.android.stickerpocket.domain.usecase.FetchStickersForCategoryUseCase
 import com.android.stickerpocket.domain.usecase.FetchStickersForQueryUseCase
 import com.android.stickerpocket.domain.usecase.FetchStickersWithNoTagsUseCase
+import com.android.stickerpocket.domain.usecase.FetchTrendingGifUseCase
 import com.android.stickerpocket.domain.usecase.GetRecentSearchUseCase
 import com.android.stickerpocket.domain.usecase.InsertOrReplaceCategoriesUseCase
 import com.android.stickerpocket.domain.usecase.InsertRecentStickerUseCase
@@ -34,14 +36,19 @@ import com.android.stickerpocket.domain.usecase.InsertStickersUseCase
 import com.android.stickerpocket.domain.usecase.UpdateStickerUseCase
 import com.android.stickerpocket.dtos.getCategories
 import com.android.stickerpocket.network.response.Emojis
+import com.android.stickerpocket.network.response.GifResponse
+import com.android.stickerpocket.network.response.tenor.TenorGifs
 import com.android.stickerpocket.presentation.StickerDTO
+import com.android.stickerpocket.utils.CommunicationBridge
 import com.android.stickerpocket.utils.StickerExt.sticker
 import com.android.stickerpocket.utils.StickerExt.toFile
 import com.android.stickerpocket.utils.StickerExt.toStickerDTO
 import com.android.stickerpocket.utils.toEmoji
+import com.android.stickerpocket.utils.toStickerDTO
 import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -51,6 +58,8 @@ import java.io.FileOutputStream
 import java.io.InputStreamReader
 import java.net.URL
 import java.util.Date
+import java.util.UUID
+
 
 class StickerViewModel : ViewModel() {
 
@@ -69,6 +78,7 @@ class StickerViewModel : ViewModel() {
         class FetchedRecentStickers(val list: List<Sticker>) : Result()
         object StickerDTOUpdated : Result()
         data class StickerUpdated(val updatedSticker: Sticker) : Result()
+        data class TrendingGiphyStickers(val giphyGifs: List<StickerDTO>, val tenorGifs: List<StickerDTO>) : Result()
     }
 
     private val _liveData = MutableLiveData<Result>()
@@ -106,6 +116,19 @@ class StickerViewModel : ViewModel() {
     private val fetchStickerCountInCategoryUseCase: FetchStickerCountInCategoryUseCase
     private val fetchStickersWithNoTagsUseCase: FetchStickersWithNoTagsUseCase
     private var stickersWithNoTags = listOf<Sticker>()
+    private var trendingGifResponse: GifResponse? = null
+    private var trendingTenorGifsResponse: TenorGifs? = null
+    private var trendingGIPHYGifs = mutableListOf<StickerDTO>()
+    private var trendingTenorGifs = mutableListOf<StickerDTO>()
+    private val fetchTrendingGifUseCase = FetchTrendingGifUseCase()
+    private val fetchTenorGifsUseCase = FetchTenorGifsUseCase()
+    private var queryGifResponse: GifResponse? = null
+    private var queryTenorGifsResponse: TenorGifs? = null
+    private var queryGIPHYGifs = mutableListOf<StickerDTO>()
+    private var queryTenorGifs = mutableListOf<StickerDTO>()
+    private val randomId = UUID.randomUUID().toString()
+    private lateinit var fetchAPIFromServeJob: Job
+    private var query: String? = null
 
     init {
         deleteRecentSearchUseCase =
@@ -612,6 +635,96 @@ class StickerViewModel : ViewModel() {
             }
             CommunicationBridge.selectedStickes.value?.clear()
             CommunicationBridge.selectedCatPosition.postValue(-1)
+        }
+    }
+
+    fun getTrendingGifs() {
+        if (trendingGifResponse != null && trendingTenorGifs != null) {
+            return
+        }
+        // GIPHY API called twice to fetch 50 GIFS, max limit in one Req is 25
+        fetchAPIFromServeJob = CoroutineScope(Dispatchers.IO).launch {
+            launch {
+                for (i in 0..1) {
+                    trendingGifResponse = fetchTrendingGifUseCase.execute(randomId = randomId, page = i)
+                    handleGiphyTrendingResponse(trendingGifResponse)
+                }
+            }
+            launch {
+                trendingTenorGifsResponse = fetchTenorGifsUseCase.execute()
+                handleTenorTrendingResponse(trendingTenorGifsResponse)
+            }
+        }
+    }
+
+    fun getQueryGifs(searchQuery: String?) {
+        searchQuery?.let {
+            query = it
+            queryGIPHYGifs.clear()
+            queryTenorGifs.clear()
+            fetchAPIFromServeJob.cancel()
+            fetchAPIFromServeJob = CoroutineScope(Dispatchers.IO).launch {
+                launch {
+                    for (i in 0..1) {
+                        queryGifResponse = fetchTrendingGifUseCase.execute(
+                            randomId = randomId,
+                            page = 1,
+                            query = query!!
+                        )
+                        handleGiphyTrendingResponse(queryGifResponse)
+                    }
+                }
+                launch {
+                    queryTenorGifsResponse = fetchTenorGifsUseCase.execute(query = query!!)
+                    handleTenorTrendingResponse(queryTenorGifsResponse)
+                }
+            }
+
+            fetchAPIFromServeJob.invokeOnCompletion {
+                _liveData.postValue(Result.TrendingGiphyStickers(queryGIPHYGifs, queryTenorGifs))
+            }
+        }
+    }
+
+    fun loadMoreGiphyStickers() {
+        CoroutineScope(Dispatchers.IO).launch {
+            val page = trendingGifResponse?.pagination?.offset?.plus(1) ?: 0
+            trendingGifResponse = fetchTrendingGifUseCase.execute(randomId = randomId, page = page)
+            handleGiphyTrendingResponse(trendingGifResponse)
+        }
+    }
+
+    fun resetResponse() {
+        trendingGifResponse = null
+    }
+
+    private fun handleGiphyTrendingResponse(gifResponse: GifResponse?) {
+        gifResponse?.let {
+            Log.w("ViewModle", "${it.data.size}")
+            it.data.forEachIndexed { index, data ->
+                val item = data.toStickerDTO()
+                Log.w("ViewModle", "${trendingGIPHYGifs.contains(item)}")
+                if(query != null) queryGIPHYGifs.add(item) else trendingGIPHYGifs.add(item)
+            }
+        }
+    }
+
+    private fun handleTenorTrendingResponse(gifResponse: TenorGifs?) {
+        gifResponse?.let {
+            it.results.forEach {
+                val item = it.toStickerDTO()
+                if(query != null) queryTenorGifs.add(item) else trendingTenorGifs.add(item)
+            }
+        }
+    }
+
+    fun loadTrendingGifs() {
+        if (trendingGifResponse == null) {
+            fetchAPIFromServeJob.cancel()
+            getTrendingGifs()
+            fetchAPIFromServeJob.invokeOnCompletion { _liveData.postValue(Result.TrendingGiphyStickers(trendingGIPHYGifs, trendingTenorGifs)) }
+        } else {
+            _liveData.postValue(Result.TrendingGiphyStickers(trendingGIPHYGifs, trendingTenorGifs))
         }
     }
 

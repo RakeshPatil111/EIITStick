@@ -18,6 +18,11 @@ class MoreStickerFragmentInteractor {
         data class clearAllRecentSearchAndHideView(val list: List<RecentSearch>) : Actions()
         data class ShowRecentSearches(val recentSearches: List<RecentSearch>) : Actions()
         data class ShowTrendingGiphyStickers(val giphyGifs: List<StickerDTO>, val tenorGifs: List<StickerDTO>) : Actions()
+        data class ShowStickerForRecentSearch(
+            val query: String,
+            val giphyGifs: List<StickerDTO>,
+            val tenorGifs: List<StickerDTO>
+        ) : Actions()
     }
     private val _liveData = MutableLiveData<Event<Actions>>()
     val liveData = _liveData
@@ -36,6 +41,19 @@ class MoreStickerFragmentInteractor {
                 }
                 is StickerViewModel.Result.RecentSearchCleared -> {
                     _liveData.value = Event(Actions.clearAllRecentSearchAndHideView(it.searches))
+                }
+                is StickerViewModel.Result.StickersWithQueryForBoth -> {
+                    if (viewModel.getViewMode() == StickerViewModel.ViewMode.RecentSearch) {
+                        _liveData.postValue(
+                            Event(
+                                Actions.ShowStickerForRecentSearch(
+                                    it.query,
+                                    it.giphyGifs,
+                                    it.tenorGifs
+                                )
+                            )
+                        )
+                    }
                 }
                 else -> {}
             }

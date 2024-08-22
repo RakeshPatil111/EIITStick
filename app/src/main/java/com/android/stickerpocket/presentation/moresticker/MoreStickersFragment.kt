@@ -22,14 +22,18 @@ import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.PagerSnapHelper
 import androidx.recyclerview.widget.RecyclerView
+import com.android.stickerpocket.R
 import com.android.stickerpocket.databinding.FragmentSearchStickerBinding
+import com.android.stickerpocket.domain.model.Sticker
 import com.android.stickerpocket.presentation.StickerDTO
 import com.android.stickerpocket.presentation.dialog.StickerConfigDialog
 import com.android.stickerpocket.presentation.dialog.StickerDownloadDialog
+import com.android.stickerpocket.presentation.sticker.NoTagStickerAdapter
 import com.android.stickerpocket.presentation.sticker.RecentSearchAdapter
 import com.android.stickerpocket.presentation.sticker.StickerFragmentInteractor
 import com.android.stickerpocket.presentation.sticker.StickerViewModel
 import com.android.stickerpocket.utils.CommunicationBridge
+import com.android.stickerpocket.utils.CustomDialog
 import com.android.stickerpocket.utils.StickerExt.stickerDTO
 import com.google.android.material.textfield.TextInputEditText
 import kotlinx.coroutines.Job
@@ -177,6 +181,33 @@ class MoreStickersFragment : Fragment(),
                     recentSearchAdapter.updateList(action.recentSearches)
                     binding.rvRecentSearch.visibility = VISIBLE
                     binding.nsvDefaultTrendingStickers.visibility = GONE
+                }
+                is MoreStickerFragmentInteractor.Actions.ShowStickerForRecentSearch -> {
+                    binding.apply {
+                        hideKeyboard()
+                        rvRecentSearch.visibility = GONE
+                        nsvDefaultTrendingStickers.visibility = VISIBLE
+
+                        if(action.giphyGifs.isEmpty()){
+                            cvNoGiphySticker.visibility = VISIBLE
+                        }else{
+                            cvNoGiphySticker.visibility = GONE
+                            rvGiphyStickerSection.adapter = trendingGifAdapter
+                            trendingGifAdapter.updateList(action.giphyGifs)
+                        }
+
+                        if(action.tenorGifs.isEmpty()){
+                            cvNoTenorSticker.visibility = VISIBLE
+                        }else{
+                            cvNoTenorSticker.visibility = GONE
+                            rvTenorStickerSection.adapter = trendingTenorAdapter
+                            trendingTenorAdapter.updateList(action.tenorGifs)
+                        }
+                        removeChangeListeners(tietSearch)
+                        tietSearch.setText(action.query)
+                        tietSearch.setSelection(tietSearch.length())
+                        addChangeListeners(tietSearch)
+                    }
                 }
                 is MoreStickerFragmentInteractor.Actions.clearAllRecentSearchAndHideView -> {
                     hideKeyboard()

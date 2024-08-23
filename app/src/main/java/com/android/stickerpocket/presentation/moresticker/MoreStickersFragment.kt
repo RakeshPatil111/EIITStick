@@ -19,22 +19,14 @@ import android.view.inputmethod.EditorInfo.*
 import android.view.inputmethod.InputMethodManager
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.PagerSnapHelper
-import androidx.recyclerview.widget.RecyclerView
-import com.android.stickerpocket.R
 import com.android.stickerpocket.databinding.FragmentSearchStickerBinding
-import com.android.stickerpocket.domain.model.Sticker
 import com.android.stickerpocket.presentation.StickerDTO
 import com.android.stickerpocket.presentation.dialog.StickerConfigDialog
 import com.android.stickerpocket.presentation.dialog.StickerDownloadDialog
-import com.android.stickerpocket.presentation.sticker.NoTagStickerAdapter
 import com.android.stickerpocket.presentation.sticker.RecentSearchAdapter
-import com.android.stickerpocket.presentation.sticker.StickerFragmentInteractor
 import com.android.stickerpocket.presentation.sticker.StickerViewModel
 import com.android.stickerpocket.utils.CommunicationBridge
-import com.android.stickerpocket.utils.CustomDialog
-import com.android.stickerpocket.utils.StickerExt.stickerDTO
 import com.google.android.material.textfield.TextInputEditText
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.MainScope
@@ -291,8 +283,6 @@ class MoreStickersFragment : Fragment(),
             rvTenorStickerSection.adapter = trendingTenorAdapter
             val snapHelper = PagerSnapHelper()
             snapHelper.attachToRecyclerView(rvTenorStickerSection)
-            rvTenorStickerSection.layoutManager =
-                GridLayoutManager(requireContext(), 2, RecyclerView.HORIZONTAL, false)
             trendingTenorAdapter.setListener(object : TrendingTenorAdapter.OnTrendingGifListener {
                 override fun onGifItemClick(item: StickerDTO) {
                     interactor.onStickerClick(item)
@@ -312,8 +302,6 @@ class MoreStickersFragment : Fragment(),
             rvGiphyStickerSection.adapter = trendingGifAdapter
             val snapHelper = PagerSnapHelper()
             snapHelper.attachToRecyclerView(rvGiphyStickerSection)
-            rvGiphyStickerSection.layoutManager =
-                GridLayoutManager(requireContext(), 2, RecyclerView.HORIZONTAL, false)
             trendingGifAdapter.setListener(object : TrendingTenorAdapter.OnTrendingGifListener {
                 override fun onGifItemClick(item: StickerDTO) {
                     interactor.onStickerClick(item)

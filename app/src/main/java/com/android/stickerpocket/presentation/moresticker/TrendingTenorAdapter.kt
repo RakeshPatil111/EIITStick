@@ -1,7 +1,5 @@
 package com.android.stickerpocket.presentation.moresticker
 
-import android.content.res.ColorStateList
-import android.graphics.Color
 import android.os.Build
 import android.util.DisplayMetrics
 import android.util.Log
@@ -17,7 +15,6 @@ import coil.load
 import com.android.stickerpocket.databinding.CvGifItemBinding
 import com.android.stickerpocket.presentation.StickerDTO
 import com.android.stickerpocket.presentation.sticker.StickerActivity
-import com.android.stickerpocket.utils.StickerExt.toLoadableImage
 
 
 class TrendingTenorAdapter: RecyclerView.Adapter<TrendingTenorAdapter.ViewHolder>() {
@@ -58,7 +55,7 @@ class TrendingTenorAdapter: RecyclerView.Adapter<TrendingTenorAdapter.ViewHolder
         val itemPadding = 12
 
         //here you may change the divide amount from 2.5 to whatever you need
-        val itemWidth = (screenWidth - itemPadding).div(3.25)
+        val itemWidth = (screenWidth - itemPadding).div(3.80)
         val layoutParams = holder.itemView.layoutParams as RecyclerView.LayoutParams
         layoutParams.height = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 95F,
             holder.itemView.context.resources.displayMetrics).toInt()
@@ -66,7 +63,7 @@ class TrendingTenorAdapter: RecyclerView.Adapter<TrendingTenorAdapter.ViewHolder
         layoutParams.topMargin = 12
         holder.itemView.layoutParams = layoutParams
         holder.binding.apply {
-            sivGifImage.strokeColor = ColorStateList.valueOf(Color.TRANSPARENT)
+            //sivGifImage.strokeColor = ColorStateList.valueOf(Color.TRANSPARENT)
             ivRemove.visibility = View.GONE
             cbSelect.visibility = View.GONE
             favImg.visibility = View.GONE

@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    android:id="@+id/cl_parent"
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/cl_parent"
     android:layout_width="match_parent"
-    android:layout_marginBottom="@dimen/dimen_10dp"
+    android:layout_height="96dp"
     android:layout_marginEnd="@dimen/dimen_10dp"
-    android:layout_height="96dp">
+    android:layout_marginBottom="@dimen/dimen_10dp">
 
-<com.google.android.material.imageview.ShapeableImageView
+    <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/siv_gif_image"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:padding="@dimen/dimen_1dp"
         android:scaleType="centerCrop"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -22,48 +22,47 @@
         app:layout_constraintVertical_bias="0.0"
         app:shapeAppearance="@style/ShapeAppearance.ImageView"
         app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerSize10Percent"
-        tools:src="@tools:sample/avatars"
-    app:strokeColor="@color/color_primary_variant"
-    app:strokeWidth="@dimen/dimen_2dp"
-    android:padding="@dimen/dimen_1dp"/>
+        app:strokeColor="@color/color_primary_variant"
+        app:strokeWidth="@dimen/dimen_2dp"
+        tools:src="@tools:sample/avatars" />
 
     <com.airbnb.lottie.LottieAnimationView
         android:id="@+id/loader"
         android:layout_width="34dp"
         android:layout_height="34dp"
-        app:lottie_rawRes="@raw/loader_animation"
-        app:lottie_autoPlay="true"
         android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:lottie_loop="true"/>
+        app:lottie_autoPlay="true"
+        app:lottie_loop="true"
+        app:lottie_rawRes="@raw/loader_animation" />
 
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/favImg"
         android:layout_width="@dimen/dimen_30dp"
         android:layout_height="@dimen/dimen_40dp"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginEnd="@dimen/dimen_5dp"
-        android:background="@drawable/ic_fav"/>
+        android:background="@drawable/ic_fav"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/iv_remove"
         android:layout_width="@dimen/dimen_25dp"
         android:layout_height="@dimen/dimen_25dp"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginEnd="@dimen/dimen_5dp"
-        android:background="@drawable/ic_minus_red"/>
+        android:background="@drawable/ic_minus_red"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.appcompat.widget.AppCompatCheckBox
         android:id="@+id/cb_select"
         android:layout_width="@dimen/dimen_25dp"
         android:layout_height="@dimen/dimen_25dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
+        android:layout_marginEnd="@dimen/dimen_5dp"
         android:button="@drawable/selector_cb"
-        android:layout_marginEnd="@dimen/dimen_5dp"/>
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

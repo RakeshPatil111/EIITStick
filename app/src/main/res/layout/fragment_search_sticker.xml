@@ -116,9 +116,13 @@
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rv_giphy_sticker_section"
                 android:layout_width="0dp"
-                android:layout_height="@dimen/dimen_200dp"
-                android:padding="@dimen/dimen_4dp"
-                android:layout_margin="@dimen/dimen_4dp"
+                android:layout_height="wrap_content"
+                android:minHeight="220dp"
+                android:padding="@dimen/dimen_8dp"
+                android:clipToPadding="false"
+                app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+                android:orientation="horizontal"
+                app:spanCount="2"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
@@ -183,16 +187,18 @@
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rv_tenor_sticker_section"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:minHeight="220dp"
                 android:orientation="horizontal"
-                android:padding="@dimen/dimen_4dp"
-                android:layout_margin="@dimen/dimen_4dp"
+                android:padding="@dimen/dimen_8dp"
+                android:clipToPadding="false"
                 app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tv_tenor_title"
-                app:spanCount="2"/>
+                app:spanCount="2"
+                tools:listitem="@layout/cv_gif_item"/>
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/cv_no_tenor_sticker"

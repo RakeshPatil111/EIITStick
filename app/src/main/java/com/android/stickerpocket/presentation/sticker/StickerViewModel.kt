@@ -79,6 +79,7 @@ class StickerViewModel : ViewModel() {
         object StickerDTOUpdated : Result()
         data class StickerUpdated(val updatedSticker: Sticker) : Result()
         data class TrendingGiphyStickers(val giphyGifs: List<StickerDTO>, val tenorGifs: List<StickerDTO>) : Result()
+        data class StickersWithQueryForBoth(val query: String, val giphyGifs: List<StickerDTO>, val tenorGifs: List<StickerDTO>) : Result()
     }
 
     private val _liveData = MutableLiveData<Result>()
@@ -681,7 +682,7 @@ class StickerViewModel : ViewModel() {
             }
 
             fetchAPIFromServeJob.invokeOnCompletion {
-                _liveData.postValue(Result.TrendingGiphyStickers(queryGIPHYGifs, queryTenorGifs))
+                _liveData.postValue(Result.StickersWithQueryForBoth(query!!, queryGIPHYGifs, queryTenorGifs))
             }
         }
     }

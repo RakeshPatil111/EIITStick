@@ -32,4 +32,5 @@ class StickerRepository(private val dao: StickerDAO) {
 
     suspend fun deleteSticker(sticker: Sticker) = dao.deleteSticker(sticker)
 
+    suspend fun fetchAllFlow() = dao.fetchAllFlow()
 }

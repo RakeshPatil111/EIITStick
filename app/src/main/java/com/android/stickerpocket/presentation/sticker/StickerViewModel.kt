@@ -740,6 +740,7 @@ class StickerViewModel : ViewModel() {
     }
 
     fun loadData() {
+        //observeStickers()
         fetchCategories()
         fetchRecentSearches()
         fetchAllFavorites()
@@ -783,6 +784,20 @@ class StickerViewModel : ViewModel() {
         }
     }
 
+    private fun observeStickers() {
+        CoroutineScope(Dispatchers.IO).launch {
+            StickerApplication.instance.stickerRepository.fetchAllFlow()
+                .collectLatest {
+                    if (categories.isNotEmpty()) {
+                        categories.filter { it.isHighlighted == true }.first().id?.let {
+                            fetchStickersForCategoryUseCase.execute(
+                                it
+                            )
+                        }
+                    }
+                }
+        }
+    }
     enum class ViewMode {
         Recent,
         Downloaded,

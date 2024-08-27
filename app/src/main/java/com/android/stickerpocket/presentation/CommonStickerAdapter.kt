@@ -2,7 +2,6 @@ package com.android.stickerpocket.presentation
 
 import android.os.Build.VERSION.SDK_INT
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import coil.ImageLoader
@@ -11,7 +10,6 @@ import coil.decode.ImageDecoderDecoder
 import com.android.stickerpocket.databinding.CvGifItemBinding
 import com.android.stickerpocket.domain.model.Sticker
 import com.android.stickerpocket.presentation.sticker.StickerViewHolder
-import com.android.stickerpocket.utils.ItemClickSupport
 import com.android.stickerpocket.utils.OnItemDoubleClickListener
 import java.util.Collections
 

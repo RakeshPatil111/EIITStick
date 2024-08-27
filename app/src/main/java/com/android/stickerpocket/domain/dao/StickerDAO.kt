@@ -52,4 +52,7 @@ interface StickerDAO {
 
     @Delete
     suspend fun deleteSticker(sticker: Sticker)
+
+    @Query("SELECT * FROM sticker WHERE isDeleted = 0 ORDER BY position ASC")
+    fun fetchAllFlow(): Flow<List<Sticker>>
 }

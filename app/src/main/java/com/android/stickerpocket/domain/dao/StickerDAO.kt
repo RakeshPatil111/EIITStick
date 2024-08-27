@@ -1,6 +1,7 @@
 package com.android.stickerpocket.domain.dao
 
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
@@ -45,4 +46,10 @@ interface StickerDAO {
 
     @Query("SELECT * FROM sticker WHERE tags IS NULL")
     fun fetchStickerWithNoTags(): List<Sticker>
+
+    @Query("SELECT * FROM sticker WHERE isDeleted = 1 ORDER BY position ASC")
+    suspend fun fetchDeletedStickers(): List<Sticker>
+
+    @Delete
+    suspend fun deleteSticker(sticker: Sticker)
 }

@@ -28,4 +28,8 @@ class StickerRepository(private val dao: StickerDAO) {
 
     suspend fun fetchStickersWithNoTags() = dao.fetchStickerWithNoTags()
 
+    suspend fun fetchDeletedStickers() = dao.fetchDeletedStickers()
+
+    suspend fun deleteSticker(sticker: Sticker) = dao.deleteSticker(sticker)
+
 }

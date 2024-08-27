@@ -70,7 +70,7 @@
     </fragment>
     <fragment
         android:id="@+id/deletedStickerFragment"
-        android:name="com.android.stickerpocket.presentation.settings.DeletedStickerFragment"
+        android:name="com.android.stickerpocket.presentation.settings.delete.DeletedStickerFragment"
         android:label="fragment_deleted_sticker"
         tools:layout="@layout/fragment_deleted_sticker" >
         <action

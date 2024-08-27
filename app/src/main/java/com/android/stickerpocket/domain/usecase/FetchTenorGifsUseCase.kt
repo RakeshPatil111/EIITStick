@@ -1,6 +1,5 @@
-package com.android.stickerpocket.domain
+package com.android.stickerpocket.domain.usecase
 
-import com.android.stickerpocket.network.TenorAPI
 import com.android.stickerpocket.network.TenorServiceImpl
 import com.android.stickerpocket.network.response.tenor.TenorGifs
 

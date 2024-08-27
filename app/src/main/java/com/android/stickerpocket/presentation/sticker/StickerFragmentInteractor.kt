@@ -128,6 +128,9 @@ class StickerFragmentInteractor {
                 else -> {}
             }
         })
+
+        // Load Categories and all other data
+        viewModel.loadData()
     }
 
     fun onViewCreated() {

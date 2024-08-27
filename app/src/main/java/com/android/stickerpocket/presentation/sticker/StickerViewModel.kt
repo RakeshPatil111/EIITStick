@@ -6,7 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.android.stickerpocket.R
 import com.android.stickerpocket.StickerApplication
-import com.android.stickerpocket.domain.FetchTenorGifsUseCase
+import com.android.stickerpocket.domain.usecase.FetchTenorGifsUseCase
 import com.android.stickerpocket.domain.model.Category
 import com.android.stickerpocket.domain.model.Emoji
 import com.android.stickerpocket.domain.model.RecentSearch
@@ -20,6 +20,7 @@ import com.android.stickerpocket.domain.usecase.DeleteRecentSearchUseCase
 import com.android.stickerpocket.domain.usecase.FetchAllDownloadedUseCase
 import com.android.stickerpocket.domain.usecase.FetchAllFavoritesUseCase
 import com.android.stickerpocket.domain.usecase.FetchCategoriesUseCase
+import com.android.stickerpocket.domain.usecase.FetchDeletedStickersUseCase
 import com.android.stickerpocket.domain.usecase.FetchEmojiByEmojiIcon
 import com.android.stickerpocket.domain.usecase.FetchRecentStickersUseCase
 import com.android.stickerpocket.domain.usecase.FetchStickerCountInCategoryUseCase
@@ -42,6 +43,7 @@ import com.android.stickerpocket.presentation.StickerDTO
 import com.android.stickerpocket.utils.CommunicationBridge
 import com.android.stickerpocket.utils.StickerExt.sticker
 import com.android.stickerpocket.utils.StickerExt.toFile
+import com.android.stickerpocket.utils.StickerExt.toLoadableImage
 import com.android.stickerpocket.utils.StickerExt.toStickerDTO
 import com.android.stickerpocket.utils.toEmoji
 import com.android.stickerpocket.utils.toStickerDTO
@@ -80,6 +82,9 @@ class StickerViewModel : ViewModel() {
         data class StickerUpdated(val updatedSticker: Sticker) : Result()
         data class TrendingGiphyStickers(val giphyGifs: List<StickerDTO>, val tenorGifs: List<StickerDTO>) : Result()
         data class StickersWithQueryForBoth(val query: String, val giphyGifs: List<StickerDTO>, val tenorGifs: List<StickerDTO>) : Result()
+        data class DeletedStickers(val stickers: List<Sticker>) : Result()
+        object StickerDeleted: Result()
+        data class Failure(val message: String): Result()
     }
 
     private val _liveData = MutableLiveData<Result>()
@@ -130,6 +135,7 @@ class StickerViewModel : ViewModel() {
     private val randomId = UUID.randomUUID().toString()
     private lateinit var fetchAPIFromServeJob: Job
     private var query: String? = null
+    private var fetchDeletedStickersUseCase: FetchDeletedStickersUseCase
 
     init {
         deleteRecentSearchUseCase =
@@ -163,11 +169,8 @@ class StickerViewModel : ViewModel() {
         insertRecentStickersUseCase = InsertRecentStickerUseCase(StickerApplication.instance.recentStickerRepository)
         fetchRecentStickersUseCase = FetchRecentStickersUseCase(StickerApplication.instance.recentStickerRepository)
         fetchStickerCountInCategoryUseCase = FetchStickerCountInCategoryUseCase(StickerApplication.instance.stickerRepository)
-        fetchCategories()
         loadAndSaveEmoji(R.raw.emojis)
-        fetchRecentSearches()
-        fetchAllFavorites()
-        fetchStickersNoTags()
+        fetchDeletedStickersUseCase = FetchDeletedStickersUseCase(StickerApplication.instance.stickerRepository)
     }
 
     private fun fetchCategories() {
@@ -726,6 +729,57 @@ class StickerViewModel : ViewModel() {
             fetchAPIFromServeJob.invokeOnCompletion { _liveData.postValue(Result.TrendingGiphyStickers(trendingGIPHYGifs, trendingTenorGifs)) }
         } else {
             _liveData.postValue(Result.TrendingGiphyStickers(trendingGIPHYGifs, trendingTenorGifs))
+        }
+    }
+
+    fun getDeletedStickers() {
+        CoroutineScope(Dispatchers.Default).launch {
+            val list = fetchDeletedStickersUseCase.execute()
+            _liveData.postValue(Result.DeletedStickers(list))
+        }
+    }
+
+    fun loadData() {
+        fetchCategories()
+        fetchRecentSearches()
+        fetchAllFavorites()
+        fetchStickersNoTags()
+    }
+
+    fun hardDeleteSticker(stickers: List<Sticker>) {
+        try {
+            val job = CoroutineScope(Dispatchers.IO).launch {
+                stickers.forEach {
+                    val file = File(StickerApplication.instance.cacheDir, it.name + ".gif")
+                    if (file.exists()) {
+                        file.delete()
+                    }
+                    val stickerRepository = StickerApplication.instance.stickerRepository
+                    stickerRepository.deleteSticker(it)
+                }
+            }
+            job.invokeOnCompletion {
+                _liveData.postValue(Result.StickerDeleted)
+            }
+        } catch (e: Exception) {
+            _liveData.value = Result.Failure(e.localizedMessage)
+        }
+    }
+
+    fun deleteAllStickers() {
+        CoroutineScope(Dispatchers.Default).launch {
+            val stickers = fetchDeletedStickersUseCase.execute()
+            hardDeleteSticker(stickers)
+        }
+    }
+
+    fun restoreStickers(selectedStickers: List<Sticker>) {
+        CoroutineScope(Dispatchers.IO).launch {
+            selectedStickers.forEach {
+                it.isDeleted = false
+                updateStickerUseCase.execute(it)
+            }
+            _liveData.postValue(Result.StickerDeleted)
         }
     }
 

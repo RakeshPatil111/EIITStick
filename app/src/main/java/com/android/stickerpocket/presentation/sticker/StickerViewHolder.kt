@@ -72,7 +72,7 @@ class StickerViewHolder(
                         if (CommunicationBridge.isOrganizationMode.value == false) {
                             val dbs= View.DragShadowBuilder(it)
                             var clipData= ClipData.newPlainText("","")
-                            it.startDragAndDrop(clipData,dbs,it,0)
+                            it.startDragAndDrop(clipData, dbs, it, View.DRAG_FLAG_OPAQUE)
                             val dragListener = DragListener()
                             binding.root.setOnDragListener(dragListener)
                             dragListener.setDropListener(object : OnStickerDropOnCategoryListener {
@@ -80,6 +80,7 @@ class StickerViewHolder(
                                     sourceStickerPosition: Int,
                                     targetCategoryPosition: Int
                                 ) {
+                                    binding.root.setOnDragListener(null)
                                     itemStickerDropListener?.invoke(sourceStickerPosition, targetCategoryPosition)
                                 }
 

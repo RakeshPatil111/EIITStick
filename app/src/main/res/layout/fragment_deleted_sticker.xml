@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".presentation.settings.DeletedStickerFragment">
+    tools:context=".presentation.settings.delete.DeletedStickerFragment">
 
     <View
         android:id="@+id/view_top_bg"
@@ -42,4 +42,90 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/view_top_bg"
         app:layout_constraintVertical_chainStyle="spread" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tv_back"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:padding="@dimen/dimen_10dp"
+        android:layout_marginTop="@dimen/dimen_10dp"
+        android:text="Back"
+        android:textSize="@dimen/text_dimen_18sp"
+        android:textColor="@color/white"
+        app:fontFamily="@font/geologic_medium"/>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_select"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_margin="@dimen/dimen_10dp"
+        android:text="Put Back"
+        android:textColor="@color/white"
+        app:fontFamily="@font/geologic_medium"
+        app:strokeColor="@color/white"
+        app:strokeWidth="@dimen/dimen_1dp"
+        android:visibility="gone"
+        app:backgroundTint="@color/color_secondary"/>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_delete_all"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="@id/view_top_bg"
+        android:layout_margin="@dimen/dimen_10dp"
+        android:text="Delete All"
+        android:textColor="@color/white"
+        app:fontFamily="@font/geologic_medium"
+        app:backgroundTint="@color/color_red"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_stickers"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="@dimen/dimen_10dp"
+        android:paddingTop="@dimen/dimen_12dp"
+        app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/view_top_bg"
+        app:spanCount="3"
+        tools:listitem="@layout/cv_gif_item" />
+
+
+    <LinearLayout
+        android:id="@+id/ll_progress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@android:color/white"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:elevation="@dimen/dimen_4dp"
+        android:visibility="gone"
+        android:padding="@dimen/dimen_12dp"
+        app:layout_constraintBottom_toBottomOf="@+id/img_screen_bg"
+        app:layout_constraintEnd_toEndOf="@+id/img_screen_bg"
+        app:layout_constraintStart_toStartOf="@+id/img_screen_bg"
+        app:layout_constraintTop_toTopOf="@+id/img_screen_bg">
+
+        <ProgressBar
+            android:layout_width="@dimen/dimen_24dp"
+            android:layout_height="@dimen/dimen_24dp"
+            android:layout_marginEnd="@dimen/dimen_12dp"
+            android:backgroundTint="@color/color_primary" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/tv_download_msg"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Deleting sticker...."
+            android:textAppearance="?attr/textAppearanceCaption"
+            android:textColor="@color/color_primary_variant"
+            android:textStyle="italic" />
+    </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

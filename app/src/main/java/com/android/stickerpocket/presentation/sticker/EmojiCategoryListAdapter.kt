@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.android.stickerpocket.utils.CommunicationBridge
 import com.android.stickerpocket.databinding.CvStickerItemBinding
 import com.android.stickerpocket.domain.model.Category
+import com.android.stickerpocket.utils.DragListener
 import com.android.stickerpocket.utils.ViewExt.removeBorder
 import com.android.stickerpocket.utils.ViewExt.setBorder
 import com.android.stickerpocket.utils.ViewExt.shakeMe

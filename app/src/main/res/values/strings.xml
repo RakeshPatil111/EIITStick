@@ -66,4 +66,5 @@
     <string name="tenor">Tenor</string>
     <string name="power_by_giphy">Power by Giphy</string>
     <string name="power_by_tenor">Power by Tenor</string>
+    <string name="trending_title">Trending</string>
 </resources>

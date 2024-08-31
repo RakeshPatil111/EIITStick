@@ -20,6 +20,7 @@ import android.view.inputmethod.InputMethodManager
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.PagerSnapHelper
+import com.android.stickerpocket.R
 import com.android.stickerpocket.databinding.FragmentSearchStickerBinding
 import com.android.stickerpocket.presentation.StickerDTO
 import com.android.stickerpocket.presentation.dialog.StickerConfigDialog
@@ -91,8 +92,8 @@ class MoreStickersFragment : Fragment(),
                     if (query.isEmpty() && tietSearch.hasFocus()) {
                         rvRecentSearch.visibility = VISIBLE
                         nsvDefaultTrendingStickers.visibility = GONE
-                        tvGiphyTrendingTitle.text = "Trending"
-                        tvTenorTrendingTitle.text = "Trending"
+                        tvGiphyTrendingTitle.text = getString(R.string.trending_title)
+                        tvTenorTrendingTitle.text = getString(R.string.trending_title)
                     } else {
                         searchJob?.cancel()
                         searchJob = MainScope().launch {
@@ -128,13 +129,10 @@ class MoreStickersFragment : Fragment(),
                     interactor.onViewCreated()
                     tvGiphyTrendingTitle.text = tietSearch.text.toString()
                     tvTenorTrendingTitle.text = tietSearch.text.toString()
-                    //currentRecyclerView = rvStickers
-                    //interactor.onEditTextClear()
-                    //currentRecyclerView.visibility = View.VISIBLE
                 } else {
                     tietSearch.text?.clear()
-                    tvGiphyTrendingTitle.text = "Trending"
-                    tvTenorTrendingTitle.text = "Trending"
+                    tvGiphyTrendingTitle.text = getString(R.string.trending_title)
+                    tvTenorTrendingTitle.text = getString(R.string.trending_title)
                 }
             }
         }
@@ -243,8 +241,8 @@ class MoreStickersFragment : Fragment(),
                     binding.apply {
                         binding.rvRecentSearch.visibility = GONE
                         binding.nsvDefaultTrendingStickers.visibility = VISIBLE
-                        tvGiphyTrendingTitle.text = "Trending"
-                        tvTenorTrendingTitle.text = "Trending"
+                        tvGiphyTrendingTitle.text = getString(R.string.trending_title)
+                        tvTenorTrendingTitle.text = getString(R.string.trending_title)
                     }
                 }
                 else -> {}

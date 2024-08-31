@@ -65,16 +65,16 @@ class StickerDownloadDialog(
             sivGifImage.load(media.toLoadableImage(), imageLoader) {
                 target(
                     onStart = {
-                        binding!!.loading.visibility = View.VISIBLE
+                        //binding!!.loading.visibility = View.VISIBLE
                     },
                     onSuccess = {
-                        binding!!.loading.visibility = View.GONE
+                        //binding!!.loading.visibility = View.GONE
                         sivGifImage.load(media.toLoadableImage(), imageLoader)
                     },
                     onError = {
                         // Show error image
                         // Handle this scene
-                        binding!!.loading.visibility = View.GONE
+                        //binding!!.loading.visibility = View.GONE
                     }
                 )
             }

@@ -26,12 +26,6 @@
         android:layout_gravity="bottom"
         android:layout_margin="@dimen/dimen_5dp"
         app:layout_constraintBottom_toTopOf="@id/bottom_navigation" >
-
-        <com.appodeal.ads.BannerView
-            android:id="@+id/banner_view"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_gravity="center"/>
     </FrameLayout>
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
@@ -39,8 +33,16 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/banner_view"
         app:menu="@menu/bottom_navigation_menu" />
+
+    <com.appodeal.ads.BannerView
+        android:id="@+id/banner_view"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_gravity="center"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <ProgressBar
         android:id="@+id/progressBar"

@@ -9,12 +9,14 @@ import coil.decode.GifDecoder
 import coil.decode.ImageDecoderDecoder
 import com.android.stickerpocket.databinding.CvGifItemBinding
 import com.android.stickerpocket.domain.model.Sticker
+import com.android.stickerpocket.dtos.CommonAdapterDTO
 import com.android.stickerpocket.presentation.sticker.StickerViewHolder
 import com.android.stickerpocket.utils.OnItemDoubleClickListener
+import com.android.stickerpocket.utils.toSticker
 import java.util.Collections
 
 class CommonStickerAdapter() : RecyclerView.Adapter<StickerViewHolder>() {
-    var stickers = mutableListOf<Sticker>()
+    var stickers = mutableListOf<CommonAdapterDTO>()
     private var actionItemClick: ((sticker: Sticker, position: Int) -> Unit)? = null
     private var actionItemLongClick: ((sticker: Sticker, position: Int) -> Unit)? = null
     private var actionItemDelete: ((sticker: Sticker, position: Int) -> Unit)? = null
@@ -53,10 +55,10 @@ class CommonStickerAdapter() : RecyclerView.Adapter<StickerViewHolder>() {
     override fun getItemCount() = stickers.size
 
     override fun onBindViewHolder(holder: StickerViewHolder, position: Int) {
-        holder.bind(stickers[position])
+        holder.bind(stickers[position].toSticker())
     }
 
-    fun updateList(list: List<Sticker>) {
+    fun updateList(list: List<CommonAdapterDTO>) {
         stickers = list.toMutableList()
         notifyDataSetChanged()
     }

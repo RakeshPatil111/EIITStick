@@ -35,6 +35,7 @@ import com.android.stickerpocket.domain.usecase.InsertRecentStickerUseCase
 import com.android.stickerpocket.domain.usecase.InsertSingleStickersUseCase
 import com.android.stickerpocket.domain.usecase.InsertStickersUseCase
 import com.android.stickerpocket.domain.usecase.UpdateStickerUseCase
+import com.android.stickerpocket.dtos.CommonAdapterDTO
 import com.android.stickerpocket.dtos.getCategories
 import com.android.stickerpocket.network.response.Emojis
 import com.android.stickerpocket.network.response.GifResponse
@@ -45,6 +46,7 @@ import com.android.stickerpocket.utils.StickerExt.sticker
 import com.android.stickerpocket.utils.StickerExt.toFile
 import com.android.stickerpocket.utils.StickerExt.toLoadableImage
 import com.android.stickerpocket.utils.StickerExt.toStickerDTO
+import com.android.stickerpocket.utils.toCommonDTO
 import com.android.stickerpocket.utils.toEmoji
 import com.android.stickerpocket.utils.toStickerDTO
 import com.google.gson.Gson
@@ -69,15 +71,15 @@ class StickerViewModel : ViewModel() {
         data class RecentSearches(val recentSearches: List<RecentSearch>) : Result()
         object CategoryCreated : Result()
         object CreateCatFailure : Result()
-        data class StickersReceivedForCategory(val stickers: List<Sticker>) : Result()
-        data class FetchedDownloadedStickers(val stickers: List<Sticker>) : Result()
+        data class StickersReceivedForCategory(val stickers: List<CommonAdapterDTO>) : Result()
+        data class FetchedDownloadedStickers(val stickers: List<CommonAdapterDTO>) : Result()
         object FavouritesStickerUpdated : Result()
-        data class StickersWithQuery(val query: String, val stickers: List<Sticker>) : Result()
+        data class StickersWithQuery(val query: String, val stickers: List<CommonAdapterDTO>) : Result()
         data class ShowProgress(val showProgress: Boolean) : Result()
         data class StickerDownloaded(val gifFile: File) : Result()
         data class ShareSticker(val gifFile: File) : Result()
         data class RecentSearchCleared(val searches: List<RecentSearch>) : Result()
-        class FetchedRecentStickers(val list: List<Sticker>) : Result()
+        class FetchedRecentStickers(val list: List<CommonAdapterDTO>) : Result()
         object StickerDTOUpdated : Result()
         data class StickerUpdated(val updatedSticker: Sticker) : Result()
         data class TrendingGiphyStickers(val giphyGifs: List<StickerDTO>, val tenorGifs: List<StickerDTO>) : Result()
@@ -204,7 +206,7 @@ class StickerViewModel : ViewModel() {
                         when (it) {
                             is FetchStickersForCategoryUseCase.Result.Success -> {
                                 stickers = it.stickers.toMutableList()
-                                _liveData.postValue(Result.StickersReceivedForCategory(stickers.toList()))
+                                _liveData.postValue(Result.StickersReceivedForCategory(stickersToCommonDTO(stickers)))
                             }
 
                             else -> {}
@@ -327,7 +329,7 @@ class StickerViewModel : ViewModel() {
 
     fun getFavourites() = favourites
 
-    fun getEmojiCategories() = categories
+    fun getEmojiCategories() = categoryToCommonDTO(categories)
 
     fun createCategory(unicode: String, pos: Int) {
         CoroutineScope(Dispatchers.Default).launch {
@@ -417,7 +419,7 @@ class StickerViewModel : ViewModel() {
     fun getStickersForQuery(query: String) {
         CoroutineScope(Dispatchers.IO).launch {
             val list = fetchStickersForQueryUseCase.execute(query)
-            _liveData.postValue(Result.StickersWithQuery(query, list))
+            _liveData.postValue(Result.StickersWithQuery(query, stickersToCommonDTO(list)))
         }
     }
 
@@ -440,7 +442,7 @@ class StickerViewModel : ViewModel() {
                   when (it) {
                       is FetchAllDownloadedUseCase.Result.Success -> {
                           stickers = it.list.toMutableList()
-                          _liveData.postValue(Result.FetchedDownloadedStickers(stickers.toList()))
+                          _liveData.postValue(Result.FetchedDownloadedStickers(stickersToCommonDTO(stickers)))
                       }
                   }
               }
@@ -538,7 +540,7 @@ class StickerViewModel : ViewModel() {
         CoroutineScope(Dispatchers.IO).launch {
             val list = fetchRecentStickersUseCase.execute()
             list.let {
-                _liveData.postValue(Result.FetchedRecentStickers(it.map { it.sticker }))
+                _liveData.postValue(Result.FetchedRecentStickers(it.map { it.sticker.toCommonDTO() }))
             }
         }
     }
@@ -583,9 +585,9 @@ class StickerViewModel : ViewModel() {
         }
     }
 
-    fun getStickersWithNullTags(): List<Sticker> {
+    fun getStickersWithNullTags(): List<CommonAdapterDTO> {
         fetchStickersNoTags()
-        return stickersWithNoTags
+        return stickersToCommonDTO(stickersWithNoTags)
     }
 
     private fun fetchStickersNoTags() {
@@ -798,6 +800,23 @@ class StickerViewModel : ViewModel() {
                 }
         }
     }
+
+    fun stickersToCommonDTO(stickers: List<Sticker>): List<CommonAdapterDTO> {
+        val commonDTOs = mutableListOf<CommonAdapterDTO>()
+        stickers.forEach {
+            commonDTOs.add(it.toCommonDTO())
+        }
+        return commonDTOs
+    }
+
+    fun categoryToCommonDTO(stickers: List<Category>): List<CommonAdapterDTO> {
+        val commonDTOs = mutableListOf<CommonAdapterDTO>()
+        stickers.forEach {
+            commonDTOs.add(it.toCommonDTO())
+        }
+        return commonDTOs
+    }
+
     enum class ViewMode {
         Recent,
         Downloaded,

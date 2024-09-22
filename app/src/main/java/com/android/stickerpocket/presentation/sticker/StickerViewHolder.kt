@@ -68,25 +68,25 @@ class StickerViewHolder(
 
             itemLongClickListener?.let { gif ->
                     sivGifImage.setOnLongClickListener {
-                       // gif(sticker, adapterPosition)
+                        // gif(sticker, adapterPosition)
                         if (CommunicationBridge.isOrganizationMode.value == false) {
-                            val dbs= View.DragShadowBuilder(it)
-                            var clipData= ClipData.newPlainText("","")
-                            it.startDragAndDrop(clipData, dbs, it, View.DRAG_FLAG_OPAQUE)
-                            val dragListener = DragListener()
+                            val dbs = View.DragShadowBuilder(it)
+                            var clipData = ClipData.newPlainText("", "")
+                            it.startDragAndDrop(clipData, dbs, it, 0)
+                            val dragListener = DragListener(dbs)
                             binding.root.setOnDragListener(dragListener)
                             dragListener.setDropListener(object : OnStickerDropOnCategoryListener {
                                 override fun onDrop(
                                     sourceStickerPosition: Int,
                                     targetCategoryPosition: Int
                                 ) {
-                                    binding.root.setOnDragListener(null)
-                                    itemStickerDropListener?.invoke(sourceStickerPosition, targetCategoryPosition)
+                                    itemStickerDropListener?.invoke(
+                                        sourceStickerPosition,
+                                        targetCategoryPosition
+                                    )
                                 }
 
                             })
-                        } else {
-                            binding.root.setOnDragListener(null)
                         }
                         true
                     }
@@ -95,14 +95,13 @@ class StickerViewHolder(
             itemDeleteClickListener?.let { gif ->
                 ivRemove.setOnClickListener {
                     gif(sticker, adapterPosition)
-                    true
                 }
             }
 
             cbSelect.setOnCheckedChangeListener { buttonView, isChecked ->
                 if (isChecked){
                     CommunicationBridge.selectedStickes.value?.add(sticker)
-                }else{
+                } else {
                     CommunicationBridge.selectedStickes.value?.remove(sticker)
                 }
             }

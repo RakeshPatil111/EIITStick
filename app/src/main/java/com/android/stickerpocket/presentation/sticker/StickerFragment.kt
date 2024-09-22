@@ -653,6 +653,12 @@ class StickerFragment : Fragment(), GPHGridCallback,
             binding.tietSearch.text?.clear()
             interactor.onCategoryItemLongClick(category, pos, previous)
         }
+        emojiCategoryListAdapter.setDropListener(object : EmojiCategoryListAdapter.OnStickerDropOnCategory {
+            override fun onDrop(stickerPosition: Int, categoryPosition: Int) {
+                interactor.onStickerDroppedOnCategory(stickerPosition, categoryPosition)
+            }
+
+        })
     }
 
     private fun clearStaticPagesBorder() {

@@ -2,7 +2,7 @@
 
 <com.google.android.material.card.MaterialCardView
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/cv_sticker"
+    android:id="@+id/cv_category_item"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="45dp"
@@ -14,7 +14,7 @@
     app:cardForegroundColor="@android:color/transparent">
 
     <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/iv_sticker_thumbnail"
+        android:id="@+id/iv_category_thumbnail"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="O"

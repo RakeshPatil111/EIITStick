@@ -6,17 +6,19 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import com.android.stickerpocket.domain.model.Category
 import com.android.stickerpocket.domain.model.RecentSearch
+import com.android.stickerpocket.dtos.CommonAdapterDTO
 import com.android.stickerpocket.dtos.getCategories
 import com.android.stickerpocket.presentation.StickerDTO
 import com.android.stickerpocket.utils.Event
 import com.android.stickerpocket.utils.StickerExt.stickerDTO
 import com.android.stickerpocket.utils.StickerExt.toStickerDTO
+import com.android.stickerpocket.utils.toCategory
 import com.giphy.sdk.core.models.Media
 
 class StickerFragmentInteractor {
 
     sealed class Actions {
-        data class InitCategoryView(val categories: List<Category>) : Actions()
+        data class InitCategoryView(val categories: List<CommonAdapterDTO>) : Actions()
         object HideGiphyGridViewAndShowRecentSearches : Actions()
         data class clearAllRecentSearchAndHideView(val list: List<RecentSearch>) : Actions()
         data class ShowRecentSearches(val recentSearches: List<RecentSearch>) : Actions()
@@ -43,21 +45,21 @@ class StickerFragmentInteractor {
         data class ShowFavoritesSticker(val favoriteStickers: List<com.android.stickerpocket.domain.model.Sticker>) :
             Actions()
 
-        data class ReloadCategories(val categories: List<Category>) : Actions()
+        data class ReloadCategories(val categories: List<CommonAdapterDTO>) : Actions()
         data class ShowMessage(val message: String) : Actions()
-        data class ShowStickers(val stickers: List<com.android.stickerpocket.domain.model.Sticker>) :
+        data class ShowStickers(val stickers: List<CommonAdapterDTO>) :
             Actions()
 
-        data class ShowDownloadedStickers(val stickers: List<com.android.stickerpocket.domain.model.Sticker>) :
+        data class ShowDownloadedStickers(val stickers: List<CommonAdapterDTO>) :
             Actions()
 
         data class ShowStickerForRecentSearch(
             val query: String,
-            val recentSearchStickers: List<com.android.stickerpocket.domain.model.Sticker>,
-            val stickersWithNoTags: List<com.android.stickerpocket.domain.model.Sticker>
+            val recentSearchStickers: List<CommonAdapterDTO>,
+            val stickersWithNoTags: List<CommonAdapterDTO>
         ) : Actions()
 
-        data class ShowRecentStickers(val stickers: List<com.android.stickerpocket.domain.model.Sticker>) :
+        data class ShowRecentStickers(val stickers: List<CommonAdapterDTO>) :
             Actions()
     }
 
@@ -136,7 +138,7 @@ class StickerFragmentInteractor {
     fun onViewCreated() {
         _liveData.value = (Event(
             Actions.InitCategoryView(
-                viewModel.getEmojiCategories().ifEmpty { getCategories() })
+                viewModel.getEmojiCategories().ifEmpty { viewModel.categoryToCommonDTO(getCategories()) })
         ))
         loadStickers()
     }
@@ -146,16 +148,22 @@ class StickerFragmentInteractor {
             StickerViewModel.ViewMode.Recent -> {
                 viewModel.fetchRecentStickers()
             }
+
             StickerViewModel.ViewMode.Downloaded -> {
                 viewModel.fetchAllDownloaded()
             }
+
             StickerViewModel.ViewMode.Favourites -> {
-                _liveData.postValue( Event(Actions.ShowFavoritesSticker(viewModel.getFavourites())))
+                _liveData.postValue(Event(Actions.ShowFavoritesSticker(viewModel.getFavourites())))
             }
+
             StickerViewModel.ViewMode.Category -> {
                 if (viewModel.getEmojiCategories().isNotEmpty())
-                    viewModel.categorySelected(viewModel.getEmojiCategories().filter { it.isHighlighted }.first(), 0)
+                    viewModel.categorySelected(
+                        viewModel.getEmojiCategories().filter { it.isHighlighted }.first().toCategory(), 0
+                    )
             }
+
             else -> {}
         }
     }
@@ -256,9 +264,14 @@ class StickerFragmentInteractor {
     fun onStickerClick(sticker: com.android.stickerpocket.domain.model.Sticker, position: Int) {
         _liveData.value = Event(Actions.ShareSticker(sticker, position, sticker.isFavourite))
     }
-    fun onStickerDoubleClick(sticker: com.android.stickerpocket.domain.model.Sticker, position: Int) {
+
+    fun onStickerDoubleClick(
+        sticker: com.android.stickerpocket.domain.model.Sticker,
+        position: Int
+    ) {
         _liveData.value = Event(Actions.ShowStickerDialog(sticker, position, sticker.isFavourite))
     }
+
     fun onStickerLongClick(sticker: com.android.stickerpocket.domain.model.Sticker, position: Int) {
         _liveData.value = Event(Actions.ShowStickerDialog(sticker, position, sticker.isFavourite))
     }
@@ -267,11 +280,17 @@ class StickerFragmentInteractor {
         _liveData.value = Event(Actions.ShareSticker(sticker, position, isFavourite = true))
     }
 
-    fun onFavStickerDoubleClick(sticker: com.android.stickerpocket.domain.model.Sticker, position: Int) {
+    fun onFavStickerDoubleClick(
+        sticker: com.android.stickerpocket.domain.model.Sticker,
+        position: Int
+    ) {
         _liveData.value = Event(Actions.ShowStickerDialog(sticker, position, isFavourite = true))
     }
 
-    fun onFavStickerLongClick(sticker: com.android.stickerpocket.domain.model.Sticker, position: Int) {
+    fun onFavStickerLongClick(
+        sticker: com.android.stickerpocket.domain.model.Sticker,
+        position: Int
+    ) {
         _liveData.value = Event(Actions.ShowStickerDialog(sticker, position, isFavourite = true))
     }
 
@@ -302,7 +321,7 @@ class StickerFragmentInteractor {
         viewModel.moveStickerToCategory(sourceStickerPosition, targetCategoryPosition)
     }
 
-    fun onStickerMovedToCategory( targetCategoryPosition: Int,) {
-        viewModel.moveMultipleStickersToCategory( targetCategoryPosition)
+    fun onStickerMovedToCategory(targetCategoryPosition: Int) {
+        viewModel.moveMultipleStickersToCategory(targetCategoryPosition)
     }
 }

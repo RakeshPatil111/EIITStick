@@ -11,10 +11,12 @@ import coil.decode.ImageDecoderDecoder
 import coil.load
 import com.android.stickerpocket.databinding.CvGifItemBinding
 import com.android.stickerpocket.domain.model.Sticker
+import com.android.stickerpocket.dtos.CommonAdapterDTO
 import com.android.stickerpocket.utils.StickerExt.toLoadableImage
+import com.android.stickerpocket.utils.toSticker
 
 class NoTagStickerAdapter: RecyclerView.Adapter<NoTagStickerAdapter.ViewHolder>() {
-    private var stickers: List<Sticker> = listOf()
+    private var stickers: List<CommonAdapterDTO> = listOf()
     private var listener: OnStickerClickListener? = null
     private lateinit var imageLoader: ImageLoader
 
@@ -41,7 +43,7 @@ class NoTagStickerAdapter: RecyclerView.Adapter<NoTagStickerAdapter.ViewHolder>(
     override fun getItemCount() = stickers.size
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val sticker = stickers[position]
+        val sticker = stickers[position].toSticker()
         holder.view.apply {
             ivRemove.visibility = View.GONE
             cbSelect.visibility = View.GONE
@@ -63,7 +65,7 @@ class NoTagStickerAdapter: RecyclerView.Adapter<NoTagStickerAdapter.ViewHolder>(
         }
     }
 
-    fun updateList(stickers: List<Sticker>) {
+    fun updateList(stickers: List<CommonAdapterDTO>) {
         this.stickers = stickers
         notifyDataSetChanged()
     }

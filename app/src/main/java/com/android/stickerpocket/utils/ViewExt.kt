@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.android.stickerpocket.R
 import com.google.android.material.card.MaterialCardView
+import kotlin.math.roundToInt
 
 
 object ViewExt {
@@ -64,5 +65,11 @@ object ViewExt {
                 }
             }
         return null
+    }
+
+    fun ViewGroup.getApproxCustomTag(viewGroup: ViewGroup, draggedViewHeight: Float): Int {
+        val firstChild = viewGroup.getChildAt(0)
+        val modOfHeight: Float = draggedViewHeight / firstChild.height
+        return modOfHeight.roundToInt()
     }
 }

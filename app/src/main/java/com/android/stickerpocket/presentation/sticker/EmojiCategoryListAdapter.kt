@@ -9,11 +9,13 @@ import androidx.recyclerview.widget.RecyclerView
 import com.android.stickerpocket.utils.CommunicationBridge
 import com.android.stickerpocket.databinding.CvStickerItemBinding
 import com.android.stickerpocket.domain.model.Category
+import com.android.stickerpocket.dtos.CommonAdapterDTO
 import com.android.stickerpocket.utils.DragListener
+import com.android.stickerpocket.utils.OnStickerDropOnCategoryListener
 import com.android.stickerpocket.utils.ViewExt.removeBorder
 import com.android.stickerpocket.utils.ViewExt.setBorder
-import com.android.stickerpocket.utils.ViewExt.shakeMe
 import com.android.stickerpocket.utils.ViewExt.zoomIn
+import com.android.stickerpocket.utils.toCategory
 
 class EmojiCategoryListAdapter :
     RecyclerView.Adapter<EmojiCategoryListAdapter.StepperViewHolder>(){
@@ -23,6 +25,7 @@ class EmojiCategoryListAdapter :
     private var stickerLongClickAction: ((category: Category, position: Int, previouslySelected: Int) -> Unit)? = null
     private val differ = AsyncListDiffer(this, diffUtilEmoji)
     private var hoverItem = -1
+    private var dropListener: OnStickerDropOnCategory? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
         StepperViewHolder(
@@ -36,7 +39,7 @@ class EmojiCategoryListAdapter :
     override fun getItemCount() = differ.currentList.size
 
     override fun onBindViewHolder(holder: StepperViewHolder, position: Int) {
-        val category = differ.currentList[position]
+        val category = differ.currentList[position].toCategory()
         holder.bind(category, position)
         if (position == hoverItem) {
             holder.binding.root.zoomIn()
@@ -44,7 +47,7 @@ class EmojiCategoryListAdapter :
         }
     }
 
-    fun updateList(list: List<Category>) {
+    fun updateList(list: List<CommonAdapterDTO>) {
         differ.submitList(list)
         notifyDataSetChanged()
     }
@@ -52,24 +55,27 @@ class EmojiCategoryListAdapter :
     inner class StepperViewHolder(val binding: CvStickerItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(category: Category, position: Int) {
-            binding.cvSticker.tag = position
-            binding.ivStickerThumbnail.tag = position
+            val dragListener = DragListener()
+            binding.root.setOnDragListener(dragListener)
+            binding.cvCategoryItem.tag = position
+            binding.ivCategoryThumbnail.tag = position
+            binding.root.tag = position
             binding.apply {
-                binding.cvSticker.tag = position
-                ivStickerThumbnail.text = Html.fromHtml(category.html)
+                binding.cvCategoryItem.tag = position
+                ivCategoryThumbnail.text = Html.fromHtml(category.html)
                 if (category.isHighlighted) {
-                    cvSticker.setBorder()
+                    cvCategoryItem.setBorder()
                 } else {
-                    cvSticker.removeBorder()
+                    cvCategoryItem.removeBorder()
                 }
                 stickerLongClickAction?.let { c ->
-                    cvSticker.setOnLongClickListener {
+                    cvCategoryItem.setOnLongClickListener {
                         c.invoke(category, position, selected)
                         true
                     }
                 }
                 stickerClickAction?.let { c ->
-                    cvSticker.setOnClickListener {
+                    cvCategoryItem.setOnClickListener {
 
                         if (CommunicationBridge.isSelectionMode.value==true){
                             CommunicationBridge.selectedCatPosition.value=category.position
@@ -80,6 +86,15 @@ class EmojiCategoryListAdapter :
                     }
                 }
             }
+            dragListener.setDropListener(object : OnStickerDropOnCategoryListener {
+                override fun onDrop(
+                    sourceStickerPosition: Int,
+                    targetCategoryPosition: Int
+                ) {
+                    dropListener?.onDrop(sourceStickerPosition, targetCategoryPosition)
+                }
+
+            })
         }
     }
 
@@ -110,21 +125,22 @@ class EmojiCategoryListAdapter :
 
     fun isCategorySelected() = selected != -1
     companion object {
-        val diffUtilEmoji = object : DiffUtil.ItemCallback<Category>() {
-            override fun areItemsTheSame(oldItem: Category, newItem: Category): Boolean {
+        val diffUtilEmoji = object : DiffUtil.ItemCallback<CommonAdapterDTO>() {
+            override fun areItemsTheSame(oldItem: CommonAdapterDTO, newItem: CommonAdapterDTO): Boolean {
                 return oldItem == newItem
             }
 
-            override fun areContentsTheSame(oldItem: Category, newItem: Category): Boolean {
+            override fun areContentsTheSame(oldItem: CommonAdapterDTO, newItem: CommonAdapterDTO): Boolean {
                 return oldItem == newItem
             }
         }
     }
 
-    fun getList() = differ.currentList
+    fun setDropListener(listener: OnStickerDropOnCategory) {
+        this.dropListener = listener
+    }
 
-    fun hoverCategory(droppedCategoryTag: Int) {
-        hoverItem = droppedCategoryTag
-        notifyItemChanged(droppedCategoryTag)
+    interface OnStickerDropOnCategory {
+        fun onDrop(stickerPosition: Int, categoryPosition: Int)
     }
 }

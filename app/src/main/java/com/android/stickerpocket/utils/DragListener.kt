@@ -6,11 +6,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.android.stickerpocket.R
-import com.android.stickerpocket.presentation.sticker.EmojiCategoryListAdapter
-import com.android.stickerpocket.utils.ViewExt.findViewAt
-import com.android.stickerpocket.utils.ViewExt.getViewByCoordinates
+import com.google.android.material.imageview.ShapeableImageView
 
-class DragListener() : View.OnDragListener {
+class DragListener(val dbs: View.DragShadowBuilder? = null) : View.OnDragListener {
 
     private var isDropped = false
     var sourcePosition: Int? = null
@@ -18,47 +16,48 @@ class DragListener() : View.OnDragListener {
     var listener: OnStickerDropOnCategoryListener? = null
     override fun onDrag(v: View, event: DragEvent): Boolean {
         when (event.action) {
-             //DragEvent.ACTION_DROP,
-             //DragEvent.ACTION_DRAG_EXITED,
-            DragEvent.ACTION_DRAG_ENDED -> {
+
+            DragEvent.ACTION_DROP -> {
                 Log.e("MyLog", "ACTION_DROP")
                 isDropped = true
-                var positionTarget: Int
 
                 val viewSource = event.localState as? View
-                val viewId = v.id
+                val draggedViewId = v.id
 
+                if (viewSource == null) {
+                    return true
+                }
                 //val flItem = R.id.frame_layout_item
-                val tvEmptyListTop = R.id.cl_parent
-                val tvEmptyListBottom = R.id.cv_sticker
-                val rvTop = R.id.rv_stickers
-                val rvBottom = R.id.rv_category
-                Log.d("MyLog", "viewId $viewId")
+                val stickerParentView = R.id.cl_parent
+                val catParentView = R.id.cv_category_item
+                val rvStickers = R.id.rv_stickers
+                val rvCategory = R.id.rv_category
+                Log.d("MyLog", "viewId $draggedViewId")
+                when ((viewSource.parent as ViewGroup).id) {
 
-                when (viewId) {
-                    tvEmptyListTop, tvEmptyListBottom, rvTop, rvBottom -> {
+                    stickerParentView, catParentView, rvStickers, rvCategory -> {
                         Log.d("MyLog", "flItem, tvEmptyListTop, tvEmptyListBottom, rvTop, rvBottom")
-                        val target: RecyclerView = when (viewId) {
-                            tvEmptyListTop, rvTop -> v.rootView.findViewById(rvBottom)
-                            tvEmptyListBottom, rvBottom -> v.rootView.findViewById(rvTop)
+                        val target: RecyclerView = when (draggedViewId) {
+                            stickerParentView, rvStickers -> v.rootView.findViewById(rvStickers)
+                            catParentView, rvCategory -> v.rootView.findViewById(rvCategory)
                             else -> v.parent as RecyclerView
                         }
-                        val cvFavY = v.rootView.findViewById<View>(R.id.cv_fav_sticker).y
-                        positionTarget = v.tag as Int
 
-                        val parentView =(target.parent as ViewGroup).getViewByCoordinates(event.x, event.y)
-                        if (parentView?.id != R.id.rv_category) {
+                        if (target.id != R.id.rv_category) {
+                            //v.alpha = 1f
                             return false
                         }
 
-                        target.findViewAt(target, event.x.toInt(), event.y.toInt())?.tag?.let {
-                            (target.adapter as EmojiCategoryListAdapter).hoverCategory(it as Int)
-                            val droppedCategoryTag = target.findViewAt(target, event.x.toInt(), event.y.toInt())?.tag as Int
-                            //(target.adapter as EmojiCategoryListAdapter).hoverCategory(droppedCategoryTag)
+                        // Check if viewSource is Child of Category ie Shapeable Image View
+                        // Get TAG of viewSource
+                        if (viewSource !is ShapeableImageView) {
+                            return false
+                        }
+                        v.tag?.let {
                             if (viewSource != null) {
                                 val positionSource = viewSource.tag as Int
                                 sourcePosition = positionSource
-                                targetPosition = droppedCategoryTag
+                                targetPosition = it as Int
                             }
 
                             if (sourcePosition != null && targetPosition != null) {

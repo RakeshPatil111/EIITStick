@@ -132,7 +132,7 @@
         style="@style/Widget.AppCompat.TextView.Options"
         android:text="Version 1.0"
         android:gravity="center"
-        android:layout_marginBottom="@dimen/dimen_24dp"
+        android:layout_marginBottom="@dimen/dimen_100dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />

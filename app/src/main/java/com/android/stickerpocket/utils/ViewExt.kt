@@ -25,6 +25,11 @@ object ViewExt {
         this.strokeWidth = 6
     }
 
+    fun MaterialCardView.setBlueBorder() {
+        this.strokeColor = Color.CYAN
+        this.strokeWidth = 6
+    }
+
     fun MaterialCardView.removeBorder() {
         this.strokeColor = Color.TRANSPARENT
         this.strokeWidth = 0

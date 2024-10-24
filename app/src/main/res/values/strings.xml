@@ -34,8 +34,14 @@
     <string name="manage_sticker">Manage Sticker</string>
     <string name="download_sticker">Download Sticker</string>
     <string name="no_stickers_found">No Sticker was found for this tag</string>
+    <string name="select_topic">Please select topic</string>
+    <string name="enter_other_topic">Please enter other topic</string>
+    <string name="please_enter_subject">Please enter subject</string>
+    <string name="please_enter_description">Please enter description</string>
+    <string name="please_attach_media">Please add Pictures or Videos when contacting us to help us understand your message</string>
     <string name="choose_a_topic">Choose a Topic</string>
     <string name="enter_subject">Enter Subject</string>
+    <string name="other">Enter Other Topic</string>
     <string name="enter_description">Enter Description</string>
     <string name="upload_media">Upload Media</string>
     <string name="upload_image_content_description">upload image content description</string>
@@ -66,4 +72,5 @@
     <string name="tenor">Tenor</string>
     <string name="power_by_giphy">Power by Giphy</string>
     <string name="power_by_tenor">Power by Tenor</string>
+    <string name="share_using">Download the Sticker Pocket app! It makes organizing and finding your stickers extremely easy and fast!</string>
 </resources>

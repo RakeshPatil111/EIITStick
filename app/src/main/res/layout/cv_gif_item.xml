@@ -41,11 +41,12 @@
 
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/favImg"
-        android:layout_width="@dimen/dimen_30dp"
-        android:layout_height="@dimen/dimen_40dp"
+        android:layout_width="@dimen/dimen_20dp"
+        android:layout_height="@dimen/dimen_25dp"
         android:layout_marginEnd="@dimen/dimen_5dp"
-        android:background="@drawable/ic_fav"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginStart="@dimen/dimen_5dp"
+        android:background="@drawable/ic_bookmark"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.appcompat.widget.AppCompatImageView

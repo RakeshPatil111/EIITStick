@@ -733,6 +733,7 @@ class StickerFragment : Fragment(), GPHGridCallback,
         binding.btnCancel.visibility = View.GONE
 
         commonStickerAdapter.notifyDataSetChanged()
+
     }
 
     private fun moveToSelectedCategory() {
@@ -745,6 +746,7 @@ class StickerFragment : Fragment(), GPHGridCallback,
                     it
                 )
             }
+            emojiCategoryListAdapter.notifyDataSetChanged()
 
             Toast.makeText(requireContext(), "moved", Toast.LENGTH_SHORT).show()
             exitSelectionMode()

@@ -51,6 +51,7 @@
 
         <RelativeLayout
             android:layout_width="match_parent"
+            android:layout_marginTop="@dimen/dimen_5dp"
             android:layout_height="wrap_content">
 
             <com.google.android.material.textview.MaterialTextView
@@ -60,8 +61,8 @@
                 android:text="@string/contact_us" />
 
             <ImageView
-                android:layout_width="72dp"
-                android:layout_height="72dp"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
                 android:layout_alignParentEnd="true"
                 android:layout_marginEnd="@dimen/dimen_24dp"
                 android:contentDescription="@string/app_name"
@@ -99,9 +100,29 @@
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/til_subject"
+                    android:id="@+id/til_other"
                     style="@style/Widget.App.TextInputLayout.Light"
                     app:hintAnimationEnabled="false"
+                    android:layout_marginTop="-5dp"
+                    android:visibility="gone"
+                    app:hintEnabled="false">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/tiet_other"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:digits="abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ 0123456789"
+                        android:hint="@string/other"
+
+                        android:imeOptions="actionDone"
+                        android:inputType="textCapSentences"
+                        android:maxLines="1" />
+                </com.google.android.material.textfield.TextInputLayout>
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/other"
+                    style="@style/Widget.App.TextInputLayout.Light"
+                    app:hintAnimationEnabled="false"
+                    android:layout_marginTop="-5dp"
                     app:hintEnabled="false">
 
                     <com.google.android.material.textfield.TextInputEditText
@@ -119,12 +140,13 @@
                     android:id="@+id/til_description"
                     style="@style/Widget.App.TextInputLayout.Light"
                     app:hintAnimationEnabled="false"
+                    android:layout_marginTop="-5dp"
                     app:hintEnabled="false">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/tiet_description"
                         android:layout_width="match_parent"
-                        android:layout_height="@dimen/dimen_150dp"
+                        android:layout_height="@dimen/dimen_100dp"
                         android:digits="abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ 0123456789"
                         android:gravity="top"
                         android:hint="@string/enter_description"
@@ -134,6 +156,7 @@
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <LinearLayout
+                    android:id="@+id/imagePickerLL"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/dimen_16dp"
@@ -156,6 +179,7 @@
                 </LinearLayout>
 
                 <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnSubmit"
                     android:layout_width="@dimen/dimen_150dp"
                     android:layout_gravity="center"
                     style="@style/Widget.App.Button"

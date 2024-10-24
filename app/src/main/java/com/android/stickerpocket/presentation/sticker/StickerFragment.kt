@@ -476,6 +476,7 @@ class StickerFragment : Fragment(), GPHGridCallback,
         setupRecentSearchRecyclerView()
         commonStickerAdapter.onItemClick { sticker, position ->
             interactor.onStickerClick(sticker, position)
+            sticker?.id?.let { viewModel.addRecentSticker(it) }
         }
         commonStickerAdapter.onItemLongClick { sticker, position ->
             interactor.onStickerLongClick(sticker, position)

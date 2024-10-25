@@ -610,6 +610,10 @@ class StickerViewModel : ViewModel() {
             selectedSticker?.position = stickerCount+1
             updateStickerUseCase.execute(selectedSticker!!)
         }
+
+        CoroutineScope(Dispatchers.Main).launch {
+            fetchStickersForCategoryUseCase.execute(categories.filter { it.isHighlighted }.first().id!!)
+        }
     }
 
     fun moveMultipleStickersToCategory( targetCategoryPosition: Int) {

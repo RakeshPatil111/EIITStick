@@ -15,6 +15,7 @@ import com.android.stickerpocket.utils.OnStickerDropOnCategoryListener
 import com.android.stickerpocket.utils.ViewExt.removeBorder
 import com.android.stickerpocket.utils.ViewExt.setBlueBorder
 import com.android.stickerpocket.utils.ViewExt.setBorder
+import com.android.stickerpocket.utils.ViewExt.shakeMe
 import com.android.stickerpocket.utils.ViewExt.zoomIn
 import com.android.stickerpocket.utils.toCategory
 
@@ -71,6 +72,7 @@ class EmojiCategoryListAdapter :
                 }
                 stickerLongClickAction?.let { c ->
                     cvCategoryItem.setOnLongClickListener {
+                        binding.root.shakeMe()
                         c.invoke(category, position, selected)
                         true
                     }
@@ -94,6 +96,7 @@ class EmojiCategoryListAdapter :
                     sourceStickerPosition: Int,
                     targetCategoryPosition: Int
                 ) {
+                    binding.root.shakeMe()
                     dropListener?.onDrop(sourceStickerPosition, targetCategoryPosition)
                 }
 

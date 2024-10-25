@@ -17,6 +17,6 @@ class FetchStickersForCategoryUseCase (private val repository: StickerRepository
             .map {
                 Result.Success(it)
             }
-            .flowOn(Dispatchers.IO)
+            .flowOn(Dispatchers.Main)
     }
 }

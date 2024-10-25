@@ -13,6 +13,7 @@ import com.android.stickerpocket.dtos.CommonAdapterDTO
 import com.android.stickerpocket.utils.DragListener
 import com.android.stickerpocket.utils.OnStickerDropOnCategoryListener
 import com.android.stickerpocket.utils.ViewExt.removeBorder
+import com.android.stickerpocket.utils.ViewExt.setBlueBorder
 import com.android.stickerpocket.utils.ViewExt.setBorder
 import com.android.stickerpocket.utils.ViewExt.zoomIn
 import com.android.stickerpocket.utils.toCategory
@@ -79,9 +80,11 @@ class EmojiCategoryListAdapter :
 
                         if (CommunicationBridge.isSelectionMode.value==true){
                             CommunicationBridge.selectedCatPosition.value=category.position
+                            cvCategoryItem.setBlueBorder()
                         }else {
                             c.invoke(category, adapterPosition, selected)
                             setSelectedItem(position)
+                            cvCategoryItem.removeBorder()
                         }
                     }
                 }

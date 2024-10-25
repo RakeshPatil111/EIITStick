@@ -41,7 +41,7 @@ class StickerDetailFragmentInteractor {
 
     fun onCreate(stickerDTO: StickerDTO?) {
         viewModel.setStickerDto(stickerDTO)
-        viewModel.addRecentSticker(stickerDTO?.stickerId!!)
+       // viewModel.addRecentSticker(stickerDTO?.stickerId!!)
     }
 
     fun onViewCreated() {

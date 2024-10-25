@@ -476,6 +476,7 @@ class StickerFragment : Fragment(), GPHGridCallback,
         setupRecentSearchRecyclerView()
         commonStickerAdapter.onItemClick { sticker, position ->
             interactor.onStickerClick(sticker, position)
+            sticker?.id?.let { viewModel.addRecentSticker(it) }
         }
         commonStickerAdapter.onItemLongClick { sticker, position ->
             interactor.onStickerLongClick(sticker, position)
@@ -733,6 +734,7 @@ class StickerFragment : Fragment(), GPHGridCallback,
         binding.btnCancel.visibility = View.GONE
 
         commonStickerAdapter.notifyDataSetChanged()
+
     }
 
     private fun moveToSelectedCategory() {
@@ -745,6 +747,7 @@ class StickerFragment : Fragment(), GPHGridCallback,
                     it
                 )
             }
+            emojiCategoryListAdapter.notifyDataSetChanged()
 
             Toast.makeText(requireContext(), "moved", Toast.LENGTH_SHORT).show()
             exitSelectionMode()
